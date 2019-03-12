@@ -113,7 +113,7 @@ class ReachCurrency extends \Magento\Directory\Model\Currency
                 return $rates;
             }
         }
-        parent::getCurrencyRates($currency, $toCurrencies = null);
+        return parent::getCurrencyRates($currency, $toCurrencies);
     }
 
     /**
@@ -129,11 +129,11 @@ class ReachCurrency extends \Magento\Directory\Model\Currency
         $value = parent::convert($price, $toCurrency);
         if(gettype($toCurrency)=='string' && $toCurrency=="JPY")
         {
-            return (int) $value;
+            return round($value);
         }
         elseif(gettype($toCurrency)=='object' && $toCurrency->getCurrencyCode()=="JPY")
         {
-            return (int) $value;
+            return round($value);
         }
         return $value;
     }

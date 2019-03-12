@@ -484,13 +484,11 @@ class Cc extends \Magento\Payment\Model\Method\Cc
                 $request['OpenContract'] = true;
             }
         }
-
-        $order->getOrderCurrencyCode();
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
-            $itemData['ConsumerPrice'] = $item->getPrice();
+            $itemData['ConsumerPrice'] = $this->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
             $itemData['Quantity'] = $item->getQtyOrdered();
             $request['Items'][]=$itemData;
         }
@@ -499,19 +497,20 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Shipping']=[];
         if ($order->getReachDuty()) {
             $request['ShippingRequired'] = true;
-            $request['Shipping']['ConsumerDuty']=$order->getReachDuty();
+            $request['Shipping']['ConsumerDuty']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
         } else {
             $request['Shipping']['ConsumerDuty']=0;
         }
-        $request['Shipping']['ConsumerPrice']=$order->getShippingAmount();
-        $request['Shipping']['ConsumerTaxes']=$order->getTaxAmount();
+        $request['Shipping']['ConsumerPrice']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+        $request['Shipping']['ConsumerTaxes']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
         
         $request['Consignee']= $this->getConsigneeInfo($order);
         if ($order->getDiscountAmount()) {
             $request['Discounts']=[];
-            $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$order->getDiscountAmount() * -1];
+            $discountAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
+            $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$order->getGrandTotal();
+        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal()); 
         return $request;
     }
 
