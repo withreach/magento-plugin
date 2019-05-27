@@ -1,0 +1,15 @@
+{
+  "name": "withreach/magento-plugin",
+  "license": "OSL-3.0",
+  "type": "magento2-module",
+  "description": "Reach payment method for Magento 2",
+  "minimum-stability": "stable",
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Reach\\Payment\\": ""
+    }
+  }
+}
