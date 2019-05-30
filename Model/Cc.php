@@ -743,4 +743,20 @@ class Cc extends \Magento\Payment\Model\Method\Cc
 
         return $this;
     }
+
+    /**
+     * Convert decimal to int for JPY
+     *
+     * @param string $currencycode
+     * @param float $amount
+     * @return int|float
+     */
+    protected function convertCurrency($currencycode,$amount)
+    {
+        if($currencycode == "JPY")
+        {
+            return round($amount);
+        }
+        return $amount;
+    }
 }
