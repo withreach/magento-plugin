@@ -24,7 +24,7 @@ use Magento\Framework\App\ObjectManager;
  */
 class Cc extends \Magento\Payment\Model\Method\Cc
 {
-  
+
 
     const METHOD_CC = 'reach_cc';
 
@@ -94,7 +94,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      * @var bool
      */
     protected $_canReviewPayment = true;
-    
+
         /**
          * @var \Magento\Store\Model\StoreManagerInterface
          */
@@ -119,7 +119,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      * @var HandlerInterface
      */
     private $errorHandler;
-    
+
     /**
      * @var \Reach\Payment\Helper\Data
      */
@@ -242,7 +242,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $path = 'payment/' . self::METHOD_CC . '/active';
         return (bool)(int) $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $storeId);
     }
-    
+
 
     /**
      * Do not validate payment form using server methods
@@ -269,7 +269,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Capture'] = false;
         $url = $this->reachHelper->getCheckoutUrl();
         $response = $this->callCurl($url, $request);
-        
+
         if (!isset($response['response']) || !$this->validateResponse($response['response'], $response['signature'])) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('This payment method is not working at the moment, please try another payment option or try again later')
@@ -280,7 +280,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $this->setTransStatus($payment, $response);
         return $this;
     }
-    
+
     /**
      * Capture payment
      *
@@ -292,7 +292,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        
+
         if ($payment->getParentTransactionId()) {
             $request['MerchantId'] = $this->reachHelper->getMerchantId();
             $request['OrderId'] = $payment->getParentTransactionId();
@@ -330,7 +330,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['MerchantId']= $this->reachHelper->getMerchantId();
         $url = $this->reachHelper->getCancelUrl();
         $response = $this->callCurl($url, $request);
-        
+
         if(!$this->validateResponse($response['response'],$response['signature']))
         {
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -401,7 +401,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url, $request);
-        
+
         if(!$this->validateResponse($response['response'],$response['signature']))
         {
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -454,13 +454,13 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request=[];
         $order = $payment->getOrder();
         $info = $this->getInfoInstance();
-        
+
         $request['MerchantId'] = $this->reachHelper->getMerchantId();
         $request['ReferenceId'] = $order->getIncrementId();
         $consumer = $this->getConsumerInfo($order);
         $request['Consumer'] = $consumer;
-        
-        
+
+
         $request['Notify'] = $this->getCallbackUrl($order);
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
 
@@ -468,12 +468,12 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         if ($rateOfferId) {
             $request['RateOfferId'] = $rateOfferId;
         }
-        
+
         $request['DeviceFingerprint'] = $info->getAdditionalInformation("device_fingerprint");
         $contractId = $info->getAdditionalInformation('contract_id');
         if (isset($contractId) && is_string($contractId)) {
             $request['ContractId'] = $contractId;
-            
+
         } else {
             $stashId = $info->getAdditionalInformation("stash_id");
             $request['StashId'] = $stashId;
@@ -493,7 +493,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
             $request['Items'][]=$itemData;
         }
         $request['ShippingRequired'] = false;
-        
+
         $request['Shipping']=[];
         if ($order->getReachDuty()) {
             $request['ShippingRequired'] = true;
@@ -503,14 +503,14 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         }
         $request['Shipping']['ConsumerPrice']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
         $request['Shipping']['ConsumerTaxes']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
-        
+
         $request['Consignee']= $this->getConsigneeInfo($order);
         if ($order->getDiscountAmount()) {
             $request['Discounts']=[];
             $discountAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
             $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal()); 
+        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
         return $request;
     }
 
@@ -677,7 +677,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         if (isset($response['ContractId'])) {
             $payment->setAdditionalInformation('contract_id', $response['ContractId']);
         }
-        
+
         return $payment;
     }
 
@@ -736,7 +736,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         } else {
             $info->setAdditionalInformation("contract_id", 0);
         }
-        
+
         if ($data->getAdditionalData('cc_last_4')) {
             $info->setData("cc_last_4", $data->getAdditionalData('cc_last_4'));
         }

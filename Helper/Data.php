@@ -14,7 +14,7 @@ class Data extends AbstractHelper
 
     const API_URL = 'https://checkout.gointerpay.net/v2.19/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
-    
+
     const DHL_API_URL = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
     const DHL_ENABLE = 'reach/dhl/enable';
@@ -33,7 +33,7 @@ class Data extends AbstractHelper
     const CONFIG_CURRENCY_ALLOWE_SPECIFIC = 'reach/global/allowspecific';
     const CONFIG_CURRENCY_SPECIFIC_COUNTRY = 'reach/global/specificcountry';
     const CONFIG_API_MODE = 'reach/global/mode';
-    const CONFIG_MERCHANT_ID = 'reach/global/mearchant_id';
+    const CONFIG_MERCHANT_ID = 'reach/global/merchant_id';
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
@@ -55,7 +55,7 @@ class Data extends AbstractHelper
         $this->_enc = $enc;
         parent::__construct($context);
     }
-    
+
     /**
      * getConfigValue
      * gets config Value for frontend
@@ -94,7 +94,7 @@ class Data extends AbstractHelper
         return $core_session;
     }
 
-    
+
     /**
      * getCheckoutSession
      * @return object
@@ -337,7 +337,7 @@ class Data extends AbstractHelper
     {
         return $this->getConfigValue(self::DHL_DUTY_LABEL);
     }
-    
+
     /**
      * Get DHL allowed specific
      *
