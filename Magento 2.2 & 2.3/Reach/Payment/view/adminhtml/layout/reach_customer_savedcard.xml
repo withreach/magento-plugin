@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <container name="root" label="Root">
+        <block class="Reach\Payment\Block\Adminhtml\Customer\Edit\Tab\View\SavedCard" name="reach.customer.edit.tab.savedcard"/>     
+    </container>   
+</layout>
