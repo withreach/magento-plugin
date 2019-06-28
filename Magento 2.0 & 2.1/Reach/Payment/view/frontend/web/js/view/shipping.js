@@ -115,13 +115,16 @@ define(
                 quote.shippingMethod.subscribe(function () {
                     self.errorValidationMessage(false);
                 });
-
+                if( window.checkoutConfig.reach.enabled != 0)
+                {
+                    quote.shippingMethod.subscribe(function(){            
+                        self.getDutyCharges();
+                    });
+                }
                 this.applyDuty.subscribe(function(){
                     self.applyDutyCharges()
                 });
-                quote.shippingMethod.subscribe(function(){            
-                    self.getDutyCharges();
-                });
+                
 
                 registry.async('checkoutProvider')(function (checkoutProvider) {
                     var shippingAddressData = checkoutData.getShippingAddressFromData();
@@ -219,6 +222,9 @@ define(
                         }
                     );
                 }
+            },
+            getReachEnabled:function(){
+                return window.checkoutConfig.reach.enabled;    
             },
             getDutyCharges: function (){
                 var shippingMethod = quote.shippingMethod();                

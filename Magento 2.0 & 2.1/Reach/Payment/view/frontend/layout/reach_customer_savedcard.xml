@@ -2,7 +2,7 @@
 <update handle="customer_account"/> 
 <body>     
      <referenceContainer name="content"> 
-     	<block class="Reach\Payment\Block\Customer\Savedcard" name="reach.savedcard" template="Reach_Payment::customer/savedcard.phtml" cacheable="false" />        
+     	<block class="Reach\Payment\Block\Customer\Savedcard" name="reach.savedcard" template="Reach_Payment::customer/savedcard.phtml"  cacheable="false" />        
     </referenceContainer> 
 </body> 
 </page>

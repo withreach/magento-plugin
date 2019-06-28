@@ -62,6 +62,10 @@ class Reach
      */
     public function isAvailable($method)
     {
+         if(!$this->reachHelper->getReachEnabled())
+        {
+            return false;
+        }
         $methods = $this->fetchPaymentMethods();
         
         if ($method == \Reach\Payment\Model\Cc::METHOD_CC && count($methods['Card'])) {
