@@ -124,9 +124,13 @@ define([
             this.applyDuty.subscribe(function(){
                 self.applyDutyCharges()
             });
-            quote.shippingMethod.subscribe(function(){            
-                self.getDutyCharges();
-            });
+            if( window.checkoutConfig.reach.enabled != 0)
+            {
+                quote.shippingMethod.subscribe(function(){            
+                    self.getDutyCharges();
+                });    
+            }
+            
 
             registry.async('checkoutProvider')(function (checkoutProvider) {
                 var shippingAddressData = checkoutData.getShippingAddressFromData();
@@ -345,6 +349,10 @@ define([
             }
 
             return true;
+        },
+
+        getReachEnabled:function(){
+            return window.checkoutConfig.reach.enabled;    
         },
 
         /**

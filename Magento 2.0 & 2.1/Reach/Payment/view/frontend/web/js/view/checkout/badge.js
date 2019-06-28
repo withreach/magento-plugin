@@ -28,7 +28,11 @@ define([
          * @returns {Boolean}
          */
         isBadgeEnabled: function () {
-            return true;
+            if(window.checkoutConfig.reach.enabled != 0)
+            {
+                return true;
+            }
+            return false;
         }
     });
 });

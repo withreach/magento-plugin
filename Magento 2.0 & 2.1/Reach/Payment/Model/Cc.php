@@ -228,7 +228,10 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {      
-
+         if(!$this->reachHelper->getReachEnabled())
+        {
+            return false;
+        } 
         $path = 'payment/'.self::METHOD_CC . '/active';                
         return $this->reachPayment->isAvailable(self::METHOD_CC) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
     }

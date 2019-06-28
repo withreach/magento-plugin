@@ -29,6 +29,7 @@ class Data extends AbstractHelper
     const DHL_PICKUP_ACCOUNT = 'reach/dhl/pickup_account';
     const DHL_PRICIING_STRATEGY = 'reach/dhl/pricing_strategy';
 
+    const CONFIG_REACH_ENABLED = 'reach/global/active';
     const CONFIG_CURRENCY_OPTION = 'reach/global/display_currency_switch';
     const CONFIG_CURRENCY_ALLOWE_SPECIFIC = 'reach/global/allowspecific';
     const CONFIG_CURRENCY_SPECIFIC_COUNTRY = 'reach/global/specificcountry';
@@ -84,7 +85,17 @@ class Data extends AbstractHelper
     }
 
     /**
-     * getCoreSession
+     * Check Reach Enabled
+     * @return boolean
+     */
+    public function getReachEnabled()
+    {
+        return $this->getConfigValue(self::CONFIG_REACH_ENABLED);
+    }    
+
+    /**
+     * Get core Session
+     *
      * @return object
      */
     public function getCoreSession()
@@ -123,6 +134,11 @@ class Data extends AbstractHelper
      */
     public function isReachCurrencyEnabled()
     {
+        if(!$this->getReachEnabled())
+        {
+            return false;
+        }
+
         if ($this->currencyOption === null) {
             $this->currencyOption = $this->getConfigValue(self::CONFIG_CURRENCY_OPTION);
         }
