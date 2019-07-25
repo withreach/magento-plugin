@@ -58,13 +58,13 @@
                   novalidate="novalidate">
 
                 <render args="shippingMethodListTemplate"/>
-                
-                <div class="reach-tax-duty" data-bind="fadeVisible: dutyCharges() > 0">
-                    <input 
+
+                <div class="reach-tax-duty" data-bind="fadeVisible: dutyCharges() > 0 && getReachEnabled() != 0">
+                    <input
                     type="checkbox"
-                    class="checkbox-inline" ,                    
+                    class="checkbox-inline" ,
                     data-bind="checked: applyDuty, fadeVisible: isDutyOptional() "
-                    /> 
+                    />
                     <label class="label" data-bind="text: getDuty()"/>
                 </div>
 

@@ -124,9 +124,12 @@ define([
             this.applyDuty.subscribe(function(){
                 self.applyDutyCharges()
             });
-            quote.shippingMethod.subscribe(function(){            
-                self.getDutyCharges();
-            });
+            if( window.checkoutConfig.reach.enabled != 0)
+            {
+                quote.shippingMethod.subscribe(function(){
+                    self.getDutyCharges();
+                });
+            }
 
             registry.async('checkoutProvider')(function (checkoutProvider) {
                 var shippingAddressData = checkoutData.getShippingAddressFromData();
@@ -244,14 +247,14 @@ define([
          * Shipping Method View
          */
         dutyCharges :  dutyService.getDuty(),
-        rates: shippingService.getShippingRates(),        
+        rates: shippingService.getShippingRates(),
         isLoading: shippingService.isLoading,
         isSelected: ko.computed(function () {
             return quote.shippingMethod() ?
                 quote.shippingMethod()['carrier_code'] + '_' + quote.shippingMethod()['method_code'] :
                 null;
         }),
-        
+
 
         /**
          * @param {Object} shippingMethod
@@ -347,13 +350,17 @@ define([
             return true;
         },
 
+        getReachEnabled:function(){
+            return window.checkoutConfig.reach.enabled;
+        },
+
         /**
         * Fetch tax & duties via API
         */
         getDutyCharges: function (){
-            var shippingMethod = quote.shippingMethod();     
+            var shippingMethod = quote.shippingMethod();
             dutyService.getCharges(shippingMethod.amount,this.applyDuty());
-         
+
         },
 
         /**
@@ -366,7 +373,7 @@ define([
         },
 
         /**
-        * Get configured label for tax & duties 
+        * Get configured label for tax & duties
         * @return {String}
         */
         getDutyLabel:function()
@@ -379,7 +386,7 @@ define([
         },
 
         /**
-        * Check is duty optional or mandatory 
+        * Check is duty optional or mandatory
         * @return {Boolean}
         */
         isDutyOptional: function (){
@@ -391,7 +398,7 @@ define([
         * Trigger to apply tax & duties in curreny order
         */
         applyDutyCharges:function (){
-            var shippingMethod = quote.shippingMethod();                            
+            var shippingMethod = quote.shippingMethod();
             dutyService.getCharges(shippingMethod.amount,this.applyDuty());
         },
 

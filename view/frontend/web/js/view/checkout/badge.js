@@ -8,11 +8,11 @@ define([
     'underscore',
     'uiComponent',
     'jquery'
-    
+
 ], function (ko,_,Component,$) {
     'use strict';
 
-    return Component.extend({        
+    return Component.extend({
         initialize: function () {
             this._super();
             return this;
@@ -20,7 +20,7 @@ define([
         /**
          * @param {HTMLElement} element
          */
-        getBadge: function () {             
+        getBadge: function () {
             return  window.checkoutConfig.reach.badge.ImageUrl;
         },
 
@@ -28,7 +28,11 @@ define([
          * @returns {Boolean}
          */
         isBadgeEnabled: function () {
-            return true;
+            if(window.checkoutConfig.reach.enabled != 0)
+            {
+                return true;
+            }
+            return false;
         }
     });
 });

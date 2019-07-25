@@ -37,7 +37,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      * @var string
      */
     protected $_code = 'reach_paypal';
-    
+
     /**
      * Payment Method feature
      *
@@ -185,7 +185,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     // @codingStandardsIgnoreStart
     public function initialize($paymentAction, $stateObject)
-    {        
+    {
         $payment = $this->getInfoInstance();
         $order   = $payment->getOrder();
         $order->setCanSendNewEmailFlag(false);
@@ -193,7 +193,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $stateObject->setStatus('pending_payment');
         $stateObject->setIsNotified(false);
     }
- 
+
     /**
      * Capture payment
      *
@@ -214,11 +214,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
             $response = $this->callCurl($url,$request);
             $this->validateResponse($response['response'],$response['signature']);
             $response = json_decode($response['response'],true);
-        
+
             $this->processErrors($response);
             $this->setTransStatus($payment, $response,true);
         }
-        return $this;       
+        return $this;
     }
 
     /**
@@ -235,7 +235,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['OrderId'] = $payment->getParentTransactionId();
         $request['MerchantId']= $this->reachHelper->getMerchantId();
         $url = $this->reachHelper->getCancelUrl();
-        $response = $this->callCurl($url,$request);         
+        $response = $this->callCurl($url,$request);
         if(!$this->validateResponse($response['response'],$response['signature']))
         {
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -253,7 +253,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
                 )->setShouldCloseParentTransaction(
                     1
                 );
-                            
+
         }
         else{
             throw new \Exception("Error during canceling authorization");
@@ -354,7 +354,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-       $path = 'payment/'.self::METHOD_PAYPAL . '/active';                
+        if(!$this->reachHelper->getReachEnabled()) {
+            return false;
+        }
+
+        $path = 'payment/'.self::METHOD_PAYPAL . '/active';
         return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
     }
 
@@ -382,35 +386,35 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     *
     * @param array $response
     * @param string $nonce
-    * @return boolean    
-    */    
+    * @return boolean
+    */
     protected function validateResponse($response,$nonce)
     {
 
         $nonce = str_replace(' ','+',$nonce);
         $key = $this->reachHelper->getSecret();
         $signature =  base64_encode(hash_hmac('sha256', $response, $key, TRUE));
-        return $signature == $nonce;    
+        return $signature == $nonce;
     }
 
     /**
     * Build request array
     *
-    * @param object $payment    
-    * @return array   
+    * @param object $payment
+    * @return array
     */
     protected function _buildCheckoutRequest($payment, $amount)
     {
         $request=[];
         $order = $payment->getOrder();
-        $info = $this->getInfoInstance();        
+        $info = $this->getInfoInstance();
 
         $order = $payment->getOrder();
         $request['MerchantId'] = $this->reachHelper->getMerchantId();
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
         $order->getOrderCurrencyCode();
-        
+
 
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item)
@@ -419,20 +423,20 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
             $itemData['Sku'] = $item->getSku();
             $itemData['ConsumerPrice'] = $item->getPrice();
             $itemData['Quantity'] = $item->getQtyOrdered();
-            $request['Items'][]=$itemData;         
+            $request['Items'][]=$itemData;
         }
 
         $shippingAddress = $order->getShippingAddress();
         $consumer = $this->getConsumerInfo($order);
         $request['Consumer'] = $consumer;
         $request['ViaAgent']=true;
-        
+
         $request['ShippingRequired'] = false;
         $request['Consignee']= $this->getConsigneeInfo($order);
         $request['ShippingRequired'] = false;
-        
+
         if($order->getReachDuty())
-        {   
+        {
             $request['ShippingRequired'] = true;
         }
         $request['Shipping']=[];
@@ -455,16 +459,16 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     /**
     * get paypal processing callback url
     *
-    * @param object $order    
-    * @return string    
-    */        
+    * @param object $order
+    * @return string
+    */
     private function getCallbackUrl($order)
     {
         $url = $this->coreUrl->getUrl('reach/paypal/processing', [
             '_secure' => true,
             '_store'  => $order->getStoreId()
         ]);
-        
+
         $url .= "?quoteid=" . $order->getQuoteId();
 
         return $url;
@@ -473,20 +477,20 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     /**
     * get order consignee information
     *
-    * @param object $order    
-    * @return array   
-    */  
+    * @param object $order
+    * @return array
+    */
     protected function getConsigneeInfo($order)
     {
         $shippingAddress = $order->getShippingAddress();
         return [
-            'Name' => $order->getCustomerName(), 
-            'Email' => $order->getCustomerEmail(), 
-            'Phone' => $shippingAddress->getTelephone(), 
-            'Region' => $shippingAddress->getRegionCode(), 
-            'Address' => implode(" ", $shippingAddress->getStreet()), 
-            'City' => $shippingAddress->getCity(), 
-            'PostalCode' => $shippingAddress->getPostcode(), 
+            'Name' => $order->getCustomerName(),
+            'Email' => $order->getCustomerEmail(),
+            'Phone' => $shippingAddress->getTelephone(),
+            'Region' => $shippingAddress->getRegionCode(),
+            'Address' => implode(" ", $shippingAddress->getStreet()),
+            'City' => $shippingAddress->getCity(),
+            'PostalCode' => $shippingAddress->getPostcode(),
             'Country' => $shippingAddress->getCountryId()
             ];
     }
@@ -494,20 +498,20 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     /**
     * get consumer info
     *
-    * @param object $order    
-    * @return array   
-    */  
+    * @param object $order
+    * @return array
+    */
     protected function getConsumerInfo($order)
     {
         $billingAddress = $order->getBillingAddress();
         return [
-            'Name' => $order->getCustomerName(), 
-            'Email' => $order->getCustomerEmail(), 
-            'Phone' => $billingAddress->getTelephone(), 
-            'Region' => $billingAddress->getRegionCode(), 
-            'Address' => implode(" ", $billingAddress->getStreet()), 
-            'City' => $billingAddress->getCity(), 
-            'PostalCode' => $billingAddress->getPostcode(), 
+            'Name' => $order->getCustomerName(),
+            'Email' => $order->getCustomerEmail(),
+            'Phone' => $billingAddress->getTelephone(),
+            'Region' => $billingAddress->getRegionCode(),
+            'Address' => implode(" ", $billingAddress->getStreet()),
+            'City' => $billingAddress->getCity(),
+            'PostalCode' => $billingAddress->getPostcode(),
             'Country' => $billingAddress->getCountryId()
             ];
     }
@@ -535,7 +539,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
             throw new \Magento\Framework\Exception\LocalizedException(
                     __($errorMessage)
                 );
-        }                
+        }
     }
 
     /**
@@ -548,7 +552,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     * @throws \Magento\Framework\Exception\LocalizedException
     */
     protected function callCurl($url,$params,$method="POST")
-    {        
+    {
         $json = json_encode($params);
         $secret = $this->reachHelper->getSecret();
         $signature = base64_encode(hash_hmac('sha256', $json,$secret, TRUE));
@@ -557,7 +561,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $rest->setContentType("application/x-www-form-urlencoded");
         $rest->setUrl($url);
         $result = $rest->executePost('request='.urlencode($json).'&signature='.urlencode($signature));
-        $responseString = $result->getResponseData();    
+        $responseString = $result->getResponseData();
         $response =[];
         parse_str($responseString,$response);
         return $response;
@@ -572,11 +576,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function setTransStatus($payment, $response)
     {
-        
+
         if($response['Completed']===false)
         {
             $payment->setIsTransactionPending(true);
         }
     }
 
-}   
+}
