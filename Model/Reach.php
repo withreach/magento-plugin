@@ -68,10 +68,10 @@ class Reach
 
         $methods = $this->fetchPaymentMethods();
 
-        if ($method == \Reach\Payment\Model\Cc::METHOD_CC && count($methods['Card'])) {
+        if ($method == \Reach\Payment\Model\Cc::METHOD_CC && isset($methods['Card']) && count($methods['Card'])) {
             return true;
         }
-        if ($method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL && count($methods['Online'])) {
+        if ($method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL && isset($methods['Online']) && count($methods['Online'])) {
             $found=false;
             foreach ($methods['Online'] as $onmethod) {
                 if ($onmethod['Id'] == 'PAYPAL') {
