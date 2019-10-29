@@ -101,7 +101,7 @@
                         <config_path>reach/dhl/optional_specificcountry</config_path>
                     </field>
                     <field id="dhl_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
-                        <label>DHL API Key</label>
+                        <label>DHL Client ID</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
@@ -114,7 +114,7 @@
                     </field>
 
                     <field id="dhl_api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
-                        <label>DHL Server Key</label>
+                        <label>DHL Client Secret</label>
                         <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                         <depends>
                             <field id="active">1</field>
