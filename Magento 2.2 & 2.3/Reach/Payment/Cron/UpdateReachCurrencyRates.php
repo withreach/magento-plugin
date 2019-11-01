@@ -22,10 +22,10 @@ class UpdateReachCurrencyRates
     public function execute()
     {
         try {
-            $logger->info('Its called');
+            //$logger->info('Its called');
             $this->currencyModel->updateRates();
         } catch (\Exception $e) {
-            $logger->info($e->getMessage());
+            //$logger->info($e->getMessage());
         }
     }
 }
