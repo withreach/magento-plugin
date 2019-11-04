@@ -26,6 +26,7 @@ class Data extends AbstractHelper
     const DHL_DUTY_ALLOW_SHIPPING = 'reach/dhl/applicable_shipping';
     const DHL_API_KEY = 'reach/dhl/key';
     const DHL_API_SECRET = 'reach/dhl/api_secret';
+    const DHL_ITEM_SELLER = 'reach/dhl/item_seller';
     const DHL_PICKUP_ACCOUNT = 'reach/dhl/pickup_account';
     const DHL_PRICIING_STRATEGY = 'reach/dhl/pricing_strategy';
 
@@ -330,6 +331,16 @@ class Data extends AbstractHelper
     public function getDhlPickupAccount()
     {
         return $this->getConfigValue(self::DHL_PICKUP_ACCOUNT);
+    }
+
+    /**
+     * Get DHL Item Seller.
+     *
+     * @return string
+     */
+    public function getDhlItemSeller()
+    {
+        return $this->getConfigValue(self::DHL_ITEM_SELLER);
     }
 
     /**
