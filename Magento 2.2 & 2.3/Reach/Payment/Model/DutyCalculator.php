@@ -269,7 +269,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $request=[];
                            
             $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
-            $request['itemSeller']= 'ShopifyPlus';
+            $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
             $request['pricingStrategy']=$this->reachHelper->getDhlPricingStrategy();
             $request['senderAddress']=$this->getShippingOrigin();//['state'=>'FL','country'=>'US'];
             $itemData['packageDetails']=[''];
