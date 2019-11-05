@@ -286,7 +286,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['itemId']=(string)$item->getId();
                 $itemData['hsCode']=$this->getHsCode($item->getSku());
                 if (!$itemData['hsCode']) {
-                    unset($itemData['hsCode']);
+                    $itemData['hsCode']=$this->reachHelper->getDhlDefaultHsCode();
                 }
                 $itemData['skuNumber']=$item->getSku();
                 $itemData['itemValue']=['value'=>$item->getRowTotal()/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
