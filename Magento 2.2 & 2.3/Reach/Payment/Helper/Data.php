@@ -28,6 +28,7 @@ class Data extends AbstractHelper
     const DHL_API_SECRET = 'reach/dhl/api_secret';
     const DHL_PICKUP_ACCOUNT = 'reach/dhl/pickup_account';
     const DHL_PRICIING_STRATEGY = 'reach/dhl/pricing_strategy';
+    const DHL_DEFAULT_HS_CODE = 'reach/dhl/default_hs_code';
 
     const CONFIG_REACH_ENABLED = 'reach/global/active';
     const CONFIG_CURRENCY_OPTION = 'reach/global/display_currency_switch';
@@ -340,6 +341,16 @@ class Data extends AbstractHelper
     public function getDhlPricingStrategy()
     {
         return $this->getConfigValue(self::DHL_PRICIING_STRATEGY);
+    }
+
+    /**
+     * Get DHL Default HS Code.
+     *
+     * @return string
+     */
+    public function getDhlDefaultHsCode()
+    {
+        return $this->getConfigValue(self::DHL_DEFAULT_HS_CODE);
     }
 
     /**

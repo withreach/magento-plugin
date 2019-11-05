@@ -136,14 +136,21 @@
                         </depends>
                         <config_path>reach/dhl/pricing_strategy</config_path>
                     </field>
-                    <field id="export_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Export" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="default_hs_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="110" translate="label" type="text">
+                        <label>Default HS Code</label>
+                        <depends>
+                            <field id="active">1</field>
+                        </depends>
+                        <config_path>reach/dhl/default_hs_code</config_path>
+                    </field>
+                    <field id="export_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Export" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Export CSV of HS Code</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
                         <config_path>reach/dhl/export_csv_hs_code</config_path>
                     </field>
-                    <field id="import_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Import" showInStore="1" sortOrder="120" showInDefault="1" showInWebsite="1" >
+                    <field id="import_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Import" showInStore="1" sortOrder="130" showInDefault="1" showInWebsite="1" >
                         <label>Import CSV of HS Code</label>
                         <backend_model>Reach\Payment\Model\Config\Backend\CsvHsCode</backend_model>
                         <upload_dir config="system" scope_info="1">HSCodeCsv</upload_dir>
