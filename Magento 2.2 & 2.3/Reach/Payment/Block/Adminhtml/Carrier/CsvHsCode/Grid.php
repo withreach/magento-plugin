@@ -92,6 +92,11 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             ['header' => __('hs_code'), 'index' => 'hs_code']
         );
 
+        $this->addColumn(
+            'country_of_origin',
+            ['header' => __('country_of_origin'), 'index' => 'country_of_origin']
+        );
+
         return parent::_prepareColumns();
     }
 }
