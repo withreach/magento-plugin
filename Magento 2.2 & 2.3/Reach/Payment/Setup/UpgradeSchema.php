@@ -14,6 +14,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer = $setup;
         $installer->startSetup();
         $connection = $installer->getConnection();
+
         if (version_compare($context->getVersion(), '1.0.1') < 0) {
             $quoteAddressTable = 'quote_address';
             $quoteTable = 'quote';
@@ -21,8 +22,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $invoiceTable = 'sales_invoice';
             $creditmemoTable = 'sales_creditmemo';
 
-        //Setup two columns for quote, quote_address and order
-        //Quote address tables
+            //Setup two columns for quote, quote_address and order
+            //Quote address tables
             $setup->getConnection()
             ->addColumn(
                 $setup->getTable($quoteAddressTable),
@@ -73,7 +74,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
-        //Quote tables
+            //Quote tables
             $setup->getConnection()
             ->addColumn(
                 $setup->getTable($quoteTable),
@@ -124,7 +125,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
-        //Order tables
+            //Order tables
             $setup->getConnection()
             ->addColumn(
                 $setup->getTable($orderTable),
@@ -178,7 +179,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
 
 
-        //Invoice tables
+            //Invoice tables
             $setup->getConnection()
             ->addColumn(
                 $setup->getTable($invoiceTable),
@@ -229,7 +230,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
-        //Credit memo tables
+            //Credit memo tables
             $setup->getConnection()
             ->addColumn(
                 $setup->getTable($creditmemoTable),
@@ -282,6 +283,22 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
+        
+        if (version_compare($context->getVersion(), "1.0.4") < 0) {
+            //DHL Country of Origin tables
+            $setup->getConnection()
+            ->addColumn(
+                $setup->getTable('reach_hs_code'),
+                'country_of_origin',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 2,
+                    'nullable' => true,
+                    'comment' =>'Country of Origin'
+                ]
+            );
+        }
+
          $installer->endSetup();
     }
 }
