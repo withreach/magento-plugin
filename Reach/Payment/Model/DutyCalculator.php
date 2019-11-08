@@ -282,6 +282,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $itemData['packageDetails']=[''];
             $request['packageDetails']['outputCurrency']=$quote->getQuoteCurrencyCode();
             $request['packageDetails']['freightCharge'] = ['value'=>$freightCharge,'currency'=>$quote->getQuoteCurrencyCode()];
+            $request['packageDetails']["clearanceMode"] = "Courier";
+            $request['packageDetails']["transportMode"] = "AIR";
+            $request['packageDetails']["endUse"] = "Personal";
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
@@ -302,6 +305,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 if (!$itemData['countryOfOrigin']) {
                     $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
                 }
+                $itemData['qualifiesForPreferentialTariffs']=true;
                 $request['customsDetails'][]=$itemData;
             }
             return $request;
