@@ -13,6 +13,7 @@ class ColumnResolver
     const COLUMN_ID = 'Id';
     const COLUMN_SKU = 'sku';
     const COLUMN_HSCODE = 'hs_code';
+    const COLUMN_COUNTRYOFORIGIN = 'country_of_origin';
 
     /**
      * @var array
@@ -21,6 +22,7 @@ class ColumnResolver
         self::COLUMN_ID => 0,
         self::COLUMN_SKU => 1,
         self::COLUMN_HSCODE => 2,
+        self::COLUMN_COUNTRYOFORIGIN => 3,
     ];
 
     /**

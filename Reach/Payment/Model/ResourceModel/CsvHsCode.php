@@ -38,4 +38,16 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
         return null;
     }
+
+    public function getCountryOfOrigin($sku)
+    {
+        $connection = $this->getConnection();
+        $select = $connection->select()->from($this->getMainTable());
+        $select->where('sku = ?', $sku);
+        $result = $connection->fetchRow($select);
+        if (count($result) && isset($result['country_of_origin'])) {
+            return $result['country_of_origin'];
+        }
+        return null;
+    }
 }
