@@ -15,6 +15,7 @@ class RowParser
      *  @var \Psr\Log\LoggerInterface
      */
     protected $_logger;
+
     /**
      * Constructor
      *
@@ -61,12 +62,13 @@ class RowParser
             'country_of_origin' => $countryOfOrigin,
         ];
     }
-     /**
-      * @param array $rowData
-      * @param ColumnResolver $columnResolver
-      * @return int|null|string
-      * @throws ColumnNotFoundException
-      */
+
+    /**
+     * @param array $rowData
+     * @param ColumnResolver $columnResolver
+     * @return int|null|string
+     * @throws ColumnNotFoundException
+     */
     private function getId(array $rowData, ColumnResolver $columnResolver)
     {
         $id = $columnResolver->getColumnValue(ColumnResolver::COLUMN_ID, $rowData);

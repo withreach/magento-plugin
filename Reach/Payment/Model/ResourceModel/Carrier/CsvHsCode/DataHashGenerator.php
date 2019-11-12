@@ -19,6 +19,5 @@ class DataHashGenerator
         $hsCode = $data['hs_code'];
         $countryOfOrigin = $data['country_of_origin'];
         return sprintf("%s-%s-%s-%s", $id, $sku, $hsCode, $countryOfOrigin);
-        
     }
 }
