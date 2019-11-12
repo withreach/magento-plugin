@@ -71,6 +71,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      *  @var \Psr\Log\LoggerInterface
      */
     protected $_logger;
+
     /**
      * Constructor
      *
