@@ -356,7 +356,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         return null;
     }
 
-        /**
+    /**
      * Get SKU specific Country of Origin 
      *
      * @param string $sku
