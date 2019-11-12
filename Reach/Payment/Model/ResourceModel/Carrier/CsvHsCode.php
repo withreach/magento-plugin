@@ -182,7 +182,8 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $columns = [
                 'id',
                 'sku',
-                'hs_code'
+                'hs_code',
+                'country_of_origin'
             ];
             $connection->delete($this->getMainTable());
             $this->getConnection()->insertArray($this->getMainTable(), $columns, $data);

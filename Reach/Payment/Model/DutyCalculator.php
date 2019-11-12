@@ -66,7 +66,12 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      * @var \Reach\Payment\Api\Data\DutyResponseInterface
      */
     protected $response;
-    
+
+    /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger;
+
     /**
      * Constructor
      *
@@ -81,6 +86,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      * @param \Magento\Directory\Model\Region $regionModel
      * @param \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
      * @param \Reach\Payment\Api\Data\DutyResponseInterface $response
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Reach\Payment\Helper\Data $reachHelper,
@@ -93,7 +99,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         \Reach\Payment\Model\ResourceModel\CsvHsCodeFactory $csvHsCodeFactory,
         \Magento\Directory\Model\Region $regionModel,
         \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
-        \Reach\Payment\Api\Data\DutyResponseInterface $response
+        \Reach\Payment\Api\Data\DutyResponseInterface $response,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->quoteRepository    = $quoteRepository;
         $this->reachHelper    = $reachHelper;
@@ -106,6 +113,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->priceCurrency      = $priceCurrency;
         $this->csvHsCodeFactory   = $csvHsCodeFactory;
         $this->httpRestFactory    = $httpRestFactory;
+        $this->_logger = $logger;
     }
 
      /**
@@ -275,6 +283,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $itemData['packageDetails']=[''];
             $request['packageDetails']['outputCurrency']=$quote->getQuoteCurrencyCode();
             $request['packageDetails']['freightCharge'] = ['value'=>$freightCharge,'currency'=>$quote->getQuoteCurrencyCode()];
+            $request['packageDetails']["clearanceMode"] = "Courier";
+            $request['packageDetails']["transportMode"] = "AIR";
+            $request['packageDetails']["endUse"] = "Personal";
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
@@ -291,7 +302,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['skuNumber']=$item->getSku();
                 $itemData['itemValue']=['value'=>$item->getRowTotal()/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
-                $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
+                $itemData['countryOfOrigin'] = $this->getCountryOfOrigin($item->getSku());
+                if (!$itemData['countryOfOrigin']) {
+                    $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
+                }
+                $itemData['qualifiesForPreferentialTariffs']=true;
                 $request['customsDetails'][]=$itemData;
             }
             return $request;
@@ -343,6 +358,21 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     }
 
     /**
+     * Get SKU specific Country of Origin 
+     *
+     * @param string $sku
+     * @return string
+     */
+    protected function getCountryOfOrigin($sku)
+    {
+        $country_of_origin = $this->csvHsCodeFactory->create()->getCountryOfOrigin($sku);
+        if ($country_of_origin) {
+            return $country_of_origin;
+        }
+        return null;
+    }
+
+    /**
      * Get Qquote from DHL
      *
      * @param array $request
@@ -357,7 +387,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest = $this->httpRestFactory->create();
         $rest->setBearerAuth($accessToken);
         $rest->setUrl($url);
-        
+        // Uncomment following lines to see request params:
+        // $this->_logger->debug('----------------START OF REQUEST----------------');
+        // $this->_logger->debug(json_encode($request));
+        // $this->_logger->debug('================END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
         return $result;
