@@ -10,6 +10,22 @@ use Magento\Framework\Phrase;
 
 class RowParser
 {
+
+    /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger;
+    /**
+     * Constructor
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(
+        \Psr\Log\LoggerInterface $logger
+    ) {
+        $this->_logger = $logger;
+    }
+
     /**
      * @return array
      */
@@ -100,6 +116,12 @@ class RowParser
     {
         $countryOfOrigin = $columnResolver->getColumnValue(ColumnResolver::COLUMN_COUNTRYOFORIGIN, $rowData);
         if (strlen($countryOfOrigin) != 2) {
+            if(strlen($countryOfOrigin) > 0){
+                $this->_logger->debug('----------------IMPORT ERROR----------------');
+                $sku = $columnResolver->getColumnValue(ColumnResolver::COLUMN_SKU, $rowData);
+                $this->_logger->debug("Country of origin for sku ".$sku." was inputted incorrectly: ".$countryOfOrigin);
+                $this->_logger->debug('================END OF IMPORT ERROR================');
+            }
             $countryOfOrigin = null;
         } else {
             $countryOfOrigin = strtoupper($countryOfOrigin);
