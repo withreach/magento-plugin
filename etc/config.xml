@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <reach>
+            <global>
+                <active>0</active>
+                <allowspecific>0</allowspecific>
+            </global>
+            <dhl>
+                <enable>0</enable>
+                <duty_label>Pay Tax and Duties</duty_label>
+                <pricing_strategy>MAXIMUM</pricing_strategy>
+                <allowspecific>0</allowspecific>
+            </dhl>
+        </reach>
+        <payment>
+            <reach_cc>
+              <active>0</active>
+              <model>Reach\Payment\Model\Cc</model>
+              <title>Credit Card (Reach)</title>
+              <payment_action>authorize</payment_action>
+              <ccfields>csc,expdate,acct</ccfields>
+              <allowspecific>0</allowspecific>
+            </reach_cc>  
+            <reach_paypal>
+              <active>0</active>
+              <model>Reach\Payment\Model\Paypal</model>
+              <payment_action>authorize</payment_action>
+              <title>Paypal (Reach)</title>
+              <allowspecific>0</allowspecific>
+            </reach_paypal>  
+        </payment>
+    </default>
+</config>

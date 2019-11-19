@@ -1,0 +1,28 @@
+<?php
+    $cards = $block->getSavedCards();
+?>
+
+<?php if (count($cards)) : ?>
+<div class="table-wrapper savedcard-history">
+
+
+    <table class="data table history">
+        <thead>
+            <th class="col"><?= $block->escapeHtml(__('Card Type')) ?></th>         
+            <th class="col"><?= $block->escapeHtml(__('Card Number')) ?></th>   
+            <th class="col"><?= $block->escapeHtml(__('Action')) ?></th>
+        </thead>
+        <tbody>
+            <?php foreach ($cards as $card) :?>
+                <tr>
+                    <td class="col"><?= $card['type'] ?></td>               
+                    <td class="col"><?= $card['number'] ?></td>
+                    <td class="col"><a href="<?= $block->getRemoveUrl($card['contract_id']) ?>">Remove</a></td>
+                </tr>
+            <?php endforeach;?>         
+        </tbody>
+    </table>
+</div>
+<?php else :?>
+    <div class="message info empty"><span><?= $block->escapeHtml(__('You have no saved cards.')) ?></span></div>
+<?php endif;?>
