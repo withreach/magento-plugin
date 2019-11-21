@@ -10,7 +10,7 @@ define(
         return Component.extend({
             defaults: {
                 isFullTaxSummaryDisplayed: window.checkoutConfig.isFullTaxSummaryDisplayed || false,
-                template: 'Reach/Payment/summary/duty'
+                template: 'summary/duty'
             },
             totals: quote.getTotals(),
             isTaxDisplayedInGrandTotal: window.checkoutConfig.includeTaxInGrandTotal || false,
