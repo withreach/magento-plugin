@@ -57,9 +57,10 @@ class ReachConfigProvider implements ConfigProviderInterface
         $config = [];
         $config['reach']=[];
         $config['reach']['enabled'] =  $this->reachHelper->getReachEnabled();
+        $config['reach']['dhl_enabled'] = $this->reachHelper->getDhlEnabled();
         $config['reach']['badge']=$this->getBadge();
         $config['reach']['dhl_quote']=$this->getDhlQuote();
-        $config['reach']['fingerprint_url']=$this->getFingerPrintUrl();  
+        $config['reach']['fingerprint_url']=$this->getFingerPrintUrl();
         $config['reach']['dhl_label']=$this->reachHelper->getDhlDutyLabel();
         return $config;
     }
@@ -81,7 +82,7 @@ class ReachConfigProvider implements ConfigProviderInterface
      */
     protected function getBadge()
     {
-        
+
         $rest = $this->httpRestFactory->create();
         $url = $this->reachHelper->getApiUrl();
         $url = $url.'badge?MerchantId='.$this->reachHelper->getMerchantId();
@@ -92,7 +93,7 @@ class ReachConfigProvider implements ConfigProviderInterface
         $rest->setUrl($url);
         $response = $rest->executeGet();
         $result = $response->getResponseData();
-        
+
         $data=[];
         if (isset($result['Text'])) {
             $data['Text'] =$result['Text'];
@@ -134,7 +135,7 @@ class ReachConfigProvider implements ConfigProviderInterface
      /**
      * Get fingerprint url
      *
-     * @return string     
+     * @return string
      */
     protected function getFingerPrintUrl()
     {

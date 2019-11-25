@@ -46,6 +46,7 @@ class Data extends AbstractHelper
     const WEBSITES_SCOPE = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
     const STORES_SCOPE = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
     const DUTY_LABEL_PATH = "payment/reach_payment/reach_dhl/duty_label";
+    const DHL_ENABLE_PATH = "payment/reach_payment/reach_dhl/reach_dhl_enable";
 
     /**
      * Constant for payment
@@ -114,7 +115,9 @@ class Data extends AbstractHelper
      */
     public function getReachEnabled()
     {
-        return $this->getConfigValue(self::CONFIG_REACH_ENABLED);
+        return $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::WEBSITES_SCOPE);
     }
 
     /**
@@ -384,16 +387,6 @@ class Data extends AbstractHelper
     public function getDhlDefaultHsCode()
     {
         return $this->getConfigValue(self::DHL_DEFAULT_HS_CODE);
-    }
-
-    /**
-     * Get DHL Pricing strategy
-     *
-     * @return string
-     */
-    public function getDhlDutyLabel()
-    {
-        return $this->getConfigValue(self::DHL_DUTY_LABEL);
     }
 
     /**
