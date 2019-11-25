@@ -64,8 +64,8 @@ define([
             template: 'Reach_Payment/shipping',
             shippingFormTemplate: 'Magento_Checkout/shipping-address/form',
             shippingMethodListTemplate: 'Magento_Checkout/shipping-address/shipping-method-list',
-            shippingMethodItemTemplate: 'Magento_Checkout/shipping-address/shipping-method-item' ,
-            applyDuty:null,
+            shippingMethodItemTemplate: 'Magento_Checkout/shipping-address/shipping-method-item',
+            applyDuty: null,
         },
         visible: ko.observable(!quote.isVirtual()),
         errorValidationMessage: ko.observable(false),
@@ -77,13 +77,13 @@ define([
         quoteIsVirtual: quote.isVirtual(),
         totals: quote.getTotals(),
 
-          initObservable: function () {
-                this._super()
-                    .observe([
-                        'applyDuty'
-                    ]);
-                return this;
-            },
+        initObservable: function () {
+            this._super()
+                .observe([
+                    'applyDuty'
+                ]);
+            return this;
+        },
 
         /**
          * @return {exports}
@@ -121,16 +121,15 @@ define([
             quote.shippingMethod.subscribe(function () {
                 self.errorValidationMessage(false);
             });
-            this.applyDuty.subscribe(function(){
+            this.applyDuty.subscribe(function () {
                 self.applyDutyCharges()
             });
-            if( window.checkoutConfig.reach.enabled != 0)
-            {
-                quote.shippingMethod.subscribe(function(){            
+            if (window.checkoutConfig.reach.enabled != 0) {
+                quote.shippingMethod.subscribe(function () {
                     self.getDutyCharges();
-                });    
+                });
             }
-            
+
 
             registry.async('checkoutProvider')(function (checkoutProvider) {
                 var shippingAddressData = checkoutData.getShippingAddressFromData();
@@ -247,15 +246,15 @@ define([
         /**
          * Shipping Method View
          */
-        dutyCharges :  dutyService.getDuty(),
-        rates: shippingService.getShippingRates(),        
+        dutyCharges: dutyService.getDuty(),
+        rates: shippingService.getShippingRates(),
         isLoading: shippingService.isLoading,
         isSelected: ko.computed(function () {
             return quote.shippingMethod() ?
                 quote.shippingMethod()['carrier_code'] + '_' + quote.shippingMethod()['method_code'] :
                 null;
         }),
-        
+
 
         /**
          * @param {Object} shippingMethod
@@ -351,46 +350,44 @@ define([
             return true;
         },
 
-        getReachEnabled:function(){
-            return window.checkoutConfig.reach.enabled;    
+        getReachEnabled: function () {
+            return window.checkoutConfig.reach.enabled;
         },
 
         /**
         * Fetch tax & duties via API
         */
-        getDutyCharges: function (){
-            var shippingMethod = quote.shippingMethod();     
-            dutyService.getCharges(shippingMethod.amount,this.applyDuty());
-         
+        getDutyCharges: function () {
+            var shippingMethod = quote.shippingMethod();
+            dutyService.getCharges(shippingMethod.amount, this.applyDuty());
+
         },
 
         /**
         * Get tax & duties value and display in form
         * @return {String}
         */
-        getDuty: function (){
+        getDuty: function () {
             var duty = dutyService.getDuty();
-            return  this.getDutyLabel() + ' ' + priceUtils.formatPrice(duty(),quote.getPriceFormat());
+            return this.getDutyLabel() + ' ' + priceUtils.formatPrice(duty(), quote.getPriceFormat());
         },
 
         /**
-        * Get configured label for tax & duties 
+        * Get configured label for tax & duties
         * @return {String}
         */
-        getDutyLabel:function()
-        {
-            if(window.checkoutConfig.reach.dhl_label && window.checkoutConfig.reach.dhl_label!= '')
-            {
+        getDutyLabel: function () {
+            if (window.checkoutConfig.reach.dhl_label && window.checkoutConfig.reach.dhl_label !== '') {
                 return window.checkoutConfig.reach.dhl_label;
             }
             return 'Pay Tax & Duties upfront ';
         },
 
         /**
-        * Check is duty optional or mandatory 
+        * Check is duty optional or mandatory
         * @return {Boolean}
         */
-        isDutyOptional: function (){
+        isDutyOptional: function () {
             var isDutyOptional = dutyService.getDutyIsOptional();
             return isDutyOptional();
         },
@@ -398,9 +395,9 @@ define([
         /**
         * Trigger to apply tax & duties in curreny order
         */
-        applyDutyCharges:function (){
-            var shippingMethod = quote.shippingMethod();                            
-            dutyService.getCharges(shippingMethod.amount,this.applyDuty());
+        applyDutyCharges: function () {
+            var shippingMethod = quote.shippingMethod();
+            dutyService.getCharges(shippingMethod.amount, this.applyDuty());
         },
 
         /**

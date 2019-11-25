@@ -208,6 +208,6 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     protected function checkLocalIP($ip)
     {
-        return in_array($ip, ['localhost','127.0.0.1']);
+        return in_array($ip, ['localhost','127.0.0.1','172.19.0.1']);
     }
 }
