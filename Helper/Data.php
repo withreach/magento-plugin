@@ -14,11 +14,13 @@ class Data extends AbstractHelper
 
     const API_URL = 'https://checkout.gointerpay.net/v2.19/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
-    
+
     const DHL_API_URL = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
+
     const DHL_ENABLE = 'reach/dhl/enable';
     const DHL_DUTY_LABEL = 'reach/dhl/duty_label';
+
     const DHL_DUTY_ALLOW_SPECIFIC = 'reach/dhl/allowspecific';
     const DHL_DUTY_ALLOW_SPECIFIC_COUNTRY = 'reach/dhl/specificcountry';
     const DHL_DUTY_OPTIONAL_SPECIFIC = 'reach/dhl/optional_allowspecific';
@@ -41,6 +43,10 @@ class Data extends AbstractHelper
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
+    const WEBSITES_SCOPE = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
+    const STORES_SCOPE = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+    const DUTY_LABEL_PATH = "payment/reach_payment/reach_dhl/duty_label";
+
     /**
      * Constant for payment
      */
@@ -48,17 +54,21 @@ class Data extends AbstractHelper
 
     protected $currencyOption;
 
+    protected $_scopeConfig;
+
     /**
      * @param Context $context
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\Encryption\EncryptorInterface $enc
+        \Magento\Framework\Encryption\EncryptorInterface $enc,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->_enc = $enc;
+        $this->_scopeConfig = $scopeConfig;
         parent::__construct($context);
     }
-    
+
     /**
      * getConfigValue
      * gets config Value for frontend
@@ -86,6 +96,18 @@ class Data extends AbstractHelper
         return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code, $storeId);
     }
 
+    /**
+    * Returns DHL label displayed to users during checkout.
+    *
+    * @return string
+    */
+    public function getDhlDutyLabel()
+    {
+        return $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::WEBSITES_SCOPE);
+    }
+
      /**
      * Check Reach Enabled
      * @return boolean
@@ -93,8 +115,8 @@ class Data extends AbstractHelper
     public function getReachEnabled()
     {
         return $this->getConfigValue(self::CONFIG_REACH_ENABLED);
-    }    
-    
+    }
+
     /**
      * getCoreSession
      * @return object
@@ -106,7 +128,7 @@ class Data extends AbstractHelper
         return $core_session;
     }
 
-    
+
     /**
      * getCheckoutSession
      * @return object
@@ -373,7 +395,7 @@ class Data extends AbstractHelper
     {
         return $this->getConfigValue(self::DHL_DUTY_LABEL);
     }
-    
+
     /**
      * Get DHL allowed specific
      *
