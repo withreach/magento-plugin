@@ -132,7 +132,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 return $this->response;
             }
            
-            if (empty($address->getCountryId()) || empty($address->getRegionCode())) {
+            if (empty($address->getCountryId())) {
                 $this->response->setSuccess(true);
                 $this->response->setDuty($duty);
                 return $this->response;
