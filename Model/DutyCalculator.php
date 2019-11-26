@@ -131,12 +131,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $this->response->setDuty($duty);
                 return $this->response;
             }
-           
-            if (empty($address->getCountryId())) {
-                $this->response->setSuccess(true);
-                $this->response->setDuty($duty);
-                return $this->response;
-            }
             $accessToken = $this->getDhlAccessToken();
            
             if ($accessToken && $accessToken!='') {
