@@ -7,14 +7,12 @@
                 <field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="select" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>reach/global/active</config_path>
                 </field>
                 <field id="merchantId" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="3" translate="label" type="text">
                     <label>Merchant Id</label>
                     <depends>
                         <field id="active">1</field>
                     </depends>
-                    <config_path>reach/global/mearchant_id</config_path>
                     <validate>required-entry</validate>
                 </field>
                 <field id="api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="4" translate="label" type="obscure">
@@ -23,7 +21,6 @@
                     <depends>
                         <field id="active">1</field>
                     </depends>
-                    <config_path>reach/global/api_secret</config_path>
                     <validate>required-entry</validate>
                 </field>
                 <field id="mode" sortOrder="5" translate="label" type="select"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
@@ -32,7 +29,6 @@
                     <depends>
                         <field id="active">1</field>
                     </depends>
-                    <config_path>reach/global/mode</config_path>
                 </field>
                 <field id="display_currency_switch" sortOrder="7" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Currency Options</label>
@@ -40,12 +36,10 @@
                     <depends>
                         <field id="active">1</field>
                     </depends>
-                    <config_path>reach/global/display_currency_switch</config_path>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="8"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Currency For Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
-                    <config_path>reach/global/allowspecific</config_path>
                     <depends>
                         <field id="display_currency_switch" separator=",">customer,reach</field>
                     </depends>
@@ -54,7 +48,6 @@
                     <label>Currency For Specific Countries</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                         <can_be_empty>1</can_be_empty>
-                    <config_path>reach/global/specificcountry</config_path>
                    <depends>
                         <field id="display_currency_switch" separator=",">customer,reach</field>
                     </depends>
@@ -72,37 +65,31 @@
                         <label>Enable tax and duty calculation</label>
                         <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                         <comment>Select the countries in which you'd like to enable tax and duty calculation</comment>
-                        <config_path>reach/dhl/allowspecific</config_path>
                     </field>
                     <field id="specificcountry" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enable tax and duty calculation</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                             <can_be_empty>1</can_be_empty>
-                        <config_path>reach/dhl/specificcountry</config_path>
                     </field>
                     <field id="optional_allowspecific" translate="label" type="allowspecific" sortOrder="50"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Make tax and duty optional</label>
                         <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                         <comment>Select the countries in which you'd like to make it optional for the user to pay tax and duty cost</comment>
-                        <config_path>reach/dhl/optional_allowspecific</config_path>
                     </field>
                     <field id="optional_specificcountry" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Make tax and duty optional</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                             <can_be_empty>1</can_be_empty>
-                        <config_path>reach/dhl/optional_specificcountry</config_path>
                     </field>
                     <field id="dhl_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
                         <label>DHL Client ID</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/key</config_path>
                     </field>
                     <field id="applicable_shipping" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Tax and Duties Applicable to shipping</label>
                         <source_model>Reach\Payment\Model\Config\Source\Carriers</source_model>
-                        <config_path>reach/dhl/applicable_shipping</config_path>
                     </field>
                     <field id="dhl_api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
                         <label>DHL Client Secret</label>
@@ -110,21 +97,18 @@
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/api_secret</config_path>
                     </field>
                     <field id="dhl_pickup_account" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>DHL Pickup Account No.</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/pickup_account</config_path>
                     </field>
                     <field id="dhl_item_seller" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>Item Seller</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/item_seller</config_path>
                     </field>
                     <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
                         <label>DHL Pricing Strategy</label>
@@ -132,14 +116,12 @@
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/pricing_strategy</config_path>
                     </field>
                     <field id="default_hs_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="110" translate="label" type="text">
                         <label>Default HS Code</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/default_hs_code</config_path>
                     </field>
                     <field id="export_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Export" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Export CSV of HS Code</label>
@@ -178,7 +160,6 @@
                     <field id="allow_open_contract" showInDefault="1" showInWebsite="1" sortOrder="5" translate="label" type="select">
                         <label>Enable Open Contract</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/reach_cc/allow_open_contract</config_path>
                     </field>
                     <field id="payment_action" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Action</label>
