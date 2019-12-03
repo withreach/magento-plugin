@@ -94,7 +94,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Currency Options value REACH_CURRENCY_SWITCH - Function 06
+     * Get Currency Options value REACH_CURRENCY_SWITCH
      *
      * @return string|null
      */
@@ -105,7 +105,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get the API Mode from database - Function 05
+     * Get the API Mode from database
      *
      * @return void
      */
@@ -116,7 +116,7 @@ class Data extends AbstractHelper
     }
 
     /**
-    * Returns DHL label displayed to users during checkout. - Function 21
+    * Returns DHL label displayed to users during checkout
     *
     * @return string
     */
@@ -128,7 +128,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Check Reach Enabled - Function 01
+     * Check Reach Enabled
      * @return boolean
      */
     public function getReachEnabled()
@@ -199,7 +199,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get currency allowed for specific countries config  REACH_SPECIFIC_PATH - Function 07
+     * Get currency allowed for specific countries config  REACH_SPECIFIC_PATH
      *
      * @return boolean
      */
@@ -211,7 +211,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get allowed currencies for country config - Function 15
+     * Get allowed currencies for country config
      *
      * @return boolean
      */
@@ -223,7 +223,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get open contract allowed config - Function 04
+     * Get open contract allowed config
      *
      * @return boolean
      */
@@ -235,7 +235,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Reach API URL - Function 05
+     * Get Reach API URL
      *
      * @return string
      */
@@ -249,7 +249,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Reach Merchant ID - Function 02
+     * Get Reach Merchant ID
      *
      * @return string
      */
@@ -261,7 +261,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Reach API Secret - Function 03
+     * Get Reach API Secret
      *
      * @return string
      */
@@ -333,7 +333,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Check DHL Tax-Duties Enabled - Function 20
+     * Check DHL Tax-Duties Enabled
      *
      * @return boolean
      */
@@ -359,7 +359,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL API Key DHL_KEY_PATH - Function 17
+     * Get DHL API Key DHL_KEY_PATH
      *
      * @return string
      */
@@ -372,7 +372,7 @@ class Data extends AbstractHelper
 
 
     /**
-     * Get DHL API Secret - Function 18
+     * Get DHL API Secret
      *
      * @return string
      */
@@ -384,7 +384,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL Pickup Account No. DHL_PICKUP_PATH - Function 19
+     * Get DHL Pickup Account No. DHL_PICKUP_PATH
      *
      * @return string
      */
@@ -396,7 +396,7 @@ class Data extends AbstractHelper
     }
 
      /**
-     * Get DHL Item Seller. DHL_SELLER_PATH - Function 12
+     * Get DHL Item Seller. DHL_SELLER_PATH
      *
      * @return string
      */
@@ -408,7 +408,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL Pricing strategy DHL_PRICING_PATH - Function 13
+     * Get DHL Pricing strategy DHL_PRICING_PATH
      *
      * @return string
      */
@@ -420,7 +420,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL Default HS Code. DHL_HS_CODE_PATH - Function 14
+     * Get DHL Default HS Code. DHL_HS_CODE_PATH
      *
      * @return string
      */
@@ -432,7 +432,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL allowed specific DHL_SPECIFIC_PATH - Function 08
+     * Get DHL allowed specific DHL_SPECIFIC_PATH
      *
      * @return boolean
      */
@@ -444,7 +444,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL allowed specific countries - Function 16
+     * Get DHL allowed specific countries
      *
      * @return string
      */
@@ -456,7 +456,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL duty optional for specific DHL_OPT_SPECIFIC - Function 09
+     * Get DHL duty optional for specific DHL_OPT_SPECIFIC
      *
      * @return boolean
      */
@@ -468,7 +468,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL duty optional for specific countries DHL_TOP_SPECIFIC_COUNTRY - Function 10
+     * Get DHL duty optional for specific countries DHL_TOP_SPECIFIC_COUNTRY
      *
      * @return string
      */
@@ -480,7 +480,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL duty applicable for shipping DHL_SHIPPING_PATH - Function 11
+     * Get DHL duty applicable for shipping DHL_SHIPPING_PATH
      *
      * @return string
      */
