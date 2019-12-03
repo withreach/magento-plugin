@@ -199,11 +199,11 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get currently allowed for specific countries config  REACH_SPECIFIC_PATH - Function 07
+     * Get currency allowed for specific countries config  REACH_SPECIFIC_PATH - Function 07
      *
      * @return boolean
      */
-    public function allowCurrencySpeicifcCountry()
+    public function allowCurrencySpecificCountry()
     {
         return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
             $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) :
