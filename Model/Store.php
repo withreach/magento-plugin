@@ -189,7 +189,7 @@ class Store extends \Magento\Store\Model\Store
      */
     public function isCountryApplicable()
     {
-        if ($this->reachHelper->allowCurrencySpeicifcCountry()) {
+        if ($this->reachHelper->allowCurrencySpecificCountry()) {
             $allowed = $this->reachHelper->allowedCurrencyForCountries();
             $localized = $this->getLocalizedCurrency();
             $countries = explode(',', $allowed);
