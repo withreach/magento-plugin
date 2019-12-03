@@ -81,7 +81,7 @@
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                             <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="dhl_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
+                    <field id="dhl_client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
                         <label>DHL Client ID</label>
                         <depends>
                             <field id="active">1</field>
@@ -91,7 +91,7 @@
                         <label>Tax and Duties Applicable to shipping</label>
                         <source_model>Reach\Payment\Model\Config\Source\Carriers</source_model>
                     </field>
-                    <field id="dhl_api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
+                    <field id="dhl_client_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
                         <label>DHL Client Secret</label>
                         <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                         <depends>

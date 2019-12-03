@@ -398,8 +398,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected function getDhlAccessToken()
     {
                
-        $clientId = $this->reachHelper->getDhlApiKey();
-        $clientSecret = $this->reachHelper->getDhlApiSecret();
+        $clientId = $this->reachHelper->getDhlClientId();
+        $clientSecret = $this->reachHelper->getDhlClientSecret();
         $url = $this->reachHelper->getDhlApiUrl();
         $basic = base64_encode($clientId.':'.$clientSecret);
         $url .= 'account/v1/auth/accesstoken';

@@ -36,9 +36,9 @@ class Data extends AbstractHelper
     const DHL_SPECIFIC_COUNTRY_PATH = "payment/reach_payment/reach_dhl/specificcountry";
     const DHL_OPT_SPECIFIC          = "payment/reach_payment/reach_dhl/optional_allowspecific";
     const DHL_OPT_SPECIFIC_COUNTRY  = "payment/reach_payment/reach_dhl/optional_specificcountry";
-    const DHL_KEY_PATH              = "payment/reach_payment/reach_dhl/dhl_key";
+    const DHL_CLIENT_ID_PATH        = "payment/reach_payment/reach_dhl/dhl_client_id";
     const DHL_SHIPPING_PATH         = "payment/reach_payment/reach_dhl/applicable_shipping";
-    const DHL_SECRET_PATH           = "payment/reach_payment/reach_dhl/dhl_api_secret";
+    const DHL_CLIENT_SECRET           = "payment/reach_payment/reach_dhl/dhl_client_secret";
     const DHL_PICKUP_PATH           = "payment/reach_payment/reach_dhl/dhl_pickup_account";
     const DHL_SELLER_PATH           = "payment/reach_payment/reach_dhl/dhl_item_seller";
     const DHL_PRICING_PATH          = "payment/reach_payment/reach_dhl/pricing_strategy";
@@ -359,15 +359,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL API Key DHL_KEY_PATH
+     * Get DHL API Key DHL_CLIENT_ID_PATH
      *
      * @return string
      */
-    public function getDhlApiKey()
+    public function getDhlClientId()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_KEY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_KEY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_KEY_PATH, SELF::WEBSITES_SCOPE);
+        return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::WEBSITES_SCOPE);
     }
 
 
@@ -376,11 +376,11 @@ class Data extends AbstractHelper
      *
      * @return string
      */
-    public function getDhlApiSecret()
+    public function getDhlClientSecret()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_SECRET_PATH, SELF::STORES_SCOPE) ?
-            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_SECRET_PATH, SELF::STORES_SCOPE)) :
-            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_SECRET_PATH, SELF::WEBSITES_SCOPE));
+        return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET, SELF::STORES_SCOPE) ?
+            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET, SELF::STORES_SCOPE)) :
+            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET, SELF::WEBSITES_SCOPE));
     }
 
     /**
