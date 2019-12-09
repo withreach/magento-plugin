@@ -38,7 +38,7 @@ class Data extends AbstractHelper
     const DHL_OPT_S_COUNTRY_PATH    = "payment/reach_payment/reach_dhl/optional_specificcountry";
     const DHL_CLIENT_ID_PATH        = "payment/reach_payment/reach_dhl/dhl_client_id";
     const DHL_SHIPPING_PATH         = "payment/reach_payment/reach_dhl/applicable_shipping";
-    const DHL_CLIENT_SECRET_PATH    = "payment/reach_payment/reach_dhl/DHL_CLIENT_SECRET_PATH";
+    const DHL_CLIENT_SECRET_PATH    = "payment/reach_payment/reach_dhl/dhl_client_secret";
     const DHL_PICKUP_PATH           = "payment/reach_payment/reach_dhl/dhl_pickup_account";
     const DHL_SELLER_PATH           = "payment/reach_payment/reach_dhl/dhl_item_seller";
     const DHL_PRICING_PATH          = "payment/reach_payment/reach_dhl/pricing_strategy";
