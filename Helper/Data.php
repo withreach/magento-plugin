@@ -268,8 +268,8 @@ class Data extends AbstractHelper
     public function getSecret()
     {
         return $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::WEBSITES_SCOPE);
+            $this->_enc->decrypt( $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE)  ):
+            $this->_enc->decript( $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::WEBSITES_SCOPE) );
     }
 
     /**
