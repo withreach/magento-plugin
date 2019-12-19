@@ -125,14 +125,14 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote = $this->getQuoteById($cartId);
             $quote->collectTotals();
             $duty=0.00;
-            
+
             if (!$this->allowDuty($address->getCountryId()) || !$this->allowShipping($shippingMethodCode, $shippingCarrierCode)) {
                 $this->response->setSuccess(true);
                 $this->response->setDuty($duty);
                 return $this->response;
             }
             $accessToken = $this->getDhlAccessToken();
-           
+
             if ($accessToken && $accessToken!='') {
                 $request = $this->prepareRequest($shippingCharge, $address);
                 $response = $this->getQuote($request, $accessToken);
@@ -177,7 +177,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         }
         return $this->response;
     }
-    
+
     /**
      * Get repository
      *
@@ -266,20 +266,20 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected function prepareRequest($freightCharge, $shippingAddress)
     {
         $quote = $this->checkoutSession->getQuote();
-       
+
         if ($quote->getId()) {
             $request=[];
-                           
+
             $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
             $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
-            $request['pricingStrategy']=$this->reachHelper->getDhlPricingStrategy();
+            $request['pricingStrategy']=$this->reachHelper->getPricingStrategy();
             $request['senderAddress']=$this->getShippingOrigin();//['state'=>'FL','country'=>'US'];
             $itemData['packageDetails']=[''];
             $request['packageDetails']['outputCurrency']=$quote->getQuoteCurrencyCode();
             $request['packageDetails']['freightCharge'] = ['value'=>$freightCharge,'currency'=>$quote->getQuoteCurrencyCode()];
-            $request['packageDetails']["clearanceMode"] = "Courier";
-            $request['packageDetails']["transportMode"] = "AIR";
-            $request['packageDetails']["endUse"] = "Personal";
+            $request['packageDetails']["clearanceMode"] = $this->reachHelper->getClearanceMode();
+            $request['packageDetails']["transportMode"] = $this->reachHelper->getTransportMode();
+            $request['packageDetails']["endUse"] = $this->reachHelper->getEndUse();;
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
@@ -332,7 +332,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->storeManager->getStore()->getId()
         );
         ;
-        
+
         return $origin;
     }
 
@@ -352,7 +352,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     }
 
     /**
-     * Get SKU specific Country of Origin 
+     * Get SKU specific Country of Origin
      *
      * @param string $sku
      * @return string
@@ -397,7 +397,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     protected function getDhlAccessToken()
     {
-               
+
         $clientId = $this->reachHelper->getDhlClientId();
         $clientSecret = $this->reachHelper->getDhlClientSecret();
         $url = $this->reachHelper->getDhlApiUrl();

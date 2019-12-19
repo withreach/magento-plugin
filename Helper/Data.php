@@ -13,10 +13,14 @@ class Data extends AbstractHelper
 {
     const CONFIG_CURRENCY_OPTION    = 'reach/global/display_currency_switch';
     const CONFIG_API_MODE           = 'reach/global/mode';
+
     const API_URL                   = 'https://checkout.gointerpay.net/v2.19/';
     const SANDBOX_API_URL           = 'https://checkout-sandbox.gointerpay.net/v2.19/';
     const DHL_API_URL               = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL       = 'https://api-sandbox.dhlecommerce.com/';
+
+    const STASH_URL                 = 'https://stash.gointerpay.net/';
+    const STASH_SANDBOX_URL         = 'https://stash-sandbox.gointerpay.net/';
 
     const WEBSITES_SCOPE            = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
     const STORES_SCOPE              = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
@@ -43,6 +47,11 @@ class Data extends AbstractHelper
     const DHL_SELLER_PATH           = "payment/reach_payment/reach_dhl/dhl_item_seller";
     const DHL_PRICING_PATH          = "payment/reach_payment/reach_dhl/pricing_strategy";
     const DHL_HS_CODE_PATH          = "payment/reach_payment/reach_dhl/default_hs_code";
+    CONST DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
+    CONST DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
+    CONST DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";
+    CONST DHL_TRANSPORT_MODE_PATH   = "payment/reach_payment/reach_dhl/transport_mode";
+
 
     /**
      * Constant for payment
@@ -91,6 +100,50 @@ class Data extends AbstractHelper
     public function getReachConfig($code, $storeId = null)
     {
         return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code, $storeId);
+    }
+
+    /**
+     * Get Transport Mode
+     *
+     * @return string|null
+     */
+    public function getTransportMode() {
+        return $this->_scopeConfig->getValue(SELF::DHL_TRANSPORT_MODE_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_TRANSPORT_MODE_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_TRANSPORT_MODE_PATH, SELF::WEBSITES_SCOPE);
+    }
+
+    /**
+     * Get End Use
+     *
+     * @return string|null
+     */
+    public function getEndUse() {
+        return $this->_scopeConfig->getValue(SELF::DHL_END_USE_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_END_USE_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_END_USE_PATH, SELF::WEBSITES_SCOPE);
+    }
+
+    /**
+     * Get Clearance Mode
+     *
+     * @return string|null
+     */
+    public function getClearanceMode() {
+        return $this->_scopeConfig->getValue(SELF::DHL_CLEARANCE_MODE_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_CLEARANCE_MODE_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_CLEARANCE_MODE_PATH, SELF::WEBSITES_SCOPE);
+    }
+
+    /**
+     * Get Pricing Strategy
+     *
+     * @return string|null
+     */
+    public function getPricingStrategy() {
+        return $this->_scopeConfig->getValue(SELF::DHL_PRICING_STRATEGY_PATH, SELF::STORES_SCOPE) ?
+            $this->_scopeConfig->getValue(SELF::DHL_PRICING_STRATEGY_PATH, SELF::STORES_SCOPE) :
+            $this->_scopeConfig->getValue(SELF::DHL_PRICING_STRATEGY_PATH, SELF::WEBSITES_SCOPE);
     }
 
     /**
@@ -245,6 +298,20 @@ class Data extends AbstractHelper
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
+        }
+    }
+
+    /**
+     * Get Reach Stash API URL
+     *
+     * @return string
+     */
+    public function getStashApiUrl()
+    {
+        if ($this->getApiMode()) {
+            return self::STASH_SANDBOX_URL;
+        } else {
+            return self::STASH_URL;
         }
     }
 

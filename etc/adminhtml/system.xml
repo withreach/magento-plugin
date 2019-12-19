@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
-            <group id="reach_payment" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1" >
+            <group id="reach_payment" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Reach(GoInterpay)</label>
                 <field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="select" canRestore="1">
                     <label>Enabled</label>
@@ -23,7 +23,7 @@
                     </depends>
                     <validate>required-entry</validate>
                 </field>
-                <field id="mode" sortOrder="5" translate="label" type="select"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="mode" sortOrder="5" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Sandbox Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
@@ -37,7 +37,7 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="8"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Currency For Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <depends>
@@ -47,12 +47,12 @@
                 <field id="specificcountry" translate="label" type="multiselect" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Currency For Specific Countries</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                        <can_be_empty>1</can_be_empty>
-                   <depends>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
                         <field id="display_currency_switch" separator=",">customer,reach</field>
                     </depends>
                 </field>
-                <group id="reach_dhl" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" >
+                <group id="reach_dhl" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>DHL Credentials</label>
                     <field id="reach_dhl_enable" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select" canRestore="1">
                         <label>Enabled</label>
@@ -61,7 +61,7 @@
                     <field id="duty_label" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
                         <label>Tax and Duties Label</label>
                     </field>
-                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Enable tax and duty calculation</label>
                         <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                         <comment>Select the countries in which you'd like to enable tax and duty calculation</comment>
@@ -69,9 +69,9 @@
                     <field id="specificcountry" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enable tax and duty calculation</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                            <can_be_empty>1</can_be_empty>
+                        <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="optional_allowspecific" translate="label" type="allowspecific" sortOrder="50"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <field id="optional_allowspecific" translate="label" type="allowspecific" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Make tax and duty optional</label>
                         <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                         <comment>Select the countries in which you'd like to make it optional for the user to pay tax and duty cost</comment>
@@ -79,7 +79,7 @@
                     <field id="optional_specificcountry" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Make tax and duty optional</label>
                         <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                            <can_be_empty>1</can_be_empty>
+                        <can_be_empty>1</can_be_empty>
                     </field>
                     <field id="dhl_client_id" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
                         <label>DHL Client ID</label>
@@ -110,9 +110,30 @@
                             <field id="active">1</field>
                         </depends>
                     </field>
-                    <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="pricing_strategy" showInDefault="1" sortOrder="100" translate="label" type="select">
                         <label>DHL Pricing Strategy</label>
-                        <source_model>Reach\Payment\Model\Config\Source\Pricing</source_model>
+                        <source_model>Reach\Payment\Model\Config\Source\PricingStrategy</source_model>
+                        <depends>
+                            <field id="active">1</field>
+                        </depends>
+                    </field>
+                    <field id="clearance_mode" showInDefault="1" sortOrder="100" translate="label" type="select">
+                        <label>Clearance Mode</label>
+                        <source_model>Reach\Payment\Model\Config\Source\ClearanceMode</source_model>
+                        <depends>
+                            <field id="active">1</field>
+                        </depends>
+                    </field>
+                    <field id="end_use" showInDefault="1" sortOrder="100" translate="label" type="select">
+                        <label>End Use</label>
+                        <source_model>Reach\Payment\Model\Config\Source\EndUse</source_model>
+                        <depends>
+                            <field id="active">1</field>
+                        </depends>
+                    </field>
+                    <field id="transport_mode" showInDefault="1" sortOrder="100" translate="label" type="select">
+                        <label>Transport Mode</label>
+                        <source_model>Reach\Payment\Model\Config\Source\TransportMode</source_model>
                         <depends>
                             <field id="active">1</field>
                         </depends>
@@ -128,16 +149,14 @@
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/export_csv_hs_code</config_path>
                     </field>
-                    <field id="import_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Import" showInStore="1" sortOrder="130" showInDefault="1" showInWebsite="1" >
+                    <field id="import_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Import" sortOrder="130" showInDefault="1" showInWebsite="1">
                         <label>Import CSV of HS Code</label>
                         <backend_model>Reach\Payment\Model\Config\Backend\CsvHsCode</backend_model>
                         <upload_dir config="system" scope_info="1">HSCodeCsv</upload_dir>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/import_csv_hs_code</config_path>
                     </field>
                 </group>
                 <group id="reach_cc" showInDefault="1" showInStore="0" showInWebsite="1" sortOrder="200" translate="label comment" type="text">
