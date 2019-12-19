@@ -13,10 +13,14 @@ class Data extends AbstractHelper
 {
     const CONFIG_CURRENCY_OPTION    = 'reach/global/display_currency_switch';
     const CONFIG_API_MODE           = 'reach/global/mode';
+
     const API_URL                   = 'https://checkout.gointerpay.net/v2.19/';
     const SANDBOX_API_URL           = 'https://checkout-sandbox.gointerpay.net/v2.19/';
     const DHL_API_URL               = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL       = 'https://api-sandbox.dhlecommerce.com/';
+
+    const STASH_URL                 = 'https://stash.gointerpay.net/';
+    const STASH_SANDBOX_URL         = 'https://stash-sandbox.gointerpay.net/';
 
     const WEBSITES_SCOPE            = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
     const STORES_SCOPE              = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
@@ -245,6 +249,20 @@ class Data extends AbstractHelper
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
+        }
+    }
+
+    /**
+     * Get Reach Stash API URL
+     *
+     * @return string
+     */
+    public function getStashApiUrl()
+    {
+        if ($this->getApiMode()) {
+            return self::STASH_SANDBOX_URL;
+        } else {
+            return self::STASH_URL;
         }
     }
 
