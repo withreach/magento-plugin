@@ -11,9 +11,6 @@ use Magento\Framework\App\ObjectManager;
  */
 class Data extends AbstractHelper
 {
-    const CONFIG_CURRENCY_OPTION    = 'reach/global/display_currency_switch';
-    const CONFIG_API_MODE           = 'reach/global/mode';
-
     const API_URL                   = 'https://checkout.gointerpay.net/v2.19/';
     const SANDBOX_API_URL           = 'https://checkout-sandbox.gointerpay.net/v2.19/';
     const DHL_API_URL               = 'https://api.dhlecommerce.com/';
@@ -26,22 +23,25 @@ class Data extends AbstractHelper
     const STORES_SCOPE              = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
 
     const REACH_ENABLE_PATH         = "payment/reach_payment/active";
-    const REACH_API_MODE_PATH       = "payment/reach_payment/mode";
-    const REACH_CURRENCY_SWITCH     = "payment/reach_payment/display_currency_switch";
-    const REACH_SPECIFIC_PATH       = "payment/reach_payment/allowspecific";
-    const REACH_COUNTRY_PATH        = "payment/reach_payment/specificcountry";
+
+    const REACH_API_MODE_PATH       = "reach/global/mode";
+    const REACH_CURRENCY_SWITCH     = "reach/global/display_currency_switch";
+    const REACH_SPECIFIC_PATH       = "reach/global/allowspecific";
+    const REACH_COUNTRY_PATH        = "reach/global/specificcountry";
+    const DHL_ALLOW_SPECIFIC        = "reach/dhl/allowspecific";
+    const DHL_SPECIFIC_COUNTRY_PATH = "reach/dhl/specificcountry";
+    const DHL_OPT_SPECIFIC_PATH     = "reach/dhl/optional_allowspecific";
+    const DHL_OPT_S_COUNTRY_PATH    = "reach/dhl/optional_specificcountry";
+    const DHL_SHIPPING_PATH         = "reach/dhl/applicable_shipping";
+
+    const DHL_SPECIFIC_PATH         = "reach/global/specificcountry";
+    
     const REACH_OPEN_CONTRACT_PATH  = "payment/reach_payment/reach_cc/allow_open_contract";
     const MERCHANT_ID_PATH          = "payment/reach_payment/merchantId";
     const API_SECRET_PATH           = "payment/reach_payment/api_secret";
-
     const DUTY_LABEL_PATH           = "payment/reach_payment/reach_dhl/duty_label";
     const DHL_ENABLE_PATH           = "payment/reach_payment/reach_dhl/reach_dhl_enable";
-    const DHL_SPECIFIC_PATH         = "payment/reach_payment/reach_dhl/allowspecific";
-    const DHL_SPECIFIC_COUNTRY_PATH = "payment/reach_payment/reach_dhl/specificcountry";
-    const DHL_OPT_SPECIFIC_PATH     = "payment/reach_payment/reach_dhl/optional_allowspecific";
-    const DHL_OPT_S_COUNTRY_PATH    = "payment/reach_payment/reach_dhl/optional_specificcountry";
     const DHL_CLIENT_ID_PATH        = "payment/reach_payment/reach_dhl/dhl_client_id";
-    const DHL_SHIPPING_PATH         = "payment/reach_payment/reach_dhl/applicable_shipping";
     const DHL_CLIENT_SECRET_PATH    = "payment/reach_payment/reach_dhl/dhl_client_secret";
     const DHL_PICKUP_PATH           = "payment/reach_payment/reach_dhl/dhl_pickup_account";
     const DHL_SELLER_PATH           = "payment/reach_payment/reach_dhl/dhl_item_seller";
@@ -109,17 +109,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get the API Mode from database
-     *
-     * @return void
-     */
-    public function getApiMode() {
-        return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE);
-    }
-
-    /**
     * Returns DHL label displayed to users during checkout
     *
     * @return string
@@ -176,7 +165,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get currency enable config
+     * Get currency enable config REACH_CURRENCY_SWITCH
      *
      * @return boolean
      */
@@ -187,7 +176,7 @@ class Data extends AbstractHelper
             return false;
         }
         if ($this->currencyOption === null) {
-            $this->currencyOption = $this->getConfigValue(self::CONFIG_CURRENCY_OPTION);
+            $this->currencyOption = $this->getConfigValue(self::REACH_CURRENCY_SWITCH);
         }
         return in_array($this->currencyOption, ['customer','reach']);
     }
@@ -209,9 +198,7 @@ class Data extends AbstractHelper
      */
     public function allowCurrencySpecificCountry()
     {
-        return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::REACH_SPECIFIC_PATH);
     }
 
     /**
@@ -221,9 +208,7 @@ class Data extends AbstractHelper
      */
     public function allowedCurrencyForCountries()
     {
-        return $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::REACH_COUNTRY_PATH);
     }
 
     /**
@@ -245,7 +230,7 @@ class Data extends AbstractHelper
      */
     public function getApiUrl()
     {
-        if ($this->getApiMode()) {
+        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
@@ -259,7 +244,7 @@ class Data extends AbstractHelper
      */
     public function getStashApiUrl()
     {
-        if ($this->getApiMode()) {
+        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
             return self::STASH_SANDBOX_URL;
         } else {
             return self::STASH_URL;
@@ -369,7 +354,7 @@ class Data extends AbstractHelper
      */
     public function getDhlApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
             return self::DHL_SANDBOX_API_URL;
         } else {
             return self::DHL_API_URL;
@@ -450,27 +435,23 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get DHL allowed specific DHL_SPECIFIC_PATH
+     * Get DHL allowed specific DHL_ALLOW_SPECIFIC
      *
      * @return boolean
      */
     public function getDhlAllowSpecific()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::DHL_ALLOW_SPECIFIC);
     }
 
     /**
-     * Get DHL allowed specific countries
+     * Get DHL allowed specific countries DHL_SPECIFIC_COUNTRY_PATH
      *
      * @return string
      */
     public function getDhlAllowedCountries()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::DHL_SPECIFIC_COUNTRY_PATH);
     }
 
     /**
@@ -480,21 +461,16 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyOptionalSpecific()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::DHL_OPT_SPECIFIC_PATH);
     }
 
     /**
-     * Get DHL duty optional for specific countries DHL_TOP_SPECIFIC_COUNTRY
-     *
+     * Get DHL duty optional for specific countries DHL_OPT_S_COUNTRY_PATH
      * @return string
      */
     public function getDhlDutyOptionalCountries()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::DHL_OPT_S_COUNTRY_PATH);
     }
 
     /**
@@ -504,8 +480,6 @@ class Data extends AbstractHelper
      */
     public function getDhlApplicableShippings()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::WEBSITES_SCOPE);
+        return $this->getConfigValue(self::DHL_SHIPPING_PATH);
     }
 }
