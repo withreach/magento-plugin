@@ -21,7 +21,10 @@ class Data extends AbstractHelper
 
     const WEBSITES_SCOPE            = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
     const STORES_SCOPE              = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
-
+    // const DEFAULT_SCOPE             = \Magento\Store\Model\ScopeInterface::SCOPE_DEFAULT;
+    // const DEFAULT_SCOPE             = \Magento\Framework\App\ScopeInterface::SCOPE_DEFAULT;
+    const DEFAULT_SCOPE             = 'default';
+    
     const REACH_ENABLE_PATH         = "payment/reach_payment/active";
 
     const REACH_API_MODE_PATH       = "reach/global/mode";
@@ -48,7 +51,7 @@ class Data extends AbstractHelper
     // const DHL_SHIPPING_PATH         = "reach/dhl/applicable_shipping";
     const DHL_SHIPPING_PATH         = "payment/reach_payment/reach_dhl/applicable_shipping";
 
-    const REACH_OPEN_CONTRACT_PATH  = "payment/reach_payment/reach_cc/allow_open_contract";
+    const REACH_OPEN_CONTRACT_PATH  = "payment/reach_cc/enable_open_contract";
     const MERCHANT_ID_PATH          = "payment/reach_payment/merchantId";
     const API_SECRET_PATH           = "payment/reach_payment/api_secret";
     const DUTY_LABEL_PATH           = "payment/reach_payment/reach_dhl/duty_label";
@@ -83,14 +86,18 @@ class Data extends AbstractHelper
     }
 
     /**	
-     * Get the API Mode from database	
+     * Get the API Mode from database REACH_API_MODE_PATH
      *	
      * @return void	
      */	
     public function getApiMode() {	
-        return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE) ?	
-            $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE) :	
-            $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE);	
+        if ($this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -126,21 +133,29 @@ class Data extends AbstractHelper
      * @return string|null
      */
     public function getCurrencySwitch() {
-        return $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_CURRENCY_SWITCH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
-    * Returns DHL label displayed to users during checkout
+    * Returns DHL label displayed to users during checkout DUTY_LABEL_PATH
     *
     * @return string
     */
     public function getDhlDutyLabel()
     {
-        return $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DUTY_LABEL_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -149,9 +164,13 @@ class Data extends AbstractHelper
      */
     public function getReachEnabled()
     {
-        return $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_ENABLE_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -199,7 +218,8 @@ class Data extends AbstractHelper
             return false;
         }
         if ($this->currencyOption === null) {
-            $this->currencyOption = $this->getConfigValue(self::REACH_CURRENCY_SWITCH);
+            $this->currencyOption = $this->getCurrencySwitch();
+            // $this->currencyOption = $this->getConfigValue(self::REACH_CURRENCY_SWITCH);
         }
         return in_array($this->currencyOption, ['customer','reach']);
     }
@@ -222,9 +242,13 @@ class Data extends AbstractHelper
     public function allowCurrencySpecificCountry()
     {
         // return $this->getConfigValue(self::REACH_SPECIFIC_PATH);
-        return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_SPECIFIC_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -235,21 +259,29 @@ class Data extends AbstractHelper
     public function allowedCurrencyForCountries()
     {
         // return $this->getConfigValue(self::REACH_COUNTRY_PATH);
-        return $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_COUNTRY_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
-     * Get open contract allowed config
-     *
+     * Get open contract allowed config REACH_OPEN_CONTRACT_PATH
+     * 
      * @return boolean
      */
     public function getAllowOpenContract()
     {
-        return $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::REACH_OPEN_CONTRACT_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -259,7 +291,8 @@ class Data extends AbstractHelper
      */
     public function getApiUrl()
     {
-        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
+        //if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
+        if ($this->getDhlApiUrl()) {
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
@@ -273,7 +306,8 @@ class Data extends AbstractHelper
      */
     public function getStashApiUrl()
     {
-        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
+        // if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
+        if ($this->getDhlApiUrl()) {
             return self::STASH_SANDBOX_URL;
         } else {
             return self::STASH_URL;
@@ -281,15 +315,19 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Reach Merchant ID
+     * Get Reach Merchant ID MERCHANT_ID_PATH 
      *
      * @return string
      */
     public function getMerchantId()
     {
-        return $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::MERCHANT_ID_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -299,9 +337,13 @@ class Data extends AbstractHelper
      */
     public function getSecret()
     {
-        return $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE) ?
-            $this->_enc->decrypt( $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE)  ):
-            $this->_enc->decript( $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::WEBSITES_SCOPE) );
+        if ($this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::API_SECRET_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -365,28 +407,34 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Check DHL Tax-Duties Enabled
+     * Check DHL Tax-Duties Enabled DHL_ENABLE_PATH
      *
      * @return boolean
      */
     public function getDhlEnabled()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_ENABLE_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
-     * Get DHL API Url
+     * Get DHL API Url REACH_API_MODE_PATH
      *
      * @return string
      */
     public function getDhlApiUrl()
     {
-        if ($this->getConfigValue(self::REACH_API_MODE_PATH)) {
-            return self::DHL_SANDBOX_API_URL;
+        if ($this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::WEBSITES_SCOPE);
         } else {
-            return self::DHL_API_URL;
+            return $this->_scopeConfig->getValue(SELF::REACH_API_MODE_PATH, SELF::DEFAULT_SCOPE);
         }
     }
 
@@ -397,9 +445,13 @@ class Data extends AbstractHelper
      */
     public function getDhlClientId()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_ID_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
 
@@ -410,9 +462,13 @@ class Data extends AbstractHelper
      */
     public function getDhlClientSecret()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::STORES_SCOPE) ?
-            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::STORES_SCOPE)) :
-            $this->_enc->decrypt($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::WEBSITES_SCOPE));
+        if ($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_CLIENT_SECRET_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -422,9 +478,13 @@ class Data extends AbstractHelper
      */
     public function getDhlPickupAccount()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_PICKUP_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
      /**
@@ -434,9 +494,13 @@ class Data extends AbstractHelper
      */
     public function getDhlItemSeller()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_SELLER_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -446,9 +510,13 @@ class Data extends AbstractHelper
      */
     public function getDhlPricingStrategy()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_PRICING_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -458,9 +526,13 @@ class Data extends AbstractHelper
      */
     public function getDhlDefaultHsCode()
     {
-        return $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_HS_CODE_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -470,10 +542,13 @@ class Data extends AbstractHelper
      */
     public function getDhlAllowSpecific()
     {
-        // return $this->getConfigValue(self::DHL_ALLOW_SPECIFIC);
-        return $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_ALLOW_SPECIFIC, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -483,10 +558,13 @@ class Data extends AbstractHelper
      */
     public function getDhlAllowedCountries()
     {
-        // return $this->getConfigValue(self::DHL_SPECIFIC_COUNTRY_PATH);
-        return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_SPECIFIC_COUNTRY_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -496,10 +574,13 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyOptionalSpecific()
     {
-        // return $this->getConfigValue(self::DHL_OPT_SPECIFIC_PATH);
-        return $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_SPECIFIC_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -508,10 +589,13 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyOptionalCountries()
     {
-        // return $this->getConfigValue(self::DHL_OPT_S_COUNTRY_PATH);
-        return $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_OPT_S_COUNTRY_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 
     /**
@@ -521,9 +605,12 @@ class Data extends AbstractHelper
      */
     public function getDhlApplicableShippings()
     {
-        // return $this->getConfigValue(self::DHL_SHIPPING_PATH);
-        return $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE) ?
-            $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE) :
-            $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::WEBSITES_SCOPE);
+        if ($this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::STORES_SCOPE);
+        } else if ($this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::WEBSITES_SCOPE)) {
+            return $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::WEBSITES_SCOPE);
+        } else {
+            return $this->_scopeConfig->getValue(SELF::DHL_SHIPPING_PATH, SELF::DEFAULT_SCOPE);
+        }
     }
 }

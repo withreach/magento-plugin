@@ -179,6 +179,7 @@
                     <field id="allow_open_contract" showInDefault="1" showInWebsite="1" sortOrder="5" translate="label" type="select">
                         <label>Enable Open Contract</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/reach_cc/enable_open_contract</config_path>
                     </field>
                     <field id="payment_action" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Action</label>
