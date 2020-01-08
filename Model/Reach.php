@@ -62,26 +62,23 @@ class Reach
      */
     public function isAvailable($method)
     {
-        if(!$this->reachHelper->getReachEnabled())
-        {
-            return false;
-        }
-        $methods = $this->fetchPaymentMethods();
-        
-        if ($method == \Reach\Payment\Model\Cc::METHOD_CC && count($methods['Card'])) {
-            return true;
-        }
-        if ($method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL && count($methods['Online'])) {
-            $found=false;
-            foreach ($methods['Online'] as $onmethod) {
-                if ($onmethod['Id'] == 'PAYPAL') {
-                    $found=true;
+        $available = false;
+        if($this->reachHelper->getReachEnabled()) {
+            $methods = $this->fetchPaymentMethods();
+            if (array_key_exists('Card', $methods) && $method == \Reach\Payment\Model\Cc::METHOD_CC) {
+                $available = true;
+            }
+            if (array_key_exists('Online', $methods) && $method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL) {
+                foreach ($methods['Online'] as $onmethod) {
+                    if ($onmethod['Id'] == 'PAYPAL') {
+                        $available = true;
+                    }
                 }
             }
-            return $found;
         }
-        return false;
+        return $available;
     }
+		
 
     /**
      * @return array
