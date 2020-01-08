@@ -13,8 +13,10 @@ class Data extends AbstractHelper
 {
 
     const API_URL = 'https://checkout.gointerpay.net/v2.19/';
+    const STASH_URL = 'https://stash.gointerpay.net/v2.19/';
+    const STASH_SANDBOX_URL = 'https://stash-sandbox.gointerpay.net/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
-    
+
     const DHL_API_URL = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
     const DHL_ENABLE = 'reach/dhl/enable';
@@ -58,7 +60,21 @@ class Data extends AbstractHelper
         $this->_enc = $enc;
         parent::__construct($context);
     }
-    
+
+    /**
+     * Get Reach Stash API URL
+     *
+     * @return string
+     */
+    public function getStashApiUrl()
+    {
+        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+            return self::STASH_SANDBOX_URL;
+        } else {
+            return self::STASH_URL;
+        }
+    }
+
     /**
      * getConfigValue
      * gets config Value for frontend
