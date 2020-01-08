@@ -204,6 +204,10 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     /**
      * Check IP is local ip
      *
+     * When running in Docker, the IP addresses assigned by the Docker service
+     * must be added here in order for the application to run. Error displayed
+     * is regarding Line 71 in Model/Reach.php.
+     *
      * @return boolean
      */
     protected function checkLocalIP($ip)
