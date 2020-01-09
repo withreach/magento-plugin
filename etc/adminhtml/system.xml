@@ -79,7 +79,6 @@
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/duty_label</config_path>
                     </field>
                     <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Enable tax and duty calculation</label>                    
