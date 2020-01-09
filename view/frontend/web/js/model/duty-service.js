@@ -65,7 +65,9 @@ define([
             storage.post(dutyUrl,payload)
             .done(
                 function (response) {    
-                    fullScreenLoader.stopLoader();                                       
+                    fullScreenLoader.stopLoader();
+                    console.log(dutyUrl);
+                    console.log(payload);
                     if (response.success) {
                         if(response.duty >= 0)    
                         {

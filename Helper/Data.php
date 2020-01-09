@@ -13,7 +13,7 @@ class Data extends AbstractHelper
 {
 
     const API_URL = 'https://checkout.gointerpay.net/v2.19/';
-    const STASH_URL = 'https://stash.gointerpay.net/v2.19/';
+    const STASH_URL = 'https://stash.gointerpay.net/';
     const STASH_SANDBOX_URL = 'https://stash-sandbox.gointerpay.net/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
 
