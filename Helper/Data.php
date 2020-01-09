@@ -41,6 +41,8 @@ class Data extends AbstractHelper
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
+    const TESTFIELD = 'payment/reach_payment/testField';
+
     /**
      * Constant for payment
      */
@@ -84,6 +86,15 @@ class Data extends AbstractHelper
     public function getReachConfig($code, $storeId = null)
     {
         return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code, $storeId);
+    }
+
+    /**
+     * Get Test Field
+     * @return string
+     */
+    public function getTestField()
+    {
+        return $this->getConfigValue(self::TESTFIELD);
     }
 
      /**
