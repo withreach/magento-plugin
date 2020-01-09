@@ -17,7 +17,7 @@ class Data extends AbstractHelper
     
     const DHL_API_URL = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
-    const DHL_ENABLE = 'reach/dhl/enable';
+    const DHL_ENABLE = 'payment/reach_payment/reach_dhl/enable';
     const DHL_DUTY_LABEL = 'payment/reach_payment/reach_dhl/duty_label';
     const DHL_DUTY_ALLOW_SPECIFIC = 'reach/dhl/allowspecific';
     const DHL_DUTY_ALLOW_SPECIFIC_COUNTRY = 'reach/dhl/specificcountry';

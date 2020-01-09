@@ -57,6 +57,7 @@ class ReachConfigProvider implements ConfigProviderInterface
         $config = [];
         $config['reach']=[];
         $config['reach']['enabled'] =  $this->reachHelper->getReachEnabled();
+        $config['reach']['dhl_enabled'] =  $this->reachHelper->getDhlEnabled();
         $config['reach']['badge']=$this->getBadge();
         $config['reach']['dhl_quote']=$this->getDhlQuote();
         $config['reach']['fingerprint_url']=$this->getFingerPrintUrl();  

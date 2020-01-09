@@ -351,6 +351,10 @@ define([
             return true;
         },
 
+        getDHLEnabled:function(){
+            return window.checkoutConfig.reach.dhl_enabled;
+        },
+
         getReachEnabled:function(){
             return window.checkoutConfig.reach.enabled;    
         },

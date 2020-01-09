@@ -59,7 +59,7 @@
 
                 <render args="shippingMethodListTemplate"/>
                 
-                <div class="reach-tax-duty" data-bind="fadeVisible: dutyCharges() > 0 && getReachEnabled() != 0">
+                <div class="reach-tax-duty" data-bind="fadeVisible: dutyCharges() > 0 && getReachEnabled() != 0 && getDHLEnabled() != 0">
                     <input 
                     type="checkbox"
                     class="checkbox-inline" ,                    
