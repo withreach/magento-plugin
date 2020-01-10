@@ -30,7 +30,6 @@ class Data extends AbstractHelper
     const DHL_API_SECRET = 'reach/dhl/api_secret';
     const DHL_ITEM_SELLER = 'reach/dhl/item_seller';
     const DHL_PICKUP_ACCOUNT = 'reach/dhl/pickup_account';
-    const DHL_PRICIING_STRATEGY = 'reach/dhl/pricing_strategy';
     const DHL_DEFAULT_HS_CODE = 'reach/dhl/default_hs_code';
 
     const CONFIG_REACH_ENABLED = 'reach/global/active';
@@ -44,6 +43,11 @@ class Data extends AbstractHelper
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
     const TESTFIELD = 'payment/reach_payment/testField';
+
+    CONST DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
+    CONST DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
+    CONST DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";
+    CONST DHL_TRANSPORT_MODE_PATH   = "payment/reach_payment/reach_dhl/transport_mode";
 
     /**
      * Constant for payment
@@ -112,6 +116,43 @@ class Data extends AbstractHelper
     {
         return $this->getConfigValue(self::TESTFIELD);
     }
+
+    /**
+     * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH
+     *
+     * @return void
+     */
+    public function getTransportMode() {
+        return $this->getConfigValue(self::DHL_TRANSPORT_MODE_PATH);
+    }
+
+    /**
+     * Get End Use DHL_END_USE_PATH
+     *
+     * @return string|null
+     */
+    public function getEndUse() {
+        return $this->getConfigValue(self::DHL_END_USE_PATH);
+    }
+
+    /**
+     * Get Clearance Mode DHL_CLEARANCE_MODE_PATH
+     *
+     * @return string|null
+     */
+    public function getClearanceMode() {
+        return $this->getConfigValue(self::DHL_CLEARANCE_MODE_PATH);
+    }
+
+    /**
+     * Get Pricing Strategy DHL_PRICING_STRATEGY_PATH
+     *
+     * @return string|null
+     */
+    public function getPricingStrategy() {
+        return $this->getConfigValue(self::DHL_PRICING_STRATEGY_PATH);
+    }
+
 
      /**
      * Check Reach Enabled
@@ -369,16 +410,6 @@ class Data extends AbstractHelper
     public function getDhlItemSeller()
     {
         return $this->getConfigValue(self::DHL_ITEM_SELLER);
-    }
-
-    /**
-     * Get DHL Pricing strategy
-     *
-     * @return string
-     */
-    public function getDhlPricingStrategy()
-    {
-        return $this->getConfigValue(self::DHL_PRICIING_STRATEGY);
     }
 
     /**
