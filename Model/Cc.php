@@ -624,8 +624,6 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         // Enable lines with logger function to turn on logging for debugging.
         $this->_logger->debug('---------------- callCurl - START OF REQUEST----------------');
 
-        $params['RateOfferId'] = null; // TODO: Temporary fix for rateofferid error on production.
-
         $json = json_encode($params);
         $this->_logger->debug('$params: ');
         $this->_logger->debug(json_encode($params));
