@@ -408,8 +408,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
-        $this->_logger->debug(json_encode($result));
-        $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
+        // $this->_logger->debug(json_encode($result));
+        // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         return $result;
     }
 
