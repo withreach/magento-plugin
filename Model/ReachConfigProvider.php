@@ -61,6 +61,7 @@ class ReachConfigProvider implements ConfigProviderInterface
         $config['reach']['dhl_quote']=$this->getDhlQuote();
         $config['reach']['fingerprint_url']=$this->getFingerPrintUrl();  
         $config['reach']['dhl_label']=$this->reachHelper->getDhlDutyLabel();
+        $config['reach']['stash_url']=$this->reachHelper->getStashApiUrl();
         return $config;
     }
 

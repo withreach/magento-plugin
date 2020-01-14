@@ -132,10 +132,28 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 return $this->response;
             }
             $accessToken = $this->getDhlAccessToken();
-           
+
+            // Enable lines with logger function to turn on logging for debugging.
+            // $this->_logger->debug('---------------- getDutyandTax - START OF REQUEST----------------');
+            // $this->_logger->debug('cartId:');
+            // $this->_logger->debug(json_encode($cartId));
+            // $this->_logger->debug('shippingCharge:');
+            // $this->_logger->debug(json_encode($shippingCharge));
+            // $this->_logger->debug('shippingMethodCode:');
+            // $this->_logger->debug(json_encode($shippingMethodCode));
+            // $this->_logger->debug('shippingCarrierCode:');
+            // $this->_logger->debug(json_encode($shippingCarrierCode));
+            // $this->_logger->debug('address:');
+            // $this->_logger->debug(json_encode($address));
+            // $this->_logger->debug('apply:');
+            // $this->_logger->debug(json_encode($apply));
+            // $this->_logger->debug('accessToken:');
+            // $this->_logger->debug(json_encode($accessToken));
+
             if ($accessToken && $accessToken!='') {
                 $request = $this->prepareRequest($shippingCharge, $address);
                 $response = $this->getQuote($request, $accessToken);
+
                 if (isset($response['feeTotals'])) {
                     foreach ($response['feeTotals'] as $charge) {
                         $duty += $charge['value'];
@@ -175,6 +193,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 __('Something went wrong while generating the DHL request: ' . $e->getMessage())
             );
         }
+        // $this->_logger->debug('================ getDutyandTax - END OF REQUEST================');
         return $this->response;
     }
     
@@ -367,7 +386,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     }
 
     /**
-     * Get Qquote from DHL
+     * Get Quote from DHL
      *
      * @param array $request
      * @param string $accessToken
@@ -382,22 +401,23 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest->setBearerAuth($accessToken);
         $rest->setUrl($url);
         // Uncomment following lines to see request params:
-        // $this->_logger->debug('----------------START OF REQUEST----------------');
+        // $this->_logger->debug('----------------GET QUOTE FROM DHL - START OF REQUEST----------------');
+        // $this->_logger->debug(json_encode($url));
+        // $this->_logger->debug(json_encode($accessToken));
         // $this->_logger->debug(json_encode($request));
-        // $this->_logger->debug('================END OF REQUEST================');
+        // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
         return $result;
     }
 
     /**
-     * Retrive DHL API access token
+     * Retrieve DHL API access token
      *
      * @return string
      */
     protected function getDhlAccessToken()
     {
-               
         $clientId = $this->reachHelper->getDhlApiKey();
         $clientSecret = $this->reachHelper->getDhlApiSecret();
         $url = $this->reachHelper->getDhlApiUrl();
@@ -408,6 +428,14 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest->setUrl($url);
         $response = $rest->executeGet();
         $result = $response->getResponseData();
+
+        // $this->_logger->debug('----------------GET DHL ACCESS TOKEN - START OF REQUEST----------------');
+        // $this->_logger->debug(json_encode($clientId));
+        // $this->_logger->debug(json_encode($clientSecret));
+        // $this->_logger->debug(json_encode($url));
+        // $this->_logger->debug(json_encode($response));
+        // $this->_logger->debug(json_encode($result));
+        // $this->_logger->debug('================GET DHL ACCESS TOKEN - END OF REQUEST================');
 
         if (isset($result['access_token'])) {
             return $result['access_token'];
