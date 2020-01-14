@@ -10,10 +10,6 @@
                     <config_path>reach/global/active</config_path>
                 </field>
 
-                <field id="testField" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="3" translate="label" type="text">
-                    <label>Test Field</label>
-                </field>
-
                 <field id="merchantId" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="3" translate="label" type="text">
                     <label>Merchant Id</label>
                     <depends>

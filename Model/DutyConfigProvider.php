@@ -41,7 +41,6 @@ class DutyConfigProvider implements ConfigProviderInterface
         $dutyConfig['duty_title'] = 'Tax & Duties';
         //$extraFeeConfig['duty_amount'] = 50.00;
         $dutyConfig['show_hide_duty'] = true;
-        $dutyConfig['testField'] = true;
         return $dutyConfig;
     }
 }
