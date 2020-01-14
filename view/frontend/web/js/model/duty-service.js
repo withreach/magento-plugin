@@ -66,8 +66,6 @@ define([
             .done(
                 function (response) {    
                     fullScreenLoader.stopLoader();
-                    console.log(dutyUrl);
-                    console.log(payload);
                     if (response.success) {
                         if(response.duty >= 0)    
                         {

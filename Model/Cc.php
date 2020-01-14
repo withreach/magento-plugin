@@ -622,29 +622,27 @@ class Cc extends \Magento\Payment\Model\Method\Cc
     protected function callCurl($url, $params, $method = "POST")
     {
         // Enable lines with logger function to turn on logging for debugging.
-        $this->_logger->debug('---------------- callCurl - START OF REQUEST----------------');
-
-        $params['RateOfferId'] = null; // TODO: Temporary fix for rateofferid error on production.
+        // $this->_logger->debug('---------------- callCurl - START OF REQUEST----------------');
 
         $json = json_encode($params);
-        $this->_logger->debug('$params: ');
-        $this->_logger->debug(json_encode($params));
+        // $this->_logger->debug('$params: ');
+        // $this->_logger->debug(json_encode($params));
         $secret = $this->reachHelper->getSecret();
-        $this->_logger->debug('$secret: ');
-        $this->_logger->debug(json_encode($secret));
+        // $this->_logger->debug('$secret: ');
+        // $this->_logger->debug(json_encode($secret));
         $signature = base64_encode(hash_hmac('sha256', $json, $secret, true));
-        $this->_logger->debug('$signature: ');
-        $this->_logger->debug(json_encode($signature));
+        // $this->_logger->debug('$signature: ');
+        // $this->_logger->debug(json_encode($signature));
         $rest = $this->httpTextFactory->create();
         $rest->setContentType("application/x-www-form-urlencoded");
         $rest->setUrl($url);
-        $this->_logger->debug('$url: ');
-        $this->_logger->debug(json_encode($url));
+        // $this->_logger->debug('$url: ');
+        // $this->_logger->debug(json_encode($url));
         $result = $rest->executePost('request='.urlencode($json).'&signature='.urlencode($signature));
         $responseString = $result->getResponseData();
         $response =[];
         parse_str($responseString, $response);
-        $this->_logger->debug('---------------- callCurl - END OF REQUEST----------------');
+        // $this->_logger->debug('---------------- callCurl - END OF REQUEST----------------');
         return $response;
     }
 

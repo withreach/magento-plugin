@@ -42,12 +42,11 @@ class Data extends AbstractHelper
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
-    const TESTFIELD = 'payment/reach_payment/testField';
-
     CONST DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
     CONST DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
     CONST DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";
     CONST DHL_TRANSPORT_MODE_PATH   = "payment/reach_payment/reach_dhl/transport_mode";
+    const SANDBOX_MODE = 1;
 
     /**
      * Constant for payment
@@ -74,7 +73,7 @@ class Data extends AbstractHelper
      */
     public function getStashApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+        if ($this->getConfigValue(self::CONFIG_API_MODE) == self::SANDBOX_MODE) {
             return self::STASH_SANDBOX_URL;
         } else {
             return self::STASH_URL;
