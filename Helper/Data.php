@@ -108,15 +108,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Test Field
-     * @return string
-     */
-    public function getTestField()
-    {
-        return $this->getConfigValue(self::TESTFIELD);
-    }
-
-    /**
      * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH
      *
      * @return void
