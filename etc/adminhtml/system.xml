@@ -9,6 +9,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>reach/global/active</config_path>
                 </field>
+
                 <field id="merchantId" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="3" translate="label" type="text">
                     <label>Merchant Id</label>
                     <depends>
@@ -67,14 +68,12 @@
                     <field id="enable" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select" canRestore="1">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>reach/dhl/enable</config_path>
                     </field>
                     <field id="duty_label" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="text">
                         <label>Tax and Duties Label</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/duty_label</config_path>
                     </field>
                     <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30"  showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                         <label>Enable tax and duty calculation</label>                    
