@@ -44,6 +44,7 @@ class Data extends AbstractHelper
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
     const TESTFIELD = 'payment/reach_payment/testField';
+    const SANDBOX_MODE = 1;
 
     /**
      * Constant for payment
@@ -70,7 +71,7 @@ class Data extends AbstractHelper
      */
     public function getStashApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+        if ($this->getConfigValue(self::CONFIG_API_MODE) == SANDBOX_MODE) {
             return self::STASH_SANDBOX_URL;
         } else {
             return self::STASH_URL;

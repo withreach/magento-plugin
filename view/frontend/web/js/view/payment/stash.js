@@ -120,7 +120,7 @@ define([
          */
         _getStash: function (stash_id) {                    
             var postData ={};
-            var url = window.checkoutConfig.reach.api_url + stash_id;
+            var url = window.checkoutConfig.reach.stash_url + stash_id;
             postData = {'DeviceFingerprint': gip_device_fingerprint};
             postData.card=JSON.stringify(this.getCardData());
             return $.ajax({
