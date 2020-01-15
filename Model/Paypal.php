@@ -136,6 +136,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Payment\Model\Method\Logger $logger
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param \Reach\Payment\Model\Currency $reachCurrency
      * @param array $data
      */
     public function __construct(
@@ -154,6 +155,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \Reach\Payment\Model\Currency $reachCurrency,
         array $data = []
     ) {
         $this->storeManager     = $storeManager;
@@ -414,7 +416,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
         $order->getOrderCurrencyCode();
-        
+    
+        $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
+        if(!empty($rateOfferId)) {
+            $request['RateOfferId'] = $rateOfferId;
+        }
 
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item)
