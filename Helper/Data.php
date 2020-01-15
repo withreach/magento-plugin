@@ -120,7 +120,7 @@ class Data extends AbstractHelper
     /**
      * Get End Use DHL_END_USE_PATH
      *
-     * @return string|null
+     * @return string
      */
     public function getEndUse() {
         return $this->getConfigValue(self::DHL_END_USE_PATH);
@@ -129,7 +129,7 @@ class Data extends AbstractHelper
     /**
      * Get Clearance Mode DHL_CLEARANCE_MODE_PATH
      *
-     * @return string|null
+     * @return string
      */
     public function getClearanceMode() {
         return $this->getConfigValue(self::DHL_CLEARANCE_MODE_PATH);
@@ -138,7 +138,7 @@ class Data extends AbstractHelper
     /**
      * Get Pricing Strategy DHL_PRICING_STRATEGY_PATH
      *
-     * @return string|null
+     * @return string
      */
     public function getPricingStrategy() {
         return $this->getConfigValue(self::DHL_PRICING_STRATEGY_PATH);
