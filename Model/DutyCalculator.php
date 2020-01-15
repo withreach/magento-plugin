@@ -291,14 +291,15 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                            
             $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
             $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
-            $request['pricingStrategy']=$this->reachHelper->getDhlPricingStrategy();
+            $request['pricingStrategy']=$this->reachHelper->getPricingStrategy();
             $request['senderAddress']=$this->getShippingOrigin();//['state'=>'FL','country'=>'US'];
             $itemData['packageDetails']=[''];
             $request['packageDetails']['outputCurrency']=$quote->getQuoteCurrencyCode();
             $request['packageDetails']['freightCharge'] = ['value'=>$freightCharge,'currency'=>$quote->getQuoteCurrencyCode()];
-            $request['packageDetails']["clearanceMode"] = "Courier";
-            $request['packageDetails']["transportMode"] = "AIR";
-            $request['packageDetails']["endUse"] = "Personal";
+            $request['packageDetails']["clearanceMode"] = $this->reachHelper->getClearanceMode();
+            $request['packageDetails']["transportMode"] = $this->reachHelper->getTransportMode();
+            $request['packageDetails']["endUse"] = $this->reachHelper->getEndUse();
+            $request['packageDetails']['qualifiesForPreferentialTariffs'] = $this->reachHelper->getPrefTariffs();
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
@@ -408,6 +409,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
+        // $this->_logger->debug(json_encode($result));
+        // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         return $result;
     }
 

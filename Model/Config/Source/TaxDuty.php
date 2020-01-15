@@ -13,7 +13,7 @@ class TaxDuty implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 'disabled', 'label' => __('Do not show taxt duty breakdown')],
+            ['value' => 'disabled', 'label' => __('Do not show tax duty breakdown')],
             ['value' => 'shipping', 'label' => __('Show it on shipping step')],
             ['value' => 'summary', 'label' => __('Show it under order summary')],
             ['value' => 'both', 'label' => __('Display Tax & Duty on shipping step and order summary')],
