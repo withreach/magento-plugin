@@ -42,6 +42,7 @@ class Data extends AbstractHelper
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
+    const DHL_PREF_TARIFFS          = "payment/reach_payment/reach_dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
     const DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
     const DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";

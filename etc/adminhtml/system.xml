@@ -132,6 +132,13 @@
                         </depends>
                         <config_path>reach/dhl/item_seller</config_path>
                     </field>
+                    <field id="pref_tariffs" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                        <label>Qualifies for Preferential Tarrifs</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <depends>
+                            <field id="active">1</field>
+                        </depends>
+                    </field>
                     <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
                         <label>DHL Pricing Strategy</label>
                         <source_model>Reach\Payment\Model\Config\Source\PricingStrategy</source_model>
