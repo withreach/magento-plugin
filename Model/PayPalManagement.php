@@ -111,8 +111,6 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
                 $this->checkoutSession->setData("reach_order_pending_payment", $order->getId());
                 $payment = $order->getPayment();
                 $request = $this->_buildCheckoutRequest($payment,$deviceFingerprint);
-                $this->_logger->debug('==========PayPal - savePaymentAndPlaceOrder - BEGIN ==========');
-                $this->_logger->debug($request);
                 $url = $this->reachHelper->getCheckoutUrl();
                 $response = $this->callCurl($url, $request);
                 $this->validateResponse($response['response'], $response['signature']);
@@ -122,7 +120,6 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
                 $data=['action'=>$response['Action']['Redirect']];
                 $this->response->setSuccess(true);
                 $this->response->setResponse($data);
-                $this->_logger->debug('==========PayPal - savePaymentAndPlaceOrder - END ==========');
             } else {
                 throw new \Magento\Framework\Validator\Exception(__('Unable to save Sage Pay order'));
             }

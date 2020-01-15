@@ -119,6 +119,10 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     private $httpTextFactory;
 
+    /**
+     * @var \Reach\Payment\Model\Currency
+     */
+    protected $reachCurrency;
 
     /**
      * Paypal constructor.
@@ -158,6 +162,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         \Reach\Payment\Model\Currency $reachCurrency,
         array $data = []
     ) {
+        $this->reachCurrency     = $reachCurrency;
         $this->storeManager     = $storeManager;
         $this->reachHelper = $reachHelper;
         $this->reachPayment      = $reachPayment;
