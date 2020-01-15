@@ -109,9 +109,16 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get if qualifies for preferential tariffs DHL_PREF_TARIFFS
+     *
+     */
+    public function getPrefTariffs() {
+        return $this->getConfigValue(self::DHL_PREF_TARIFFS);
+    }
+
+    /**
      * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH
      *
-     * @return void
      */
     public function getTransportMode() {
         return $this->getConfigValue(self::DHL_TRANSPORT_MODE_PATH);

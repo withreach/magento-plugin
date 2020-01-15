@@ -298,7 +298,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $request['packageDetails']['freightCharge'] = ['value'=>$freightCharge,'currency'=>$quote->getQuoteCurrencyCode()];
             $request['packageDetails']["clearanceMode"] = $this->reachHelper->getClearanceMode();
             $request['packageDetails']["transportMode"] = $this->reachHelper->getTransportMode();
-            $request['packageDetails']["endUse"] = $this->reachHelper->getEndUse();;
+            $request['packageDetails']["endUse"] = $this->reachHelper->getEndUse();
+            $request['packageDetails']['qualifiesForPreferentialTariffs'] = $this->reachHelper->getPrefTariffs();
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
