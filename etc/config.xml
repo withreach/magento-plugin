@@ -12,7 +12,6 @@
                     <pricing_strategy>MAXIMUM</pricing_strategy>
                     <allowspecific>0</allowspecific>
                     <pref_tariffs>1</pref_tariffs>
-                    <pricing_strategy>MAXIMUM</pricing_strategy>
                     <clearance_mode>COURIER</clearance_mode>
                     <end_use>PERSONAL</end_use>
                     <transport_mode>AIR</transport_mode>
