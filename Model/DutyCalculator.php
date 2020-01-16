@@ -299,7 +299,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $request['packageDetails']["clearanceMode"] = $this->reachHelper->getClearanceMode();
             $request['packageDetails']["transportMode"] = $this->reachHelper->getTransportMode();
             $request['packageDetails']["endUse"] = $this->reachHelper->getEndUse();
-            $request['packageDetails']['qualifiesForPreferentialTariffs'] = $this->reachHelper->getPrefTariffs();
             $request['customsDetails']=[];
             $request['consigneeAddress']=['state'=>$shippingAddress->getRegionCode(),'country'=>$shippingAddress->getCountryId()];
             foreach ($quote->getItems() as $item) {
@@ -320,7 +319,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 if (!$itemData['countryOfOrigin']) {
                     $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
                 }
-                $itemData['qualifiesForPreferentialTariffs']=true;
+                if ($this->reachHelper->getPrefTariffs() == 1 ) {
+                    $itemData['qualifiesForPreferentialTariffs'] = true;
+                } else {
+                    $itemData['qualifiesForPreferentialTariffs'] = false;
+                }
                 $request['customsDetails'][]=$itemData;
             }
             return $request;
