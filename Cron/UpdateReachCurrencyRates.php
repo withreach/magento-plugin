@@ -9,9 +9,22 @@ class UpdateReachCurrencyRates
      */
     protected $currencyModel;
 
+    /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger; 
+
+    /**
+     * Constructor
+     *
+     * @param \Reach\Payment\Model\Currency $currencyModel
+     * @param \Psr\Log\LoggerInterface $logger
+     */
     public function __construct(
-        \Reach\Payment\Model\Currency $currencyModel
+        \Reach\Payment\Model\Currency $currencyModel,
+        \Psr\Log\LoggerInterface $logger
     ) {
+        $this->_logger = $logger;
         $this->currencyModel = $currencyModel;
     }
     /**
@@ -22,10 +35,11 @@ class UpdateReachCurrencyRates
     public function execute()
     {
         try {
-            //$logger->info('Its called');
+            $this->_logger->debug('---------------- updateRates - Function Called ----------------');
             $this->currencyModel->updateRates();
         } catch (\Exception $e) {
-            //$logger->info($e->getMessage());
+            $this->_logger->debug('---------------- updateRates - Error ----------------');
+            $this->_logger->debug($e->getMessage());
         }
     }
 }

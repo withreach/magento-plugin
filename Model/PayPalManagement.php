@@ -53,7 +53,15 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
      */
     private $httpTextFactory;
 
-    
+    /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger; 
+
+    /**
+     * @var \Reach\Payment\Model\Currency
+     */
+    protected $reachCurrency;
 
     /**
      * Constructor
@@ -63,10 +71,12 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
      * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      * @param \Reach\Payment\Helper\Checkout $checkoutHelper
+     * @param \Reach\Payment\Model\Currency $reachCurrency
      * @param \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory
      * @param \Magento\Framework\UrlInterface $coreUrl
      * @param \Reach\Payment\Model\Api\HttpTextFactory $httpTextFactory
      * @param \Reach\Payment\Api\Data\ResponseInterface $response
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         \Reach\Payment\Helper\Data $reachHelper,
@@ -74,20 +84,24 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Reach\Payment\Helper\Checkout $checkoutHelper,
+        \Reach\Payment\Model\Currency $reachCurrency,
         \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory,
         \Magento\Framework\UrlInterface $coreUrl,
         \Reach\Payment\Model\Api\HttpTextFactory $httpTextFactory,
-        \Reach\Payment\Api\Data\ResponseInterface $response
+        \Reach\Payment\Api\Data\ResponseInterface $response,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->quoteRepository    = $quoteRepository;
         $this->reachHelper    = $reachHelper;
         $this->checkoutSession    = $checkoutSession;
         $this->_customerSession   = $customerSession;
         $this->checkoutHelper     = $checkoutHelper;
+        $this->reachCurrency     = $reachCurrency;
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->coreUrl            = $coreUrl;
         $this->response           = $response;
         $this->httpTextFactory    = $httpTextFactory;
+        $this->_logger            = $logger;
     }
 
     /**
@@ -111,8 +125,17 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
                 $this->checkoutSession->setData("reach_order_pending_payment", $order->getId());
                 $payment = $order->getPayment();
                 $request = $this->_buildCheckoutRequest($payment,$deviceFingerprint);
+
+                $this->_logger->debug('---------------- savePaymentAndPlaceOrder - START OF REQUEST----------------');
+
                 $url = $this->reachHelper->getCheckoutUrl();
                 $response = $this->callCurl($url, $request);
+
+                $this->_logger->debug(json_encode($request));
+                $this->_logger->debug(json_encode($url));
+                $this->_logger->debug(json_encode($response));
+                $this->_logger->debug('---------------- savePaymentAndPlaceOrder - END OF REQUEST----------------');
+
                 $this->validateResponse($response['response'], $response['signature']);
                 $response = json_decode($response['response'], true);
                 $this->processErrors($response);
@@ -229,6 +252,12 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
             $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
         $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
+
+        $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
+        if(!empty($rateOfferId)) {
+            $request['RateOfferId'] = $rateOfferId;
+        }
+
         return $request;
     }
     

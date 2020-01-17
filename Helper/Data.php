@@ -258,7 +258,7 @@ class Data extends AbstractHelper
      */
     public function getApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+        if ($this->getConfigValue(self::CONFIG_API_MODE) == self::SANDBOX_MODE) {
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
