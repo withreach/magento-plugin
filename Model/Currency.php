@@ -20,6 +20,11 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     protected $addressService;
 
     /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger; 
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\Model\Context $context
@@ -29,6 +34,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      * @param \Reach\Payment\Helper\Data $reachHelper
      * @param \Reach\Payment\Model\ResourceModel\Currency $resource
      * @param \Reach\Payment\Model\ResourceModel\Currency\Collection $collection
+     * @param \Psr\Log\LoggerInterface $logger
      * @param array $data = []
      */
     public function __construct(
@@ -39,12 +45,14 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         \Reach\Payment\Helper\Data $reachHelper,
         \Reach\Payment\Model\ResourceModel\Currency $resource,
         \Reach\Payment\Model\ResourceModel\Currency\Collection $collection,
+        \Psr\Log\LoggerInterface $logger,
         array $data = []
     ) {
 
         $this->reachHelper = $reachHelper;
         $this->httpRestFactory = $httpRestFactory;
         $this->addressService  = $addressService;
+        $this->_logger = $logger;
         parent::__construct($context, $registry, $resource, $collection, $data);
     }
 
@@ -177,16 +185,18 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     protected function fetchRates()
     {
+        $this->_logger->debug('---------------- fetchRates - START OF REQUEST----------------');
         $rest = $this->httpRestFactory->create();
         $url = $this->reachHelper->getApiUrl();
         $url.='getRates?MerchantId='.$this->reachHelper->getMerchantId();
+        $this->_logger->debug(json_encode($url));
         $rest->setUrl($url);
         $response = $rest->executeGet();
         $result = $response->getResponseData();
         if (isset($result['RateOffers'])) {
             return $result['RateOffers'];
         }
-
+        $this->_logger->debug('---------------- fetchRates - END OF REQUEST----------------');
         return null;
     }
 

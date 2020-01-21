@@ -119,6 +119,10 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     private $httpTextFactory;
 
+    /**
+     * @var \Reach\Payment\Model\Currency
+     */
+    protected $reachCurrency;
 
     /**
      * Paypal constructor.
@@ -129,7 +133,8 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Framework\UrlInterface $coreUrl
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Reach\Payment\Helper\Data $reachHelper
-     * @param\Reach\Payment\Model\Reach $reachPayment
+     * @param \Reach\Payment\Model\Reach $reachPayment
+     * @param \Reach\Payment\Model\Currency $reachCurrency
      * @param \Reach\Payment\Model\Api\HttpTextFactory $httpTextFactory
      * @param \Magento\Payment\Helper\Data $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -147,6 +152,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Reach\Payment\Helper\Data $reachHelper,
         \Reach\Payment\Model\Reach $reachPayment,
+        \Reach\Payment\Model\Currency $reachCurrency,
         \Reach\Payment\Model\Api\HttpTextFactory $httpTextFactory,
         \Magento\Sales\Model\Order\Payment\Transaction $transactionModel,
         \Magento\Payment\Helper\Data $paymentData,
@@ -156,6 +162,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->reachCurrency     = $reachCurrency;
         $this->storeManager     = $storeManager;
         $this->reachHelper = $reachHelper;
         $this->reachPayment      = $reachPayment;
@@ -414,7 +421,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
         $order->getOrderCurrencyCode();
-        
+    
+        $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
+        if(!empty($rateOfferId)) {
+            $request['RateOfferId'] = $rateOfferId;
+        }
 
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item)
@@ -453,6 +464,10 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
 
         $request['PaymentMethod'] = 'PAYPAL';
         $request['Return'] = $this->getCallbackUrl($order);
+        $this->_logger->debug('---------------- _buildCheckoutRequest - START OF REQUEST----------------');
+        $this->_logger->debug($request);
+        $this->_logger->debug('---------------- _buildCheckoutRequest - END OF REQUEST----------------');
+
         return $request;
     }
 
