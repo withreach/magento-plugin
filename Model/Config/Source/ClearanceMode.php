@@ -15,7 +15,7 @@ class ClearanceMode implements \Magento\Framework\Option\ArrayInterface
         return [
             ['value' => 'COURIER', 'label' => __('Courier')],
             ['value' => 'POST', 'label' => __('Post')],
-            ['value' => 'BLANK', 'label' => __('Blank')]
+            ['value' => '', 'label' => __('No Selection')]
         ];
     }
 }
