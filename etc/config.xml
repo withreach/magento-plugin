@@ -6,8 +6,6 @@
                 <active>0</active>
                 <mode>0</mode>
                 <allowspecific>0</allowspecific>
-            </global>
-            <dhl>
                 <enable>0</enable>
                 <duty_label>Pay Tax and Duties</duty_label>
                 <pricing_strategy>MAXIMUM</pricing_strategy>
@@ -16,7 +14,7 @@
                 <clearance_mode>COURIER</clearance_mode>
                 <end_use>PERSONAL</end_use>
                 <transport_mode>AIR</transport_mode>
-            </dhl>
+            </global>
         </reach>
         <payment>
             <reach_cc>

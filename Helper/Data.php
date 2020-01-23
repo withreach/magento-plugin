@@ -44,6 +44,7 @@ class Data extends AbstractHelper
 
     const DHL_PREF_TARIFFS          = "payment/reach_payment/reach_dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
+    const DHL_PREF_TARIFFS_PATH     = "payment/reach_payment/reach_dhl/pref_tariffs";
     const DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
     const DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";
     const DHL_TRANSPORT_MODE_PATH   = "payment/reach_payment/reach_dhl/transport_mode";
@@ -109,14 +110,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get if qualifies for preferential tariffs DHL_PREF_TARIFFS
-     *
-     */
-    public function getPrefTariffs() {
-        return $this->getConfigValue(self::DHL_PREF_TARIFFS);
-    }
-
-    /**
      * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH
      *
      */
@@ -151,6 +144,14 @@ class Data extends AbstractHelper
         return $this->getConfigValue(self::DHL_PRICING_STRATEGY_PATH);
     }
 
+    /**
+     * Get Preferential Tariff setting DHL_PREF_TARIFFS_PATH
+     * 
+     * @return string
+     */
+    public function getTariffStrategy() {
+        return $this->getConfigValue(self::DHL_PREF_TARIFFS_PATH);
+    }
 
      /**
      * Check Reach Enabled

@@ -319,11 +319,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 if (!$itemData['countryOfOrigin']) {
                     $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
                 }
-                if ($this->reachHelper->getPrefTariffs() == 1 ) {
-                    $itemData['qualifiesForPreferentialTariffs'] = true;
-                } else {
-                    $itemData['qualifiesForPreferentialTariffs'] = false;
-                }
+                $itemData['qualifiesForPreferentialTariffs'] = $this->reachHelper->getTariffStrategy();
                 $request['customsDetails'][]=$itemData;
             }
             return $request;
