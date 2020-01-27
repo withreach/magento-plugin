@@ -125,7 +125,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function handleTaxApplicability($address, $apply)
     {
-
         $this->_logger->debug('In handleTaxApplicability method');
         $this->_logger->debug($this->checkoutSession->getReachDuty());
         $this->_logger->debug($address->getCountryId());
@@ -134,8 +133,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->_logger->debug($this->checkoutSession->getPrevRegion());
         $this->_logger->debug($apply);
         $quote = $this->checkoutSession->getQuote();
+
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
-           //$quote->setDuty($this->checkoutSession->getDuty());
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
            $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
            $this->response->setSuccess(true);
@@ -153,8 +152,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
            //if this amount is more than 0 even though the user did not choose to apply it on
            //computation of total landed cost/billing
            $this->_logger->debug('In handleTaxApplicability method --- apply is false');
-
         }
+
         $quote->save();//this is needed so that different aspects related to a quote are available on other pages.
         //More specifically saving quote in database is needed as apparently Magento session scopes are not application
         // wide but code area specific (?)
@@ -215,7 +214,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     public function handleCaseWhereDutyIsAlreadyRetrieved($apply, $quote, $address)
     {
         if ($apply) {//user indicated that (s)he wants to apply duty and tax during calculation of billing
-
             $quote->setReachDuty($this->checkoutSession->getReachDuty());
             $this->response->setDuty($this->checkoutSession->getReachDuty());
             $this->handleTaxApplicability($address, $apply);
@@ -226,7 +224,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote->setDhlBreakdown($this->checkoutSession->getDhlBreakdown());
             $this->_logger->debug($quote->getReachDuty());
         }
-        else {////user indicated that (s)he does not  want to apply duty and tax during calculation of billing
+        else {//user indicated that (s)he does not  want to apply duty and tax during calculation of billing
             $quote->setReachDuty(0);
             //should we reset DhlQuoteId and DhlBreakdown too so as not to break any reporting?
             //I am assuming that we do
@@ -237,7 +235,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         }
 
         $quote->save();
-
         $this->response->setDuty($this->checkoutSession->getReachDuty());
     }
 
@@ -250,7 +247,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function fillOutQuoteAndSessionUsingFeeReturned($duty, $address, $apply, $response)
     {
-
         //dealing with whether duty and tax related checkbox is selected or not
         //or whether applying duty is a must for that country or not (a setting in magento admin
         //panel)
@@ -276,11 +272,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote->setDhlBreakdown(json_encode($response['feeTotals']));
             $this->checkoutSession->setDhlBreakdown($quote->getDhlBreakdown());
             $this->checkoutSession->setApply(true); //checkbox selection /corresponding passed value
-            // implies that duty should be applied
+            //implies that duty should be applied
             $this->_logger->debug('Apply block immediately after DHL call');
-
         } else {
-            //checkbox selection or paramter passed indicates that duty should not be applied
+            //checkbox selection or parameter passed indicates that duty should not be applied
             $quote->setBaseReachDuty(0);
             $quote->setReachDuty(0);
             $this->checkoutSession->setBaseReachDuty(0);
@@ -291,8 +286,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setDhlBreakdown('');
             $this->checkoutSession->setApply(false);
             $this->_logger->debug('Do not Apply block immediately after DHL call');
-
         }
+
         $quote->save();
         $this->response->setSuccess(true);
         $this->response->setDuty($duty_adjusted);
@@ -307,6 +302,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     {
         $this->response->setSuccess(false);
         $this->response->setDuty(0);
+
         if (isset($response['message'])) { //error message from DHL duty and tax api call?
             //if yes then do we want to call the API again?
             //Assuming we do; we are resetting previous country and region value so that we can reenter the blcok to make
@@ -331,7 +327,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     public function callDHLDutyTaxApi($cartId, $address, $shippingCharge, $duty, $apply, $quote)
     {
         $accessToken = $this->getDhlAccessToken();
-
 
         //Right moment to make a DHL api call for getting 'Duty and Tax' value
         if ($accessToken && $accessToken != '') {
@@ -384,7 +379,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         // when state is irrelevant?
         //The added verbose debug logging statements could be turned off by executing
         //bin/magento setup:config:set --enable-debug-logging=false
-        //
+
+
         //this can go somewhere else more appropriate
         $special_countries = array('CA','BR');
 
@@ -392,7 +388,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote = $this->getQuoteById($cartId);
             $quote->collectTotals();
             $duty=0.00;
-
             $this->_logger->debug('Entered DT routine');
 
             if (!$this->allowDuty($address->getCountryId())
@@ -427,27 +422,20 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                         || !$address->getRegionCode()  //this check is redundant here
                     ) {
                         $this->handleCaseWithCountryAndStateSpecified($address, $apply);
-
                         return $this->response;
                     }
-
                 }
                 else {//country selection did not change and we are assuming (as we do not have extra info handy)
                     //for these countries D&T does not changes with change in state (double check with the business)
                     $quote = $this->checkoutSession->getQuote();
                     $this->response->setSuccess(true);
                     $this->_logger->debug('country selection did not change and not a special country');
-
                     $this->handleCaseWhereDutyIsAlreadyRetrieved($apply, $quote, $address);
-
                     return $this->response;
                 }
-
-
             }
             //trying to get Duty value by calling DHL Duty API
             $this->callDHLDutyTaxApi($cartId, $address, $shippingCharge, $duty, $apply, $quote);
-
         } catch (\Exception $e) {
             $this->response->setSuccess(false);
             $this->response->setErrorMessage(
@@ -514,9 +502,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     {
         if ($this->reachHelper->getDhlAllowSpecific()) {
             $allowed = $this->reachHelper->getDhlAllowedCountries();
-
             $countries = explode(',', $allowed);
             $this->_logger->debug('$allowed ::'.$allowed);
+
             if (!in_array($countryId, $countries)) {
                 return false;
             }
