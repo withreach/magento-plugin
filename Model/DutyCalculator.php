@@ -128,7 +128,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
         $this->_logger->debug('In handleTaxApplicability method');
         $this->_logger->debug($this->checkoutSession->getReachDuty());
-        #$apply = $this->checkoutSession->getApply();
         $this->_logger->debug($address->getCountryId());
         $this->_logger->debug($address->getRegionCode());
         $this->_logger->debug($this->checkoutSession->getPrevCountry());
@@ -146,8 +145,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         else {
            $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
            $this->response->setSuccess(true);
-           #as apply duty and tax(DT) is not selected duty and tax would not be used in total pricing
-           #so setting all relevant quote values to zero
+           //as apply duty and tax(DT) is not selected duty and tax would not be used in total pricing
+           //so setting all relevant quote values to zero
            //$quote->setDuty(0) ;
            $quote->setReachDuty(0) ;
            $this->response->setDuty($this->checkoutSession->getReachDuty()); //the DT checkbox and label  should still appear
@@ -228,7 +227,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->_logger->debug($quote->getReachDuty());
         }
         else {////user indicated that (s)he does not  want to apply duty and tax during calculation of billing
-            //$quote->setDuty(0) ; #$this->checkoutSession->getDuty());
             $quote->setReachDuty(0);
             //should we reset DhlQuoteId and DhlBreakdown too so as not to break any reporting?
             //I am assuming that we do
@@ -277,8 +275,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote->setDhlQuoteId($response['quoteId']);
             $quote->setDhlBreakdown(json_encode($response['feeTotals']));
             $this->checkoutSession->setDhlBreakdown($quote->getDhlBreakdown());
-            $this->checkoutSession->setApply(true); #checkbox selection /corresponding passed value
-            # implies that duty should be applied
+            $this->checkoutSession->setApply(true); //checkbox selection /corresponding passed value
+            // implies that duty should be applied
             $this->_logger->debug('Apply block immediately after DHL call');
 
         } else {
