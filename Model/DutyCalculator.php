@@ -134,24 +134,21 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->_logger->debug($apply);
         $quote = $this->checkoutSession->getQuote();
 
+        $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
+        $this->response->setSuccess(true);
+        $this->response->setDuty($this->checkoutSession->getReachDuty()); //the DT checkbox and label
+        // should still appear if this amount is more than 0 (irrespective of whether the user chose to apply it or not on
+        // computation of total landed cost/billing)
+
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
+
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
-           $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
-           $this->response->setSuccess(true);
-           $this->response->setDuty($this->checkoutSession->getRechDuty());
-           $this->_logger->debug('In handleTaxApplicability method --- apply is true');
         }
         else {
-           $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
-           $this->response->setSuccess(true);
-           //as apply duty and tax(DT) is not selected duty and tax would not be used in total pricing
+
+           //as apply duty and tax(DT) is not selected; duty and tax would not be used in total pricing
            //so setting all relevant quote values to zero
-           //$quote->setDuty(0) ;
            $quote->setReachDuty(0) ;
-           $this->response->setDuty($this->checkoutSession->getReachDuty()); //the DT checkbox and label  should still appear
-           //if this amount is more than 0 even though the user did not choose to apply it on
-           //computation of total landed cost/billing
-           $this->_logger->debug('In handleTaxApplicability method --- apply is false');
         }
 
         $quote->save();//this is needed so that different aspects related to a quote are available on other pages.
