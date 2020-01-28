@@ -139,18 +139,22 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->response->setDuty($this->checkoutSession->getReachDuty()); //the DT checkbox and label
         // should still appear if this amount is more than 0 (irrespective of whether the user chose to apply it or not on
         // computation of total landed cost/billing)
+        $isDutyOptional = $this->getIsOptional($address->getCountryId());
+        $this->_logger->debug("Value of apply ".$apply);
+        $this->_logger->debug("Value of isDutyOptional ".$isDutyOptional);
 
-        if ($apply || !$this->getIsOptional($address->getCountryId())) {
-
+        if ($apply || !$isDutyOptional) {
+           $this->_logger->debug("Duty should be applied (due to user selection or the value of the 'apply' ".
+               " parameter that is passed to this function or because duty is not optional for the chosen country ".
+               "(shipment address)");
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
         }
         else {
-
-           //as apply duty and tax(DT) is not selected; duty and tax would not be used in total pricing
-           //so setting all relevant quote values to zero
+            $this->_logger->debug("Duty should not be applied.");
+            //as apply duty and tax(DT) is not selected or it is optional; duty and tax would not be used in total
+            // pricing; so setting all relevant quote values to zero
            $quote->setReachDuty(0) ;
         }
-
         $quote->save();//this is needed so that different aspects related to a quote are available on other
         // pages/propagate to other pages (without changing existing code on those pages).
     }
@@ -172,7 +176,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote->save();
     }
 
-    /** Sets appropriate response (eventually be https response) values
+    /** Sets appropriate response (as per DutyResponseInterface) values
      * when state/province is (needed for proper duty calculation
      * but) not yet specified
      * @param float $duty
@@ -182,8 +186,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
        $quote = $this->checkoutSession->getQuote();
        $this->response->setSuccess(true);
        $this->response->setDuty($duty);
-       $this->_logger->debug('Special country where state selection is neccessary before initiating DHL API call;
-                but state is not selected anyway.');
+       $this->_logger->debug('Special country where state selection is necessary before initiating DHL API call;'.
+                'but state is not selected anyway.');
     }
 
 
