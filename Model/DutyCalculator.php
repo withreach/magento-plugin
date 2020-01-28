@@ -151,9 +151,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
            $quote->setReachDuty(0) ;
         }
 
-        $quote->save();//this is needed so that different aspects related to a quote are available on other pages.
-        //More specifically saving quote in database is needed as apparently Magento session scopes are not application
-        // wide but code area specific (?)
+        $quote->save();//this is needed so that different aspects related to a quote are available on other
+        // pages/propagate to other pages (without changing existing code on those pages).
     }
 
 
@@ -357,27 +356,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
       */
     public function getDutyandTax($cartId, $shippingCharge, $shippingMethodCode, $shippingCarrierCode, $address, $apply = false)
     {
-        //Some comments/concerns which may be relevant to the reviewer
-        //using this style https://pear.php.net/manual/en/rfc.cs-enhancements.splitlongstatements.php
-        //to split long conditions into multiline
-
-        //this code is done on limited time
-        //cleaner more concise logic is possible provided more time was available to write the code
-        //significant amount of time was passed tracking changes due to event and side effect of blocking multiple DHL
-        // api call
-        //and limited time spent on bringing a fix of average quality (under pressure)
-        //also are we supposed to enforce  80 characters line limit or such
-
-        //what is not tested: multiple cart items in same order each delivered to different places with differing duties
-        //when someone comeback after sometime in the same session
-        //did not tested as a logged in user
-        //After latest round of code reorganization did not try putting order for a country (with applicable duty)
-        //finish checkout and then in the same session put another order for the same country . Is another DHL call made
-        // when state is irrelevant?
-        //The added verbose debug logging statements could be turned off by executing
-        //bin/magento setup:config:set --enable-debug-logging=false
-
-
         //this can go somewhere else more appropriate
         $special_countries = array('CA','BR');
 
