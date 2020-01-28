@@ -171,6 +171,12 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->response->setSuccess(true);
         $this->response->setDuty($duty);
         $this->checkoutSession->setReachDuty($duty);
+        //Need the following two assignments to make sure that the country comparison based initiation or prevention of
+        //DHL call works properly.
+        //Otherwise the DHL call is prevented even when we need one (due to the fact that even though the
+        //country selection has changed that is not tracked/captured).
+        $this->checkoutSession->setPrevCountry('');
+        $this->checkoutSession->setPrevRegion('');
         $quote->setReachDuty($duty) ;
         $this->_logger->debug('In duty or shipping not allowed section');
         $quote->save();
@@ -275,7 +281,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             //implies that duty should be applied
             $this->_logger->debug('Apply block immediately after DHL call');
         } else {
-            //checkbox selection or parameter passed indicates that duty should not be applied
+            //checkbox selection or parameter passed or admin config (as relevant to the selected country of shipment)
+            //implies that the duty should not be applied
             $quote->setBaseReachDuty(0);
             $quote->setReachDuty(0);
             $this->checkoutSession->setBaseReachDuty(0);
@@ -368,6 +375,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote->collectTotals();
             $duty=0.00;
             $this->_logger->debug('Entered DT routine');
+            $this->_logger->debug('current country '.$address->getCountryId());
+            $this->_logger->debug('current region '.$address->getRegionCode());
+            $this->_logger->debug('previous country '.$this->checkoutSession->getPrevCountry());
+            $this->_logger->debug('previous region '.$this->checkoutSession->getPrevRegion());
 
             if (!$this->allowDuty($address->getCountryId())
                 || !$this->allowShipping($shippingMethodCode, $shippingCarrierCode)
