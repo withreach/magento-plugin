@@ -153,7 +153,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->_logger->debug("Duty should not be applied.");
             //as apply duty and tax(DT) is not selected or it is optional; duty and tax would not be used in total
             // pricing; so setting all relevant quote values to zero
-           $quote->setReachDuty(0) ;
+            $quote->setReachDuty(0);
         }
         $quote->save();//this is needed so that different aspects related to a quote are available on other
         // pages/propagate to other pages (without changing existing code on those pages).
@@ -305,7 +305,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      * Deals with a case when DHL API call does not return a value for duty
      * @param Magento\Framework\App\Response $response
      */
-    public function fillOutQuoteAndSessionOnError($response)
+    public function fillOutResponseAndSessionOnError($response)
     {
         $this->response->setSuccess(false);
         $this->response->setDuty(0);
@@ -357,7 +357,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $this->fillOutQuoteAndSessionUsingFeeReturned($duty, $address, $apply, $response);
 
             } else {
-                $this->fillOutQuoteAndSessionOnError($response);
+                $this->fillOutResponseAndSessionOnError($response);
 
             }
         }
@@ -368,7 +368,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     public function getDutyandTax($cartId, $shippingCharge, $shippingMethodCode, $shippingCarrierCode, $address, $apply = false)
     {
         //this can go somewhere else more appropriate
-        $special_countries = array('CA','BR');
+        $countries_require_state = array('CA','BR');
 
         try {
             $quote = $this->getQuoteById($cartId);
@@ -388,9 +388,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             }
 
             //Countries (as per DHL doc) where both country name and states are required but are not selected yet.
-            //At present those are Canada and Brazil and few others (not sure what are those)
-            //What to do about those other countries?
-            if (in_array($address->getCountryId(), $special_countries, true)
+            //At present those are Canada and Brazil
+            if (in_array($address->getCountryId(), $countries_require_state, true)
                 && !$address->getRegionCode()
             ) {
                 $this->handleStateUnspecifiedCase($duty);
@@ -407,7 +406,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
                 //if chosen country is one of the special countries where state is needed
                 //but state is either not specified
-                if (in_array($address->getCountryId(), $special_countries, true)) {
+                if (in_array($address->getCountryId(), $countries_require_state, true)) {
                     if (($this->checkoutSession->getPrevRegion() == $address->getRegionCode())
                         || !$address->getRegionCode()  //this check is redundant here
                     ) {
@@ -415,8 +414,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                         return $this->response;
                     }
                 }
-                else {//country selection did not change and we are assuming (as we do not have extra info handy)
-                    //for these countries D&T does not changes with change in state (double check with the business)
+                else {//country selection did not change and
+                    //for these countries (other than 'CA' and 'BR') D&T does not changes with change in state
+                    //(as per the requirement as of now; we double checked with the business.)
                     $quote = $this->checkoutSession->getQuote();
                     $this->response->setSuccess(true);
                     $this->_logger->debug('country selection did not change and not a special country');
