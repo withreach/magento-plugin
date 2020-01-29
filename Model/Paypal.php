@@ -399,8 +399,8 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_logger->debug(json_encode($this->reachPayment->testLocalizeCurrency()));
 
         $this->_logger->debug('---------------- isAvailable - END OF REQUEST----------------');
-       // return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
-       return $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        return ($this->reachPayment->isAvailable(self::METHOD_PAYPAL) && 
+            $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId()));
     }
 
      /**

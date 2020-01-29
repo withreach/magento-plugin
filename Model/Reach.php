@@ -47,7 +47,7 @@ class Reach
         \Reach\Payment\Model\Currency $currencyModel,
         \Reach\Payment\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
+        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
     ) {
         $this->_coresession     = $session;
         $this->currencyModel    = $currencyModel;
@@ -88,7 +88,7 @@ class Reach
             if (array_key_exists('Card', $methods) && $method == \Reach\Payment\Model\Cc::METHOD_CC) {
                 $available = true;
             }
-            if (array_key_exists('Online', $methods) && $method == 'payment/reach_paypal/active') {
+            if (array_key_exists('Online', $methods) && $method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL) {
                 if (array_key_exists('Online', $methods)) {
                     foreach ($methods['Online'] as $onmethod) {
                         if ($onmethod['Id'] == 'PAYPAL') {
