@@ -57,21 +57,41 @@ class Reach
         
     }
 
+    /**
+     * Returns payment methods for debugging.
+     *
+     * @return array
+     */
     public function testMethods(){
         $methods = $this->fetchPaymentMethods();
         return $methods;
     }
 
+    /**
+     * Returns current currency code from session for debugging.
+     *
+     * @return array
+     */
     public function testCurrencyCode() {
         $currencyCode = $this->checkoutSession->getQuote()->getQuoteCurrencyCode();
         return $currencyCode;
     }
 
+    /**
+     * Returns if the store is configured for localization.
+     *
+     * @return boolean
+     */
     public function testLocalize() {
         $localize = $this->getLocalize();
         return $localize;
     }
 
+    /**
+     * Returns configured Reach methods from current session for debugging.
+     *
+     * @return array
+     */
     public function testReachMethods() {
         return $this->checkoutSession->getReachMethods();
     }
@@ -149,10 +169,20 @@ class Reach
         return $methods;
     }
 
+    /**
+     * Test if core session is configured for localization.
+     *
+     * @return array
+     */
     public function testGetLocalize() {
         return $this->_coresession->getLocalize();
     }
 
+    /**
+     * Test if currency model is configured for localization.
+     *
+     * @return array
+     */
     public function testLocalizeCurrency() {
         $localize = $this->currencyModel->getLocalizeCurrency();
         return $localize;
