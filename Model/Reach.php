@@ -33,8 +33,6 @@ class Reach
      */
     protected $httpRestFactory;
 
-    protected $_logger;
-
     /**
      * Constructor
      *
@@ -43,7 +41,6 @@ class Reach
      * @param \Reach\Payment\Helper\Data $hlper
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
-     * @param \Magento\Payment\Model\Method\Logger $logger
      */
     public function __construct(
         \Magento\Framework\Session\SessionManagerInterface $session,
@@ -51,7 +48,6 @@ class Reach
         \Reach\Payment\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
-        \Magento\Payment\Model\Method\Logger $logger
     ) {
         $this->_coresession     = $session;
         $this->currencyModel    = $currencyModel;
