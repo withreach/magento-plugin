@@ -33,6 +33,8 @@ class Reach
      */
     protected $httpRestFactory;
 
+    protected $_logger;
+
     /**
      * Constructor
      *
@@ -41,19 +43,41 @@ class Reach
      * @param \Reach\Payment\Helper\Data $hlper
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
+     * @param \Magento\Payment\Model\Method\Logger $logger
      */
     public function __construct(
         \Magento\Framework\Session\SessionManagerInterface $session,
         \Reach\Payment\Model\Currency $currencyModel,
         \Reach\Payment\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
+        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
+        \Magento\Payment\Model\Method\Logger $logger
     ) {
         $this->_coresession     = $session;
         $this->currencyModel    = $currencyModel;
         $this->reachHelper  = $helper;
         $this->checkoutSession  = $checkoutSession;
         $this->httpRestFactory  = $httpRestFactory;
+        
+    }
+
+    public function testMethods(){
+        $methods = $this->fetchPaymentMethods();
+        return $methods;
+    }
+
+    public function testCurrencyCode() {
+        $currencyCode = $this->checkoutSession->getQuote()->getQuoteCurrencyCode();
+        return $currencyCode;
+    }
+
+    public function testLocalize() {
+        $localize = $this->getLocalize();
+        return $localize;
+    }
+
+    public function testReachMethods() {
+        return $this->checkoutSession->getReachMethods();
     }
 
     /**
@@ -68,10 +92,12 @@ class Reach
             if (array_key_exists('Card', $methods) && $method == \Reach\Payment\Model\Cc::METHOD_CC) {
                 $available = true;
             }
-            if (array_key_exists('Online', $methods) && $method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL) {
-                foreach ($methods['Online'] as $onmethod) {
-                    if ($onmethod['Id'] == 'PAYPAL') {
-                        $available = true;
+            if (array_key_exists('Online', $methods) && $method == 'payment/reach_paypal/active') {
+                if (array_key_exists('Online', $methods)) {
+                    foreach ($methods['Online'] as $onmethod) {
+                        if ($onmethod['Id'] == 'PAYPAL') {
+                            $available = true;
+                        }
                     }
                 }
             }
@@ -89,8 +115,9 @@ class Reach
         $localize = $this->getLocalize();
         $currencyCode = $this->checkoutSession->getQuote()->getQuoteCurrencyCode();
         if (!$localize || !isset($localize['country'])) {
-            return [];
+            return ['no localization'];
         }
+
         $sessionMethods=[];
         if ($this->checkoutSession->getReachMethods()!==null) {
             $sessionMethods=$this->checkoutSession->getReachMethods();
@@ -124,6 +151,15 @@ class Reach
         }
         $this->checkoutSession->setReachMethods([$localize['country'].'_'.$currencyCode=>$methods]);
         return $methods;
+    }
+
+    public function testGetLocalize() {
+        return $this->_coresession->getLocalize();
+    }
+
+    public function testLocalizeCurrency() {
+        $localize = $this->currencyModel->getLocalizeCurrency();
+        return $localize;
     }
 
     /**

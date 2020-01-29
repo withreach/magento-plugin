@@ -142,6 +142,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     public function getLocalizeCurrency()
     {
+        $this->_logger->debug('------------- Currency::getLocalizeCurrency() : START ------------------');
         $rest = $this->httpRestFactory->create();
         $url = $this->reachHelper->getApiUrl();
         $url = $url.'localize?MerchantId='.$this->reachHelper->getMerchantId();
@@ -149,10 +150,21 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         if (!$this->checkLocalIP($ip)) {
             $url = $url.'&ConsumerIpAddress='.$ip;
         }
+
+        $this->_logger->debug('url: ');
+        $this->_logger->debug(json_encode($url));
+
         $rest->setUrl($url);
         $response = $rest->executeGet();
+
+        $this->_logger->debug('response: ');
+        $this->_logger->debug(json_encode($response));
+
         $result = $response->getResponseData();
         
+        $this->_logger->debug('result: ');
+        $this->_logger->debug(json_encode($result));
+
         if (isset($result['Currency'])) {
             return [
                 'currency'=>$result['Currency'],
@@ -160,6 +172,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
                 'country'=>$result['Country']
             ];
         }
+        $this->_logger->debug('------------- Currency::getLocalizeCurrency() : END ------------------');
         return false;
     }
 
@@ -222,6 +235,15 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     protected function checkLocalIP($ip)
     {
-        return in_array($ip, ['localhost','127.0.0.1','172.19.0.1','172.25.0.7','172.25.0.1']);
+        $this->_logger->debug('------------- Currency::checkLocalIP() : START ------------------');
+        if ( ! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) )
+        {
+            // is a local ip address
+            $this->_logger->debug('Using a local IP address');
+            return true;
+        }
+        $this->_logger->debug('Using a public IP address');
+        $this->_logger->debug('------------- Currency::checkLocalIP() : END ------------------');
+        return false;
     }
 }

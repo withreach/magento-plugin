@@ -361,12 +361,46 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
+        $this->_logger->debug('---------------- isAvailable - START OF REQUEST----------------');
+        $this->_logger->debug('PayPal Enabled: ');
+        $this->_logger->debug($this->reachHelper->getReachEnabled());
         if(!$this->reachHelper->getReachEnabled())
         {
             return false;
         } 
-       $path = 'payment/'.self::METHOD_PAYPAL . '/active';                
-       return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        $path = 'payment/'.self::METHOD_PAYPAL . '/active';
+        $this->_logger->debug('Reach is Enabled!');
+
+        $this->_logger->debug('Path:');
+        $this->_logger->debug(json_encode($path));
+
+        $this->_logger->debug('Calc 1:');
+        $this->_logger->debug(json_encode($this->reachPayment->isAvailable(self::METHOD_PAYPAL)));
+
+        $this->_logger->debug('Calc 2:');
+        $this->_logger->debug(json_encode($this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId())));
+
+        $this->_logger->debug('methods:');
+        $this->_logger->debug(json_encode($this->reachPayment->testMethods()));
+
+        $this->_logger->debug('testCurrencyCode:');
+        $this->_logger->debug(json_encode($this->reachPayment->testCurrencyCode()));
+
+        $this->_logger->debug('testLocalize:');
+        $this->_logger->debug(json_encode($this->reachPayment->testLocalize()));
+
+        $this->_logger->debug('testreachmethods:');
+        $this->_logger->debug(json_encode($this->reachPayment->testreachmethods()));
+
+        $this->_logger->debug('testGetLocalize:');
+        $this->_logger->debug(json_encode($this->reachPayment->testGetLocalize()));
+
+        $this->_logger->debug('testLocalizeCurrency:');
+        $this->_logger->debug(json_encode($this->reachPayment->testLocalizeCurrency()));
+
+        $this->_logger->debug('---------------- isAvailable - END OF REQUEST----------------');
+       // return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+       return $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
     }
 
      /**
