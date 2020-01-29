@@ -109,11 +109,9 @@ class Reach
                 $available = true;
             }
             if (array_key_exists('Online', $methods) && $method == \Reach\Payment\Model\Paypal::METHOD_PAYPAL) {
-                if (array_key_exists('Online', $methods)) {
-                    foreach ($methods['Online'] as $onmethod) {
-                        if ($onmethod['Id'] == 'PAYPAL') {
-                            $available = true;
-                        }
+                foreach ($methods['Online'] as $onmethod) {
+                    if ($onmethod['Id'] == 'PAYPAL') {
+                        $available = true;
                     }
                 }
             }
