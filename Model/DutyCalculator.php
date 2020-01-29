@@ -367,6 +367,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
       */
     public function getDutyandTax($cartId, $shippingCharge, $shippingMethodCode, $shippingCarrierCode, $address, $apply = false)
     {
+        //DHL API call is not required if DHL option is not enabled from admin
+        if (!$this->reachHelper->getDhlEnabled()) {
+           return;
+        }
+
         //this can go somewhere else more appropriate
         $countries_require_state = array('CA','BR');
 
