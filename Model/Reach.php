@@ -129,7 +129,7 @@ class Reach
         $localize = $this->getLocalize();
         $currencyCode = $this->checkoutSession->getQuote()->getQuoteCurrencyCode();
         if (!$localize || !isset($localize['country'])) {
-            return ['no localization'];
+            return [];
         }
 
         $sessionMethods=[];
