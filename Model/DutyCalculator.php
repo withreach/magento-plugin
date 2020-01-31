@@ -287,6 +287,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote = $this->checkoutSession->getQuote();
        
         if ($quote->getId()) {
+            $this->_logger->debug("----------- DutyCalculator::prepareRequest  - START ---------------");
             $request=[];
                            
             $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
@@ -308,14 +309,41 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
                 $itemData=[];
                 $itemData['itemId']=(string)$item->getId();
+                $this->_logger->debug("itemId: ");
+                $this->_logger->debug(json_encode($itemData['itemId']));
+
+                $this->_logger->debug('SKU: ');
+                $this->_logger->debug(json_encode($item->getSku()));
+
+                $this->_logger->debug('Item Details: ');
+                $this->_logger->debug(
+                    json_encode($this->testProductDetails($item->getSku()))
+                );
+
                 $itemData['hsCode']=$this->getHsCode($item->getSku());
                 if (!$itemData['hsCode']) {
                     $itemData['hsCode']=$this->reachHelper->getDhlDefaultHsCode();
                 }
+
+                $this->_logger->debug("hsCode: ");
+                $this->_logger->debug(json_encode($itemData['hsCode']));
+
                 $itemData['skuNumber']=$item->getSku();
                 $itemData['itemValue']=['value'=>$item->getRowTotal()/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
+
+                $this->_logger->debug("itemValue: ");
+                $this->_logger->debug(json_encode($itemData['itemValue']));
+
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
+
+                $this->_logger->debug("itemQuantity: ");
+                $this->_logger->debug(json_encode($itemData['itemQuantity']));
+
                 $itemData['countryOfOrigin'] = $this->getCountryOfOrigin($item->getSku());
+
+                $this->_logger->debug("countryOfOrigin: ");
+                $this->_logger->debug(json_encode($itemData['countryOfOrigin']));
+
                 if (!$itemData['countryOfOrigin']) {
                     $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
                 }
@@ -326,6 +354,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 }
                 $request['customsDetails'][]=$itemData;
             }
+            $this->_logger->debug("----------- DutyCalculator::prepareRequest  - END ---------------");
             return $request;
         }
     }
@@ -357,6 +386,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         ;
         
         return $origin;
+    }
+
+    public function testProductDetails($sku) {
+        return $this->csvHsCodeFactory->create()->testProductDetails($sku);
     }
 
     /**

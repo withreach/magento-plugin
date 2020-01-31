@@ -27,16 +27,28 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->_init('reach_hs_code', 'id');
     }
 
+    public function testProductDetails($sku) {
+        $connection = $this->getConnection();
+        $select = $connection->select()->from($this->getMainTable());
+        $select->where('sku = ?', $sku);
+        $result = $connection->fetchRow($select);
+        return $result;
+    }
+
     public function getHsCode($sku)
     {
         $connection = $this->getConnection();
         $select = $connection->select()->from($this->getMainTable());
         $select->where('sku = ?', $sku);
         $result = $connection->fetchRow($select);
-        if (count($result) && isset($result['hs_code'])) {
-            return $result['hs_code'];
+
+        if ($result) {
+            if (count($result) && isset($result['hs_code'])) {
+                return $result['hs_code'];
+            }
+        } else {
+            return null;
         }
-        return null;
     }
 
     public function getCountryOfOrigin($sku)
@@ -45,9 +57,12 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $select = $connection->select()->from($this->getMainTable());
         $select->where('sku = ?', $sku);
         $result = $connection->fetchRow($select);
-        if (count($result) && isset($result['country_of_origin'])) {
-            return $result['country_of_origin'];
+        if ($result) {
+            if (count($result) && isset($result['country_of_origin'])) {
+                return $result['country_of_origin'];
+            }
+        } else {
+            return null;
         }
-        return null;
     }
 }
