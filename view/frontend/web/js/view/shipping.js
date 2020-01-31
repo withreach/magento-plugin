@@ -124,7 +124,8 @@ define([
             this.applyDuty.subscribe(function(){
                 self.applyDutyCharges()
             });
-            if( window.checkoutConfig.reach.enabled != 0)
+            //DHL is not enabled from admin - so duty calculation is not needed
+            if (window.checkoutConfig.reach.dhl_enabled != 0)
             {
                 quote.shippingMethod.subscribe(function(){            
                     self.getDutyCharges();
