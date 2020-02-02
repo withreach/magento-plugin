@@ -39,7 +39,7 @@ class CartChangedObserver implements ObserverInterface
     }
 
     /**
-     * handles 'checkout_cart_save_before' core Magento event
+     * handles 'checkout_cart_save_after' core Magento event
      * basically cleans up the system state (session not database) necessary for triggering a new DHL api call when
      * 1. there is change in the cart and
      * 2. checkout is attempted.
