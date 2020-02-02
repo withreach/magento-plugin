@@ -33,7 +33,7 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $select = $connection->select()->from($this->getMainTable());
         $select->where('sku = ?', $sku);
         $result = $connection->fetchRow($select);
-        if (count($result) && isset($result['hs_code'])) {
+        if ($result && count($result) && isset($result['hs_code'])) {
             return $result['hs_code'];
         }
         return null;
@@ -45,7 +45,7 @@ class CsvHsCode extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $select = $connection->select()->from($this->getMainTable());
         $select->where('sku = ?', $sku);
         $result = $connection->fetchRow($select);
-        if (count($result) && isset($result['country_of_origin'])) {
+        if ($result && count($result) && isset($result['country_of_origin'])) {
             return $result['country_of_origin'];
         }
         return null;
