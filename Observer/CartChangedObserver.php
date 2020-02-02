@@ -39,15 +39,17 @@ class CartChangedObserver implements ObserverInterface
     }
 
     /**
-     * Set payment fee to order
-     *
+     * handles 'checkout_cart_save_before' core Magento event
+     * basically cleans up the system state (session not database) necessary for triggering a new DHL api call when
+     * 1. there is change in the cart and
+     * 2. checkout is attempted.
      * @param EventObserver $observer
      * @return $this
      */
-    //checkout_cart_save_after
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
+            //clearing previously saved country and state information in the checkout session
             $this->_checkoutSession->setPrevCountry('');
             $this->_checkoutSession->setPrevRegion('');
         } catch (\Exception $e) {
@@ -58,22 +60,4 @@ class CartChangedObserver implements ObserverInterface
         }
         return $this;
     }
-
-
-    /**
-     * validate response
-     *
-     * @param array $response
-     * @param string $nonce
-     * @return boolean
-     */
-    /*
-    protected function validateResponse($response, $nonce)
-    {
-        $nonce = str_replace(' ', '+', $nonce);
-        $key = $this->reachHelper->getSecret();
-        $signature =  base64_encode(hash_hmac('sha256', $response, $key, true));
-        return $signature == $nonce;
-    }*/
-
 }
