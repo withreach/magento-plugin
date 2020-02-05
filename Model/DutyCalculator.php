@@ -412,7 +412,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 //if chosen country is one of the special countries where state is needed
                 //but state is either not specified
                 if (in_array($address->getCountryId(), $countries_require_state, true)) {
-                    if (($this->checkoutSession->getPrevRegion() == $address->getRegionCode())
+                    if ((($this->checkoutSession->getPrevRegion() == $address->getRegionCode())
+                        &&  $this->checkoutSession->getPrevRegion() !='')
                         || !$address->getRegionCode()  //this check is redundant here
                     ) {
                         $this->handleCaseWithCountryAndStateSpecified($address, $apply);
