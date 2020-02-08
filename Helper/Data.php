@@ -5,6 +5,7 @@ namespace Reach\Payment\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Helper Class
@@ -34,13 +35,13 @@ class Data extends AbstractHelper
 
     const CONFIG_REACH_ENABLED = 'reach/global/active';
     const CONFIG_CURRENCY_OPTION = 'reach/global/display_currency_switch';
-    const CONFIG_CURRENCY_ALLOWE_SPECIFIC = 'reach/global/allowspecific';
+    const CONFIG_CURRENCY_ALLOW_SPECIFIC = 'reach/global/allowspecific';
     const CONFIG_CURRENCY_SPECIFIC_COUNTRY = 'reach/global/specificcountry';
     const CONFIG_API_MODE = 'reach/global/mode';
     const CONFIG_MERCHANT_ID = 'reach/global/mearchant_id';
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
-    const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
+    const CONFIG_CC_OPEN_CONCTRACT = 'payment/reach_cc/allow_open_contract';
 
     const DHL_PREF_TARIFFS          = "reach/dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "reach/dhl/pricing_strategy";
@@ -56,16 +57,33 @@ class Data extends AbstractHelper
 
     protected $currencyOption;
 
+
     /**
      * @param Context $context
+     * @param EncryptorInterface $enc
+     * //@param ScopeConfigInterface $config
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\Encryption\EncryptorInterface $enc
+        \Magento\Framework\Encryption\EncryptorInterface $enc,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->_enc = $enc;
+        $this->config = $scopeConfig;
         parent::__construct($context);
+
     }
+
+    /**
+     * @param string $path
+     * @return array
+     * <FIXME>
+     * Need investigation: how to effectively know the correct scope code and storeID  properly.
+     * wondering is it possible that one scope type has multiple scope codes?
+     * Thinking about looking at the dev test fixture examples that came with Magento
+     * apparently.
+     */
+
 
     /**
      * Get Reach Stash API URL
@@ -84,28 +102,36 @@ class Data extends AbstractHelper
     /**
      * getConfigValue
      * gets config Value for frontend
-     * @param  string $field Field id in system.xml
+     * @param  string $path in config.xml
      * @param  int $storeId StoreID can be null
      * @return string|bool
      */
-    public function getConfigValue($field, $storeId = null)
+    public function getConfigValue($path, $storeID = null, $scopeID = null)
     {
-        return $this->scopeConfig->getValue(
-            $field,
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+        $valueInStore = $this->config->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (isset($valueInStore)) {
+            return  $valueInStore;
+        }
+        $valueInWebsite = $this->config->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
+        if (isset($valueInWebsite)) {
+            return  $valueInWebsite;
+        }
+        $valueInDefault = $this->config->getValue($path,  \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
+        if (isset($valueInDefault)) {
+            return $valueInDefault;
+        }
     }
+
 
     /**
      * getReachConfig
      * @param  string $code
-     * @param  int $storeId
+
      * @return string|bool
      */
-    public function getReachConfig($code, $storeId = null)
+    public function getReachConfig($code)
     {
-        return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code, $storeId);
+        return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code);
     }
 
     /**
@@ -189,6 +215,9 @@ class Data extends AbstractHelper
      *
      * @return boolean
      */
+    //<FIXME> I see spelling mistake
+    //Also where is the self::CONFIG_DISPLAY_BADGE constant even defined?
+
     public function getDisaplyBade()
     {
         return $this->getConfigValue(self::CONFIG_DISPLAY_BADGE);
@@ -228,7 +257,7 @@ class Data extends AbstractHelper
      */
     public function allowCurrencySpeicifcCountry()
     {
-        return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOWE_SPECIFIC);
+        return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC);
     }
 
     /**
@@ -248,7 +277,7 @@ class Data extends AbstractHelper
      */
     public function getAllowOpenContract()
     {
-        return $this->getConfigValue(self::CONFIG_CC_OPEN_ONCTRACT);
+        return $this->getConfigValue(self::CONFIG_CC_OPEN_CONCTRACT);
     }
 
     /**
@@ -362,7 +391,8 @@ class Data extends AbstractHelper
      */
     public function getDhlApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)) {
+        if ($this->getConfigValue(self::CONFIG_API_MODE)
+            == self::SANDBOX_MODE) {
             return self::DHL_SANDBOX_API_URL;
         } else {
             return self::DHL_API_URL;
