@@ -116,7 +116,8 @@ class Data extends AbstractHelper
         if (isset($valueInWebsite)) {
             return  $valueInWebsite;
         }
-        $valueInDefault = $this->config->getValue($path,  \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
+        $valueInDefault = $this->config->getValue($path,
+            \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
         if (isset($valueInDefault)) {
             return $valueInDefault;
         }
