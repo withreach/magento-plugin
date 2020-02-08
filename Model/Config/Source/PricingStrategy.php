@@ -13,8 +13,8 @@ class PricingStrategy implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 'MINIMUM', 'label' => __('MINIMUM')],
             ['value' => 'MAXIMUM', 'label' => __('MAXIMUM')],
+            ['value' => 'MINIMUM', 'label' => __('MINIMUM')],
             ['value' => 'AVERAGE', 'label' => __('AVERAGE')],
             ['value' => 'EXACT',   'label' => __('EXACT')],
         ];

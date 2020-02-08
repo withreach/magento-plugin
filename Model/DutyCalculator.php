@@ -441,7 +441,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
         return $this->response;
     }
-    
+
     /**
      * Get repository
      *
@@ -532,10 +532,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected function prepareRequest($freightCharge, $shippingAddress)
     {
         $quote = $this->checkoutSession->getQuote();
-       
+
         if ($quote->getId()) {
             $request=[];
-                           
             $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
             $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
             $request['pricingStrategy']=$this->reachHelper->getPricingStrategy();
@@ -573,6 +572,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 }
                 $request['customsDetails'][]=$itemData;
             }
+
+            $this->_logger->debug(json_encode($request));
             return $request;
         }
     }
@@ -602,7 +603,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->storeManager->getStore()->getId()
         );
         ;
-        
+
         return $origin;
     }
 
@@ -622,7 +623,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     }
 
     /**
-     * Get SKU specific Country of Origin 
+     * Get SKU specific Country of Origin
      *
      * @param string $sku
      * @return string

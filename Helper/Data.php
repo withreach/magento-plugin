@@ -19,8 +19,8 @@ class Data extends AbstractHelper
 
     const DHL_API_URL = 'https://api.dhlecommerce.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
-    const DHL_ENABLE = 'payment/reach_payment/reach_dhl/enable';
-    const DHL_DUTY_LABEL = 'payment/reach_payment/reach_dhl/duty_label';
+    const DHL_ENABLE = 'reach/dhl/enable';
+    const DHL_DUTY_LABEL = 'reach/dhl/duty_label';
     const DHL_DUTY_ALLOW_SPECIFIC = 'reach/dhl/allowspecific';
     const DHL_DUTY_ALLOW_SPECIFIC_COUNTRY = 'reach/dhl/specificcountry';
     const DHL_DUTY_OPTIONAL_SPECIFIC = 'reach/dhl/optional_allowspecific';
@@ -42,11 +42,11 @@ class Data extends AbstractHelper
 
     const CONFIG_CC_OPEN_ONCTRACT = 'payment/reach_cc/allow_open_contract';
 
-    const DHL_PREF_TARIFFS          = "payment/reach_payment/reach_dhl/pref_tariffs";
-    const DHL_PRICING_STRATEGY_PATH = "payment/reach_payment/reach_dhl/pricing_strategy";
-    const DHL_CLEARANCE_MODE_PATH   = "payment/reach_payment/reach_dhl/clearance_mode";
-    const DHL_END_USE_PATH          = "payment/reach_payment/reach_dhl/end_use";
-    const DHL_TRANSPORT_MODE_PATH   = "payment/reach_payment/reach_dhl/transport_mode";
+    const DHL_PREF_TARIFFS          = "reach/dhl/pref_tariffs";
+    const DHL_PRICING_STRATEGY_PATH = "reach/dhl/pricing_strategy";
+    const DHL_CLEARANCE_MODE_PATH   = "reach/dhl/clearance_mode";
+    const DHL_END_USE_PATH          = "reach/dhl/end_use";
+    const DHL_TRANSPORT_MODE_PATH   = "reach/dhl/transport_mode";
     const SANDBOX_MODE = 1;
 
     /**
@@ -109,7 +109,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get if qualifies for preferential tariffs DHL_PREF_TARIFFS
+     * Reading whether item/product qualifies for preferential tariffs
      *
      */
     public function getPrefTariffs() {
@@ -159,8 +159,8 @@ class Data extends AbstractHelper
     public function getReachEnabled()
     {
         return $this->getConfigValue(self::CONFIG_REACH_ENABLED);
-    }    
-    
+    }
+
     /**
      * getCoreSession
      * @return object
@@ -172,7 +172,7 @@ class Data extends AbstractHelper
         return $core_session;
     }
 
-    
+
     /**
      * getCheckoutSession
      * @return object
@@ -429,7 +429,7 @@ class Data extends AbstractHelper
     {
         return $this->getConfigValue(self::DHL_DUTY_LABEL);
     }
-    
+
     /**
      * Get DHL allowed specific
      *
