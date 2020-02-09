@@ -100,7 +100,8 @@ class Data extends AbstractHelper
     }
 
     /**
-     * getConfigValue
+     * Get configuration value from highest priority scope (that is not undefined).
+     * If all else fails then returns configured value from the default scope.
      * gets config Value for frontend
      * @param  string $path in config.xml
      * @param  int $storeId StoreID can be null
@@ -118,9 +119,10 @@ class Data extends AbstractHelper
         }
         $valueInDefault = $this->config->getValue($path,
             \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
-        if (isset($valueInDefault)) {
-            return $valueInDefault;
-        }
+
+        return $valueInDefault; //At this point other higher priority scopes are undefined; if it is undefined too
+                                // then it would be treated as false
+
     }
 
 
