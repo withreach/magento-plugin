@@ -26,15 +26,15 @@ class Data extends AbstractHelper
     const DHL_DUTY_ALLOW_SPECIFIC_COUNTRY = 'reach/dhl/specificcountry';
     const DHL_DUTY_OPTIONAL_SPECIFIC = 'reach/dhl/optional_allowspecific';
     const DHL_DUTY_OPTIONAL_SPECIFIC_COUNTRY = 'reach/dhl/optional_specificcountry';
-    //would be needed for MAG-90 as well
-    const DHL_DUTY_ALLOW_SHIPPING = "payment/reach_payment/reach_dhl/applicable_shipping";
 
-    //***** xpath from system.xml as default does not exists *****/
-    const DHL_API_KEY = "payment/reach_payment/reach_dhl/dhl_key";
-    const DHL_API_SECRET = 'payment/reach_payment/api_secret';
-    const DHL_ITEM_SELLER = 'payment/reach_payment/reach_dhl/dhl_item_seller';
-    const DHL_PICKUP_ACCOUNT = "payment/reach_payment/reach_dhl/dhl_pickup_account";
-    const DHL_DEFAULT_HS_CODE = "payment/reach_payment/reach_dhl/default_hs_code";
+
+    //DHL_DUTY_ALLOW_SHIPPING would be needed for MAG-90 as well
+    const DHL_DUTY_ALLOW_SHIPPING = "reach/dhl/applicable_shipping";
+    const DHL_API_KEY = "reach/dhl/key";
+    const DHL_API_SECRET = "reach/dhl/api_secret";
+    const DHL_ITEM_SELLER = "reach/dhl/item_seller";
+    const DHL_PICKUP_ACCOUNT =  "reach/dhl/pickup_account";
+    const DHL_DEFAULT_HS_CODE =  "reach/dhl/default_hs_code";
 
     const CONFIG_REACH_ENABLED = 'reach/global/active';
     const CONFIG_CURRENCY_OPTION = 'reach/global/display_currency_switch';
@@ -44,8 +44,8 @@ class Data extends AbstractHelper
     const CONFIG_MERCHANT_ID = 'reach/global/mearchant_id';
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
-    //***** xpath from system.xml as default does not exists *****/
-    const CONFIG_CC_OPEN_CONCTRACT = 'payment/reach_payment/reach_cc/allow_open_contract';
+
+    const CONFIG_CC_OPEN_CONCTRACT = 'payment/reach_cc/allow_open_contract';
 
     const DHL_PREF_TARIFFS          = "reach/dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "reach/dhl/pricing_strategy";
@@ -53,7 +53,9 @@ class Data extends AbstractHelper
     const DHL_END_USE_PATH          = "reach/dhl/end_use";
     const DHL_TRANSPORT_MODE_PATH   = "reach/dhl/transport_mode";
     const SANDBOX_MODE = 1;
-
+    //No getter for this two yet
+    const DHL_IMPORT_CSV_HS_CODE_PATH ="reach/dhl/import_csv_hs_code";
+    const DHL_EXPORT_CSV_HS_CODE_PATH ="reach/dhl/export_csv_hs_code";
     /**
      * Constant for payment
      */
@@ -121,8 +123,7 @@ class Data extends AbstractHelper
         if (isset($valueInWebsite)) {
             return  $valueInWebsite;
         }
-        $valueInDefault = $this->config->getValue($path,
-            \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
+        $valueInDefault = $this->config->getValue($path,\Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
 
         return $valueInDefault; //At this point other higher priority scopes are undefined; if it is undefined too
                                 // then it would be treated as false
