@@ -125,14 +125,14 @@
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/pickup_account</config_path>
+                        <!-- No config path as it has no default -->
                     </field>
                     <field id="dhl_item_seller" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>Item Seller</label>
                         <depends>
                             <field id="active">1</field>
                         </depends>
-                        <config_path>reach/dhl/item_seller</config_path>
+                        <!-- No config path as it has no default -->
                     </field>
                     <field id="pref_tariffs" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
                         <label>Qualifies for Preferential Tariffs</label>
@@ -218,7 +218,7 @@
                     <field id="allow_open_contract" showInDefault="1" showInWebsite="1" sortOrder="5" translate="label" type="select">
                         <label>Enable Open Contract</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/reach_cc/allow_open_contract</config_path>
+                        <!-- default does not exists -->
                     </field>
                     <field id="payment_action" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Payment Action</label>
