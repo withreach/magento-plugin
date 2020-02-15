@@ -153,19 +153,21 @@ class Data extends AbstractHelper
     /**
      * Reading state/province of shipping origin
      * @param  string $xmlPathOriginRegionID
+     * @param int $storeID
      * @return string|null
      */
-    public function getShippingOriginState($xmlPathOriginRegionID) {
-        return $this->getConfigValue($xmlPathOriginRegionID);
+    public function getShippingOriginState($xmlPathOriginRegionID, $storeID) {
+        return $this->getConfigValue($xmlPathOriginRegionID, $storeID);
     }
 
     /**
      * Reading country of shipping origin
      * @param  string $xmlPathOriginCountryID
+     * @param int $storeID
      * @return string|null
      */
-    public function getShippingOriginCountry($xmlPathOriginCountryID) {
-        return $this->getConfigValue($xmlPathOriginCountryID);
+    public function getShippingOriginCountry($xmlPathOriginCountryID, $storeID) {
+        return $this->getConfigValue($xmlPathOriginCountryID, $storeID);
     }
 
 

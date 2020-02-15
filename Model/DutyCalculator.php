@@ -586,23 +586,17 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected function getShippingOrigin()
     {
         $origin = [];
-        $region = $this->_scopeConfig->getValue(
-            self::XML_PATH_ORIGIN_REGION_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId()
-        );
 
+        $region = $this->reachHelper->getShippingOriginState(self::XML_PATH_ORIGIN_REGION_ID,
+            $this->storeManager->getStore()->getId());
         if (is_numeric($region)) {
             $this->regionModel->load($region);
             $region = $this->regionModel->getCode();
         }
         $origin['state']=$region;
-        $origin['country']=$this->_scopeConfig->getValue(
-            self::XML_PATH_ORIGIN_COUNTRY_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $this->storeManager->getStore()->getId()
-        );
-        ;
+
+        $origin['country']=$this->reachHelper->getShippingOriginCountry(
+            self::XML_PATH_ORIGIN_COUNTRY_ID, $this->storeManager->getStore()->getId());
 
         return $origin;
     }
@@ -656,11 +650,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         // $this->_logger->debug('----------------GET QUOTE FROM DHL - START OF REQUEST----------------');
         // $this->_logger->debug(json_encode($url));
         // $this->_logger->debug(json_encode($accessToken));
-        // $this->_logger->debug(json_encode($request));
+        $this->_logger->debug(json_encode($request));
         // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
-        // $this->_logger->debug(json_encode($result));
+        $this->_logger->debug(json_encode($result));
         // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         return $result;
     }
@@ -682,14 +676,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest->setUrl($url);
         $response = $rest->executeGet();
         $result = $response->getResponseData();
-
-        // $this->_logger->debug('----------------GET DHL ACCESS TOKEN - START OF REQUEST----------------');
-        // $this->_logger->debug(json_encode($clientId));
-        // $this->_logger->debug(json_encode($clientSecret));
-        // $this->_logger->debug(json_encode($url));
-        // $this->_logger->debug(json_encode($response));
-        // $this->_logger->debug(json_encode($result));
-        // $this->_logger->debug('================GET DHL ACCESS TOKEN - END OF REQUEST================');
 
         if (isset($result['access_token'])) {
             return $result['access_token'];
