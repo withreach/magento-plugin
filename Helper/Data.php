@@ -151,6 +151,25 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Reading state/province of shipping origin
+     * @param  string $xmlPathOriginRegionID
+     * @return string|null
+     */
+    public function getShippingOriginState($xmlPathOriginRegionID) {
+        return $this->getConfigValue($xmlPathOriginRegionID);
+    }
+
+    /**
+     * Reading country of shipping origin
+     * @param  string $xmlPathOriginCountryID
+     * @return string|null
+     */
+    public function getShippingOriginCountry($xmlPathOriginCountryID) {
+        return $this->getConfigValue($xmlPathOriginCountryID);
+    }
+
+
+    /**
      * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH
      *
      */
