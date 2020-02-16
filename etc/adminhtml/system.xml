@@ -49,7 +49,6 @@
                     <depends>
                         <field id="display_currency_switch" separator=",">customer,reach</field>
                     </depends>
-                    <!-- No config path as it has no default -->
                 </field>
                 <field id="specificcountry" translate="label" type="multiselect" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Currency For Specific Countries</label>
