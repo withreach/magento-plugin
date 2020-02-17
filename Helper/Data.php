@@ -113,9 +113,9 @@ class Data extends AbstractHelper
      * @param  int $storeId StoreID can be null
      * @return string|bool
      */
-    public function getConfigValue($path, $storeID = null, $scopeID = null)
+    public function getConfigValue($path, $storeID = null)
     {
-        $valueInStore = $this->config->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $valueInStore = $this->config->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeID);
         if (isset($valueInStore)) {
             return  $valueInStore;
         }
@@ -150,6 +150,7 @@ class Data extends AbstractHelper
         return $this->getConfigValue(self::DHL_PREF_TARIFFS);
     }
 
+    //The following two methods can be combined
     /**
      * Reading state/province of shipping origin
      * @param  string $xmlPathOriginRegionID
@@ -170,6 +171,27 @@ class Data extends AbstractHelper
         return $this->getConfigValue($xmlPathOriginCountryID, $storeID);
     }
 
+    //The following two methods can be combined
+    /**
+     * Reading Credit Card active or not
+     * @param  string $xmlPathCreditCardActive
+     * @param int $storeID
+     * @return int|bool
+     */
+    public function getCreditCardActive($xmlPathCreditCardActive, $storeID) {
+        return $this->getConfigValue($xmlPathCreditCardActive, $storeID);
+
+    }
+
+    /**
+     * Reading PayPal active or not
+     * @param  string $xmlPathPayPalActive
+     * @param int $storeID
+     * @return int/bool
+     */
+    public function getPayPalActive($xmlPathPayPalActive,  $storeID) {
+        return $this->getConfigValue($xmlPathPayPalActive, $storeID);
+    }
 
     /**
      * Get Transport Mode for DHL DHL_TRANSPORT_MODE_PATH

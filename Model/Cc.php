@@ -217,6 +217,10 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $this->errorHandler = $errorHandler;
     }
 
+    /** Why do we need both isAvailable and isActive
+     * methods? Should not the first one be enough?
+     **/
+
     /**
      * Check whether payment method can be used
      *
@@ -231,7 +235,8 @@ class Cc extends \Magento\Payment\Model\Method\Cc
             return false;
         } 
         $path = 'payment/'.self::METHOD_CC . '/active';
-        return $this->reachPayment->isAvailable(self::METHOD_CC) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+        $isCcActive = $this->reachHelper->getCreditCardActive($path, $this->storeManager->getStore()->getId());
+        return $this->reachPayment->isAvailable(self::METHOD_CC) && $isCcActive;
     }
 
     /**
@@ -243,7 +248,8 @@ class Cc extends \Magento\Payment\Model\Method\Cc
     public function isActive($storeId = null)
     {
         $path = 'payment/' . self::METHOD_CC . '/active';
-        return (bool)(int) $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $storeId);
+        $isCcActive = $this->reachHelper->getCreditCardActive($path, $storeId);
+        return (bool)(int) $isCcActive;
     }
     
 
