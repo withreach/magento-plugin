@@ -6,6 +6,9 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
+
+
 
 /**
  * Helper Class
@@ -62,20 +65,26 @@ class Data extends AbstractHelper
     const XML_PATH_REACH = 'payment/';
 
     protected $currencyOption;
-
+    protected $_enc;
+    protected $config;
+    protected $storeManager;
 
     /**
      * @param Context $context
      * @param EncryptorInterface $enc
-     * //@param ScopeConfigInterface $config
+     * @param ScopeConfigInterface $config
+     * @param StoreManagerInterface $storeManager
      */
+
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Encryption\EncryptorInterface $enc,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->_enc = $enc;
         $this->config = $scopeConfig;
+        $this->storeManager = $storeManager;
         parent::__construct($context);
 
     }
@@ -139,7 +148,7 @@ class Data extends AbstractHelper
      */
     public function getReachConfig($code)
     {
-        return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code);
+        return $this->getConfigValue(self::XML_PATH_REACH .'reach_gointerpay/'. $code, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -147,7 +156,8 @@ class Data extends AbstractHelper
      *
      */
     public function getPrefTariffs() {
-        return $this->getConfigValue(self::DHL_PREF_TARIFFS);
+
+        return $this->getConfigValue(self::DHL_PREF_TARIFFS, $this->storeManager->getStore()->getId());
     }
 
     //The following two methods can be combined
@@ -198,7 +208,7 @@ class Data extends AbstractHelper
      *
      */
     public function getTransportMode() {
-        return $this->getConfigValue(self::DHL_TRANSPORT_MODE_PATH);
+        return $this->getConfigValue(self::DHL_TRANSPORT_MODE_PATH, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -207,7 +217,7 @@ class Data extends AbstractHelper
      * @return string
      */
     public function getEndUse() {
-        return $this->getConfigValue(self::DHL_END_USE_PATH);
+        return $this->getConfigValue(self::DHL_END_USE_PATH, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -216,7 +226,7 @@ class Data extends AbstractHelper
      * @return string
      */
     public function getClearanceMode() {
-        return $this->getConfigValue(self::DHL_CLEARANCE_MODE_PATH);
+        return $this->getConfigValue(self::DHL_CLEARANCE_MODE_PATH, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -225,7 +235,7 @@ class Data extends AbstractHelper
      * @return string
      */
     public function getPricingStrategy() {
-        return $this->getConfigValue(self::DHL_PRICING_STRATEGY_PATH);
+        return $this->getConfigValue(self::DHL_PRICING_STRATEGY_PATH, $this->storeManager->getStore()->getId());
     }
 
 
@@ -235,7 +245,7 @@ class Data extends AbstractHelper
      */
     public function getReachEnabled()
     {
-        return $this->getConfigValue(self::CONFIG_REACH_ENABLED);
+        return $this->getConfigValue(self::CONFIG_REACH_ENABLED, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -271,7 +281,7 @@ class Data extends AbstractHelper
 
     public function getDisaplyBade()
     {
-        return $this->getConfigValue(self::CONFIG_DISPLAY_BADGE);
+        return $this->getConfigValue(self::CONFIG_DISPLAY_BADGE, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -286,7 +296,7 @@ class Data extends AbstractHelper
             return false;
         }
         if ($this->currencyOption === null) {
-            $this->currencyOption = $this->getConfigValue(self::CONFIG_CURRENCY_OPTION);
+            $this->currencyOption = $this->getConfigValue(self::CONFIG_CURRENCY_OPTION, $this->storeManager->getStore()->getId());
         }
         return in_array($this->currencyOption, ['customer','reach']);
     }
@@ -308,7 +318,7 @@ class Data extends AbstractHelper
      */
     public function allowCurrencySpeicifcCountry()
     {
-        return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC);
+        return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -318,7 +328,7 @@ class Data extends AbstractHelper
      */
     public function allowedCurrencyForCountries()
     {
-        return $this->getConfigValue(self::CONFIG_CURRENCY_SPECIFIC_COUNTRY);
+        return $this->getConfigValue(self::CONFIG_CURRENCY_SPECIFIC_COUNTRY, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -328,7 +338,7 @@ class Data extends AbstractHelper
      */
     public function getAllowOpenContract()
     {
-        return $this->getConfigValue(self::CONFIG_CC_OPEN_CONCTRACT);
+        return $this->getConfigValue(self::CONFIG_CC_OPEN_CONCTRACT, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -338,7 +348,7 @@ class Data extends AbstractHelper
      */
     public function getApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE) == self::SANDBOX_MODE) {
+        if ($this->getConfigValue(self::CONFIG_API_MODE, $this->storeManager->getStore()->getId()) == self::SANDBOX_MODE) {
             return self::SANDBOX_API_URL;
         } else {
             return self::API_URL;
@@ -352,7 +362,7 @@ class Data extends AbstractHelper
      */
     public function getMerchantId()
     {
-        return $this->getConfigValue(self::CONFIG_MERCHANT_ID);
+        return $this->getConfigValue(self::CONFIG_MERCHANT_ID, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -362,7 +372,7 @@ class Data extends AbstractHelper
      */
     public function getSecret()
     {
-        return $this->_enc->decrypt($this->getConfigValue(self::CONFIG_API_SECRET));
+        return $this->_enc->decrypt($this->getConfigValue(self::CONFIG_API_SECRET, $this->storeManager->getStore()->getId()));
     }
 
     /**
@@ -432,7 +442,7 @@ class Data extends AbstractHelper
      */
     public function getDhlEnabled()
     {
-        return $this->getConfigValue(self::DHL_ENABLE);
+        return $this->getConfigValue(self::DHL_ENABLE, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -442,7 +452,7 @@ class Data extends AbstractHelper
      */
     public function getDhlApiUrl()
     {
-        if ($this->getConfigValue(self::CONFIG_API_MODE)
+        if ($this->getConfigValue(self::CONFIG_API_MODE, $this->storeManager->getStore()->getId())
             == self::SANDBOX_MODE) {
             return self::DHL_SANDBOX_API_URL;
         } else {
@@ -457,7 +467,7 @@ class Data extends AbstractHelper
      */
     public function getDhlApiKey()
     {
-        return $this->getConfigValue(self::DHL_API_KEY);
+        return $this->getConfigValue(self::DHL_API_KEY, $this->storeManager->getStore()->getId());
     }
 
 
@@ -468,7 +478,7 @@ class Data extends AbstractHelper
      */
     public function getDhlApiSecret()
     {
-        return $this->_enc->decrypt($this->getConfigValue(self::DHL_API_SECRET));
+        return $this->_enc->decrypt($this->getConfigValue(self::DHL_API_SECRET, $this->storeManager->getStore()->getId()));
     }
 
     /**
@@ -478,7 +488,7 @@ class Data extends AbstractHelper
      */
     public function getDhlPickupAccount()
     {
-        return $this->getConfigValue(self::DHL_PICKUP_ACCOUNT);
+        return $this->getConfigValue(self::DHL_PICKUP_ACCOUNT, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -488,7 +498,7 @@ class Data extends AbstractHelper
      */
     public function getDhlItemSeller()
     {
-        return $this->getConfigValue(self::DHL_ITEM_SELLER);
+        return $this->getConfigValue(self::DHL_ITEM_SELLER, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -498,7 +508,7 @@ class Data extends AbstractHelper
      */
     public function getDhlDefaultHsCode()
     {
-        return $this->getConfigValue(self::DHL_DEFAULT_HS_CODE);
+        return $this->getConfigValue(self::DHL_DEFAULT_HS_CODE, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -508,7 +518,7 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyLabel()
     {
-        return $this->getConfigValue(self::DHL_DUTY_LABEL);
+        return $this->getConfigValue(self::DHL_DUTY_LABEL, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -518,7 +528,7 @@ class Data extends AbstractHelper
      */
     public function getDhlAllowSpecific()
     {
-        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SPECIFIC);
+        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SPECIFIC, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -528,7 +538,7 @@ class Data extends AbstractHelper
      */
     public function getDhlAllowedCountries()
     {
-        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SPECIFIC_COUNTRY);
+        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SPECIFIC_COUNTRY, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -538,7 +548,7 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyOptionalSpecific()
     {
-        return $this->getConfigValue(self::DHL_DUTY_OPTIONAL_SPECIFIC);
+        return $this->getConfigValue(self::DHL_DUTY_OPTIONAL_SPECIFIC, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -548,7 +558,7 @@ class Data extends AbstractHelper
      */
     public function getDhlDutyOptionalCountries()
     {
-        return $this->getConfigValue(self::DHL_DUTY_OPTIONAL_SPECIFIC_COUNTRY);
+        return $this->getConfigValue(self::DHL_DUTY_OPTIONAL_SPECIFIC_COUNTRY, $this->storeManager->getStore()->getId());
     }
 
     /**
@@ -558,6 +568,6 @@ class Data extends AbstractHelper
      */
     public function getDhlApplicableShippings()
     {
-        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SHIPPING);
+        return $this->getConfigValue(self::DHL_DUTY_ALLOW_SHIPPING, $this->storeManager->getStore()->getId());
     }
 }
