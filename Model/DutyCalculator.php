@@ -646,16 +646,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest = $this->httpRestFactory->create();
         $rest->setBearerAuth($accessToken);
         $rest->setUrl($url);
-        // Uncomment following lines to see request params:
-        // $this->_logger->debug('----------------GET QUOTE FROM DHL - START OF REQUEST----------------');
-        // $this->_logger->debug(json_encode($url));
-        // $this->_logger->debug(json_encode($accessToken));
         $this->_logger->debug(json_encode($request));
-        // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
         $this->_logger->debug(json_encode($result));
-        // $this->_logger->debug('================GET QUOTE FROM DHL - END OF REQUEST================');
         return $result;
     }
 
