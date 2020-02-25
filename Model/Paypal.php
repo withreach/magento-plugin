@@ -365,8 +365,9 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         {
             return false;
         } 
-       $path = 'payment/'.self::METHOD_PAYPAL . '/active';                
-       return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $this->_scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $this->storeManager->getStore()->getId());
+       $path = 'payment/'.self::METHOD_PAYPAL . '/active';
+       $isPayPalActive = $this->getPayPalActive($path, $this->storeManager->getStore()->getId());
+       return $this->reachPayment->isAvailable(self::METHOD_PAYPAL) && $isPayPalActive;
     }
 
      /**

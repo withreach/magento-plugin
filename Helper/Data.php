@@ -46,8 +46,8 @@ class Data extends AbstractHelper
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
 
-    const CONFIG_CC_OPEN_CONTRACT = 'payment/reach_cc/allow_open_contract';
 
+    const CONFIG_CC_OPEN_CONTRACT = 'payment/reach_cc/allow_open_contract';
     const DHL_PREF_TARIFFS          = "reach/dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "reach/dhl/pricing_strategy";
     const DHL_CLEARANCE_MODE_PATH   = "reach/dhl/clearance_mode";
@@ -73,6 +73,7 @@ class Data extends AbstractHelper
      * @param ScopeConfigInterface $config
      * @param StoreManagerInterface $storeManager
      */
+
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Encryption\EncryptorInterface $enc,
@@ -176,6 +177,28 @@ class Data extends AbstractHelper
      */
     public function getShippingOriginCountry($xmlPathOriginCountryID, $storeID) {
         return $this->getConfigValue($xmlPathOriginCountryID, $storeID);
+    }
+
+    //The following two methods can be combined
+    /**
+     * Reading Credit Card active or not
+     * @param  string $xmlPathCreditCardActive
+     * @param int $storeID
+     * @return int|bool
+     */
+    public function getCreditCardActive($xmlPathCreditCardActive, $storeID) {
+        return $this->getConfigValue($xmlPathCreditCardActive, $storeID);
+
+    }
+
+    /**
+     * Reading PayPal active or not
+     * @param  string $xmlPathPayPalActive
+     * @param int $storeID
+     * @return int/bool
+     */
+    public function getPayPalActive($xmlPathPayPalActive,  $storeID) {
+        return $this->getConfigValue($xmlPathPayPalActive, $storeID);
     }
 
     /**
