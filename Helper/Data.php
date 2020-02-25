@@ -46,7 +46,7 @@ class Data extends AbstractHelper
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
 
-    const CONFIG_CC_OPEN_CONCTRACT = 'payment/reach_cc/allow_open_contract';
+    const CONFIG_CC_OPEN_CONTRACT = 'payment/reach_cc/allow_open_contract';
 
     const DHL_PREF_TARIFFS          = "reach/dhl/pref_tariffs";
     const DHL_PRICING_STRATEGY_PATH = "reach/dhl/pricing_strategy";
@@ -287,10 +287,11 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get currencly allowed for specific countries config
-     *
+     * Get currently allowed for specific countries config
      * @return boolean
      */
+    // <FIXME> spelling should be corrected in the function name and also where it is called
+
     public function allowCurrencySpeicifcCountry()
     {
         return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC, $this->storeManager->getStore()->getId());
@@ -313,7 +314,7 @@ class Data extends AbstractHelper
      */
     public function getAllowOpenContract()
     {
-        return $this->getConfigValue(self::CONFIG_CC_OPEN_CONCTRACT, $this->storeManager->getStore()->getId());
+        return $this->getConfigValue(self::CONFIG_CC_OPEN_CONTRACT, $this->storeManager->getStore()->getId());
     }
 
     /**
