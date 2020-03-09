@@ -421,7 +421,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['MerchantId'] = $this->reachHelper->getMerchantId();
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
-        $order->getOrderCurrencyCode();
+        $order->getOrderCurrencyCode(); //What it is for?
     
         $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
         if(!empty($rateOfferId)) {
@@ -431,6 +431,9 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item)
         {
+            if ($item->getProductType() == "simple" && ($item->getParentItem())) {
+                continue;
+            }
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
             $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());

@@ -498,6 +498,9 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         }
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
+            if ($item->getProductType() == "simple" && ($item->getParentItem())) {
+                continue;
+            }
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
             $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
