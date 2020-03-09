@@ -22,8 +22,9 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     /**
      *  @var \Psr\Log\LoggerInterface
      */
-    protected $_logger; 
+    protected $_logger;
 
+    const PRECISION = 2;
     /**
      * Constructor
      *
@@ -212,16 +213,37 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Check IP is local ip
-     *
-     * When running in Docker, the IP addresses assigned by the Docker service
-     * must be added here in order for the application to run. Error displayed
-     * is regarding Line 71 in Model/Reach.php.
-     *
+     * check IP is local machine IP
+     * @param  string $ip
      * @return boolean
      */
     protected function checkLocalIP($ip)
     {
-        return in_array($ip, ['localhost','127.0.0.1','172.19.0.1','172.25.0.7','172.25.0.1']);
+        //Ryan's code from MAG-75 (to be able to test payment code properly)
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+        {
+            // is a local ip address
+            $this->_logger->debug('Using a local IP address');
+            return true;
+        }
+        $this->_logger->debug('Using a public IP address');
+        return false;
+    }
+
+
+    /**
+     * Convert decimal to int for JPY
+     *
+     * @param string $currencycode
+     * @param float $amount
+     * @return int|float
+     */
+    public function convertCurrency($currencycode,$amount)
+    {
+        if($currencycode == "JPY")
+        {
+            return round($amount);
+        }
+        return round($amount, self::PRECISION);
     }
 }

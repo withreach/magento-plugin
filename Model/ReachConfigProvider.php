@@ -130,9 +130,16 @@ class ReachConfigProvider implements ConfigProviderInterface
      */
     protected function checkLocalIP($ip)
     {
-        return in_array($ip, ['localhost','127.0.0.1']);
+        //Ryan's code from MAG-75 (to be able to test payment code properly)
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+        {
+            // is a local ip address
+            $this->_logger->debug('Using a local IP address');
+            return true;
+        }
+        $this->_logger->debug('Using a public IP address');
+        return false;
     }
-
      /**
      * Get fingerprint url
      *

@@ -24,7 +24,7 @@ use Magento\Framework\App\ObjectManager;
  */
 class Cc extends \Magento\Payment\Model\Method\Cc
 {
-  
+
 
     const METHOD_CC = 'reach_cc';
 
@@ -278,7 +278,10 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Capture'] = false;
         $url = $this->reachHelper->getCheckoutUrl();
         $response = $this->callCurl($url, $request);
-        
+        $this->_logger->debug(json_encode($url));
+        $this->_logger->debug(json_encode($request));
+        $this->_logger->debug(json_encode($response));
+
         if (!isset($response['response']) || !$this->validateResponse($response['response'], $response['signature'])) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('This payment method is not working at the moment, please try another payment option or try again later')
@@ -497,7 +500,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         foreach ($order->getAllVisibleItems() as $item) {
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
-            $itemData['ConsumerPrice'] = $this->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
+            $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
             $itemData['Quantity'] = $item->getQtyOrdered();
             $request['Items'][]=$itemData;
         }
@@ -506,20 +509,20 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Shipping']=[];
         if ($order->getReachDuty()) {
             $request['ShippingRequired'] = true;
-            $request['Shipping']['ConsumerDuty']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
+            $request['Shipping']['ConsumerDuty']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
         } else {
             $request['Shipping']['ConsumerDuty']=0;
         }
-        $request['Shipping']['ConsumerPrice']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
-        $request['Shipping']['ConsumerTaxes']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
+        $request['Shipping']['ConsumerPrice']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+        $request['Shipping']['ConsumerTaxes']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
         
         $request['Consignee']= $this->getConsigneeInfo($order);
         if ($order->getDiscountAmount()) {
             $request['Discounts']=[];
-            $discountAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
+            $discountAmount = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
             $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal()); 
+        $request['ConsumerTotal']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
         return $request;
     }
 
@@ -765,19 +768,4 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         return $this;
     }
 
-    /**
-    * Convert decimal to int for JPY 
-    *
-    * @param string $currencycode
-    * @param float $amount
-    * @return int|float
-    */
-    protected function convertCurrency($currencycode,$amount)
-    {
-        if($currencycode == "JPY")
-        {
-            return round($amount);
-        }
-        return $amount;
-    }
 }
