@@ -130,14 +130,14 @@ class ReachConfigProvider implements ConfigProviderInterface
      */
     protected function checkLocalIP($ip)
     {
-        //Ryan's code from MAG-75 (to be able to test payment code properly)
+        //Ryan's code from MAG-75 (to be able to test payment code properly).
+        //In future this method should be moved to some util or helper file to increase reusability.
+        //I noticed duplication of this method/code in our extension.
         if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
         {
             // is a local ip address
-            $this->_logger->debug('Using a local IP address');
             return true;
         }
-        $this->_logger->debug('Using a public IP address');
         return false;
     }
      /**
