@@ -114,6 +114,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
             foreach ($rates as $rate) {
                 $data = $this->getResource()->getByCurrency($rate['Currency']);
                 if (count($data) && isset($data[0]['rate_id'])) {
+                    //update
                     $this->setData([
                         'rate_id'=>$data[0]['rate_id'],
                         'offer_id'=>$rate['Id'],
@@ -121,7 +122,10 @@ class Currency extends \Magento\Framework\Model\AbstractModel
                         'rate'=>$rate['Rate'],
                         'expire_at'=>$rate['Expiry']
                     ])->save();
+                    $this->storedData = []; //this is one work around for this Magento bug
+                    // (https://github.com/magento/magento2/issues/4174) as explained in JIRA MAG-102
                 } else {
+                    //insert
                     $this->setData([
                         'rate_id'=>null,
                         'offer_id'=>$rate['Id'],
