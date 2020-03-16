@@ -421,7 +421,6 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['MerchantId'] = $this->reachHelper->getMerchantId();
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
-        $order->getOrderCurrencyCode(); //What it is for?
     
         $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
         if(!empty($rateOfferId)) {
@@ -596,11 +595,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function setTransStatus($payment, $response)
     {
-        
+ 
         if($response['Completed']===false)
         {
             $payment->setIsTransactionPending(true);
         }
     }
 
-}   
+}
