@@ -498,6 +498,19 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         }
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
+            //In case of a configurable product (that is a product with multiple attributes like size, color etc.
+            //Magento (by design) inserts more than one rows in the database.
+            //In such a case if only one representative row is not used during the checkout as well as reporting/accounting
+            // processes then it causes problem by counting a product more than once.
+            //getAllVisibleItems() used to help with retrieving only one (representative) row in the past but it no
+            //longer works with newer versions of Magento (it is mentioned in a comment here
+            //https://stackoverflow.com/questions/7877566/magento-order-getallitems-return-twice-the-same-item).
+            //The solution as specified in one of the comments here:
+            //https://magento.stackexchange.com/questions/111112/magento2-correct-way-to-get-order-items worked.
+            //Basically if a product row does not have a parent then consider it.
+            //On the other hand if a product row has a parent then do not consider such a product row.
+            //In this case consider the parent item instead.
+            //More about configurable products here: https://docs.magento.com/m2/ee/user_guide/catalog/product-types.html
             if ($item->getProductType() == "simple" && ($item->getParentItem())) {
                 continue;
             }
