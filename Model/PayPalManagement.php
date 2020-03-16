@@ -198,8 +198,6 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
         $request['DeviceFingerprint'] = $deviceFingerprint;
-        $order->getOrderCurrencyCode(); //what it is for?
-        
 
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
