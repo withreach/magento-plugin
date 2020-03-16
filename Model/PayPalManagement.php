@@ -198,14 +198,15 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
         $request['DeviceFingerprint'] = $deviceFingerprint;
-        $order->getOrderCurrencyCode();
-        
 
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
+            if ($item->getProductType() == "simple" && ($item->getParentItem())) {
+                continue;
+            }
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
-            $itemData['ConsumerPrice'] = $this->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
+            $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
             $itemData['Quantity'] = $item->getQtyOrdered();
             $request['Items'][]=$itemData;
         }
@@ -233,25 +234,25 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         
         $request['Shipping']=[];
         if ($order->getShippingAmount()) {
-            $shippingAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+            $shippingAmount = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
             $request['Shipping'][]=['Name'=>'Shipping Cost','ConsumerPrice'=>$shippingAmount];     
         }
         if ($order->getReachDuty()) {
             $request['ShippingRequired'] = true;
-            $request['Shipping']['ConsumerDuty']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
+            $request['Shipping']['ConsumerDuty']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
         } else {
             $request['Shipping']['ConsumerDuty']=0;
         }
-        $request['Shipping']['ConsumerPrice']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
-        $request['Shipping']['ConsumerTaxes']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
+        $request['Shipping']['ConsumerPrice']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+        $request['Shipping']['ConsumerTaxes']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
         $request['Consignee']= $this->getConsigneeInfo($order);
         if($order->getDiscountAmount())
         {
             $request['Discounts']=[];
-            $discountAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
+            $discountAmount = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
             $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
+        $request['ConsumerTotal']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
 
         $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
         if(!empty($rateOfferId)) {
@@ -386,19 +387,5 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         }
     }
 
-    /**
-    * Convert decimal to int for JPY 
-    *
-    * @param string $currencycode
-    * @param float $amount
-    * @return int|float
-    */
-    protected function convertCurrency($currencycode,$amount)
-    {
-        if($currencycode == "JPY")
-        {
-            return round($amount);
-        }
-        return $amount;
-    }
+
 }

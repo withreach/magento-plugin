@@ -24,7 +24,7 @@ use Magento\Framework\App\ObjectManager;
  */
 class Cc extends \Magento\Payment\Model\Method\Cc
 {
-  
+
 
     const METHOD_CC = 'reach_cc';
 
@@ -278,7 +278,10 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Capture'] = false;
         $url = $this->reachHelper->getCheckoutUrl();
         $response = $this->callCurl($url, $request);
-        
+        $this->_logger->debug(json_encode($url));
+        $this->_logger->debug(json_encode($request));
+        $this->_logger->debug(json_encode($response));
+
         if (!isset($response['response']) || !$this->validateResponse($response['response'], $response['signature'])) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('This payment method is not working at the moment, please try another payment option or try again later')
@@ -495,9 +498,25 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         }
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item) {
+            //In case of a configurable product (that is a product with multiple attributes like size, color etc.
+            //Magento (by design) inserts more than one rows in the database.
+            //In such a case if only one representative row is not used during the checkout as well as reporting/accounting
+            // processes then it causes problem by counting a product more than once.
+            //getAllVisibleItems() used to help with retrieving only one (representative) row in the past but it no
+            //longer works with newer versions of Magento (it is mentioned in a comment here
+            //https://stackoverflow.com/questions/7877566/magento-order-getallitems-return-twice-the-same-item).
+            //The solution as specified in one of the comments here:
+            //https://magento.stackexchange.com/questions/111112/magento2-correct-way-to-get-order-items worked.
+            //Basically if a product row does not have a parent then consider it.
+            //On the other hand if a product row has a parent then do not consider such a product row.
+            //In this case consider the parent item instead.
+            //More about configurable products here: https://docs.magento.com/m2/ee/user_guide/catalog/product-types.html
+            if ($item->getProductType() == "simple" && ($item->getParentItem())) {
+                continue;
+            }
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
-            $itemData['ConsumerPrice'] = $this->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
+            $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
             $itemData['Quantity'] = $item->getQtyOrdered();
             $request['Items'][]=$itemData;
         }
@@ -506,20 +525,20 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Shipping']=[];
         if ($order->getReachDuty()) {
             $request['ShippingRequired'] = true;
-            $request['Shipping']['ConsumerDuty']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
+            $request['Shipping']['ConsumerDuty']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
         } else {
             $request['Shipping']['ConsumerDuty']=0;
         }
-        $request['Shipping']['ConsumerPrice']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
-        $request['Shipping']['ConsumerTaxes']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
+        $request['Shipping']['ConsumerPrice']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+        $request['Shipping']['ConsumerTaxes']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
         
         $request['Consignee']= $this->getConsigneeInfo($order);
         if ($order->getDiscountAmount()) {
             $request['Discounts']=[];
-            $discountAmount = $this->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
+            $discountAmount = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
             $request['Discounts'][]=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$this->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal()); 
+        $request['ConsumerTotal']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getGrandTotal());
         return $request;
     }
 
@@ -765,19 +784,4 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         return $this;
     }
 
-    /**
-    * Convert decimal to int for JPY 
-    *
-    * @param string $currencycode
-    * @param float $amount
-    * @return int|float
-    */
-    protected function convertCurrency($currencycode,$amount)
-    {
-        if($currencycode == "JPY")
-        {
-            return round($amount);
-        }
-        return $amount;
-    }
 }

@@ -22,8 +22,9 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     /**
      *  @var \Psr\Log\LoggerInterface
      */
-    protected $_logger; 
+    protected $_logger;
 
+    const PRECISION = 2;
     /**
      * Constructor
      *
@@ -113,6 +114,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
             foreach ($rates as $rate) {
                 $data = $this->getResource()->getByCurrency($rate['Currency']);
                 if (count($data) && isset($data[0]['rate_id'])) {
+                    //update
                     $this->setData([
                         'rate_id'=>$data[0]['rate_id'],
                         'offer_id'=>$rate['Id'],
@@ -120,7 +122,10 @@ class Currency extends \Magento\Framework\Model\AbstractModel
                         'rate'=>$rate['Rate'],
                         'expire_at'=>$rate['Expiry']
                     ])->save();
+                    $this->storedData = []; //this is one work around for this Magento bug
+                    // (https://github.com/magento/magento2/issues/4174) as explained in JIRA MAG-102
                 } else {
+                    //insert
                     $this->setData([
                         'rate_id'=>null,
                         'offer_id'=>$rate['Id'],
@@ -212,16 +217,36 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Check IP is local ip
-     *
-     * When running in Docker, the IP addresses assigned by the Docker service
-     * must be added here in order for the application to run. Error displayed
-     * is regarding Line 71 in Model/Reach.php.
-     *
+     * check IP is local machine IP
+     * @param  string $ip
      * @return boolean
      */
     protected function checkLocalIP($ip)
     {
-        return in_array($ip, ['localhost','127.0.0.1','172.19.0.1','172.25.0.7','172.25.0.1']);
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+        {
+            // is a local ip address
+            $this->_logger->debug('Using a local IP address');
+            return true;
+        }
+        $this->_logger->debug('Using a public IP address');
+        return false;
+    }
+
+
+    /**
+     * Convert decimal to int for JPY
+     *
+     * @param string $currencycode
+     * @param float $amount
+     * @return int|float
+     */
+    public function convertCurrency($currencycode,$amount)
+    {
+        if($currencycode == "JPY")
+        {
+            return round($amount);
+        }
+        return round($amount, self::PRECISION);
     }
 }

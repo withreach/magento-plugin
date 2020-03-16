@@ -421,7 +421,6 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['MerchantId'] = $this->reachHelper->getMerchantId();
         $request['ReferenceId'] = $order->getIncrementId();
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
-        $order->getOrderCurrencyCode();
     
         $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
         if(!empty($rateOfferId)) {
@@ -431,9 +430,12 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
         $request['Items']=[];
         foreach ($order->getAllVisibleItems() as $item)
         {
+            if ($item->getProductType() == "simple" && ($item->getParentItem())) {
+                continue;
+            }
             $itemData=[];
             $itemData['Sku'] = $item->getSku();
-            $itemData['ConsumerPrice'] = $item->getPrice();
+            $itemData['ConsumerPrice'] = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$item->getPrice());
             $itemData['Quantity'] = $item->getQtyOrdered();
             $request['Items'][]=$itemData;         
         }
@@ -452,15 +454,16 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
             $request['ShippingRequired'] = true;
         }
         $request['Shipping']=[];
-        $request['Shipping']['ConsumerPrice']=$order->getShippingAmount();
-        $request['Shipping']['ConsumerTaxes']=$order->getTaxAmount();
-        $request['Shipping']['ConsumerDuty']=$order->getReachDuty();
+        $request['Shipping']['ConsumerPrice']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getShippingAmount());
+        $request['Shipping']['ConsumerTaxes']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getTaxAmount());
+        $request['Shipping']['ConsumerDuty']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getReachDuty());
         $request['Consignee']= $this->getConsigneeInfo($order);
         if($order->getDiscountAmount())
         {
-            $request['Discounts']=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$order->getDiscountAmount() * -1];
+            $discountAmount = $this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(),$order->getDiscountAmount() * -1);
+            $request['Discounts']=['Name'=>$order->getCouponCode()?$order->getCouponCode():'Discount','ConsumerPrice'=>$discountAmount];
         }
-        $request['ConsumerTotal']=$order->getGrandTotal();
+        $request['ConsumerTotal']=$this->reachCurrency->convertCurrency($order->getOrderCurrencyCode(), $order->getGrandTotal());
 
 
         $request['PaymentMethod'] = 'PAYPAL';
@@ -592,11 +595,11 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function setTransStatus($payment, $response)
     {
-        
+ 
         if($response['Completed']===false)
         {
             $payment->setIsTransactionPending(true);
         }
     }
 
-}   
+}
