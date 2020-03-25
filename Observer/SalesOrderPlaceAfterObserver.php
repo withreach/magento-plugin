@@ -134,9 +134,9 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
                     $detail['identifier']=$response_extracted['Payment']['AccountIdentifier'];
 
                     if (isset($response_extracted['Times']['Expiry'])) {
-                        $expiredAt = explode('T',$response_extracted['Times']['Expiry']);
-                        $detail['expire_at']= $expiredAt[0];
-                        $time = explode('.', $expiredAt[1]);
+                        $expiresAt = explode('T',$response_extracted['Times']['Expiry']);
+                        $detail['expire_at']= $expiresAt[0];
+                        $time = explode('.', $expiresAt[1]);
                         $detail['expire_at'] .= ' '. $time[0];
                     }
                     return $detail;
