@@ -129,11 +129,11 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
 
                 if ($response_extracted  && isset($response_extracted['Payment'])) {
                     $detail=[];
-                    $detail['currency']= $response_extracted ['ConsumerCurrency'];
-                    $detail['method']=$response_extracted ['Payment']['Method'];
-                    $detail['identifier']=$response_extracted ['Payment']['AccountIdentifier'];
+                    $detail['currency']= $response_extracted['ConsumerCurrency'];
+                    $detail['method']=$response_extracted['Payment']['Method'];
+                    $detail['identifier']=$response_extracted['Payment']['AccountIdentifier'];
 
-                    if (isset($response_extracted ['Times']['Expiry'])) {
+                    if (isset($response_extracted['Times']['Expiry'])) {
                         $expredAt = explode('T',$response_extracted['Times']['Expiry']);
                         $detail['expire_at']= $expredAt[0];
                         $time = explode('.', $expredAt[1]);
