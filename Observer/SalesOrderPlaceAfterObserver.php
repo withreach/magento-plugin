@@ -95,6 +95,8 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
             $contract->setReachContractId($contractId);
             $contract->setMethod($detail['method']);
             $contract->setIdentifier($detail['identifier']);
+            $contract->setCurrency($detail['currency']);
+
             if (isset($detail['expire_at'])) {
                 $contract->setExpireAt($detail['expire_at']);
             }
@@ -117,17 +119,24 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
         $response = $this->callCurl($url, $request);
 
         if (isset($response['response']) && isset($response['signature'])) {
-            if ($this->validateResponse($response['response'], $response['signature'])) {
-                //$response['ConsumerCurrency']; to save currency info later on
-                if ($response && isset($response['Payment'])) {
-                    $detail=[];
-                    $detail['method']=$response['Payment']['Method'];
-                    $detail['identifier']=$response['Payment']['AccountIdentifier'];
 
-                    if (isset($response['Times']['Expiry'])) {
-                        $expredAt = explode('T', $response['Times']['Expiry']);
-                        $detail['expire_at']= $expredAt[0];
-                        $time = explode('.', $expredAt[1]);
+            if ($this->validateResponse($response['response'], $response['signature'])) {
+                //lack of this line was the problem; without this it was looking for desired elements at wrong place/depth
+                //in the nested data structure.
+                //Also converting string in $response['response'] to array so that the rest of the code would
+                //work with minimal changes.
+                $response_extracted = json_decode($response['response'], true);
+
+                if ($response_extracted  && isset($response_extracted['Payment'])) {
+                    $detail=[];
+                    $detail['currency']= $response_extracted['ConsumerCurrency'];
+                    $detail['method']=$response_extracted['Payment']['Method'];
+                    $detail['identifier']=$response_extracted['Payment']['AccountIdentifier'];
+
+                    if (isset($response_extracted['Times']['Expiry'])) {
+                        $expiresAt = explode('T',$response_extracted['Times']['Expiry']);
+                        $detail['expire_at']= $expiresAt[0];
+                        $time = explode('.', $expiresAt[1]);
                         $detail['expire_at'] .= ' '. $time[0];
                     }
                     return $detail;
