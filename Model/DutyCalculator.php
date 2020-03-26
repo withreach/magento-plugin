@@ -149,8 +149,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                "(shipment address)");
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
            $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
-
-           $this->_logger->debug("DhlQuoteId (reading what is saved in Quote object): ".$quote->getDhlQuoteId());
         }
         else {
             $this->_logger->debug("Duty should not be applied.");
@@ -322,7 +320,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setPrevCountry('');
             $this->checkoutSession->setPrevRegion('');
         }
-
     }
 
     /**
