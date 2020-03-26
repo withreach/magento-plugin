@@ -148,6 +148,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                " parameter that is passed to this function or because duty is not optional for the chosen country ".
                "(shipment address)");
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
+           $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
+
+           $this->_logger->debug("DhlQuoteId (reading what is saved in Quote object): ".$quote->getDhlQuoteId());
         }
         else {
             $this->_logger->debug("Duty should not be applied.");
@@ -263,6 +266,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         //but are we supposed to round always?
         //should not that be based on corresponding admin setting?
         $this->checkoutSession->setReachDuty($duty_adjusted);
+        $this->_logger->debug("Inside fillOutQuoteAndSessionUsingFeeReturned");
+        $this->_logger->debug("response['quoteId'] ".$response['quoteId']);
 
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
             //checkbox selection was duty should be applied
@@ -278,6 +283,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $quote->setDhlBreakdown(json_encode($response['feeTotals']));
             $this->checkoutSession->setDhlBreakdown($quote->getDhlBreakdown());
             $this->checkoutSession->setApply(true); //checkbox selection /corresponding passed value
+            $this->checkoutSession->setDhlQuoteId($response['quoteId']);
             //implies that duty should be applied
             $this->_logger->debug('Apply block immediately after DHL call');
         } else {
@@ -288,13 +294,13 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setBaseReachDuty(0);
             $this->checkoutSession->setReachDuty($duty_adjusted);
             $quote->setDhlQuoteId('');
-            $this->checkoutSession->setDhlQuoteId('');
             $quote->setDhlBreakdown('');
             $this->checkoutSession->setDhlBreakdown('');
             $this->checkoutSession->setApply(false);
             $this->_logger->debug('Do not Apply block immediately after DHL call');
         }
 
+        $this->_logger->debug("quoteId from Quote Object: ".$quote->getDHLQuoteId());
         $quote->save();
         $this->response->setSuccess(true);
         $this->response->setDuty($duty_adjusted);
@@ -319,6 +325,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setPrevCountry('');
             $this->checkoutSession->setPrevRegion('');
         }
+
+        $this->_logger->debug("Inside fillOutResponseAndSessionOnError:::");
+        $this->_logger->debug("quoteId from session: ".$this->checkoutSession->getDhlQuoteId());
     }
 
     /**
@@ -348,6 +357,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $response = $this->getQuote($request, $accessToken);
 
             $this->checkoutSession->setDhlQuoteId($response['quoteId']);
+            $quote->setDhlQuoteId($response['quoteId']);
 
             //fee value came from DHL
             if (isset($response['feeTotals'])) {
