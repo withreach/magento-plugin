@@ -266,8 +266,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         //but are we supposed to round always?
         //should not that be based on corresponding admin setting?
         $this->checkoutSession->setReachDuty($duty_adjusted);
-        $this->_logger->debug("Inside fillOutQuoteAndSessionUsingFeeReturned");
-        $this->_logger->debug("response['quoteId'] ".$response['quoteId']);
 
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
             //checkbox selection was duty should be applied
@@ -300,7 +298,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->_logger->debug('Do not Apply block immediately after DHL call');
         }
 
-        $this->_logger->debug("quoteId from Quote Object: ".$quote->getDHLQuoteId());
         $quote->save();
         $this->response->setSuccess(true);
         $this->response->setDuty($duty_adjusted);
@@ -326,8 +323,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setPrevRegion('');
         }
 
-        $this->_logger->debug("Inside fillOutResponseAndSessionOnError:::");
-        $this->_logger->debug("quoteId from session: ".$this->checkoutSession->getDhlQuoteId());
     }
 
     /**
