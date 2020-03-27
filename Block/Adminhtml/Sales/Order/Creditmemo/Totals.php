@@ -56,6 +56,7 @@ class Totals extends \Magento\Framework\View\Element\Template
                 'code' => 'reach_duty',
                 'value' => $this->getSource()->getReachDuty(),
                 'label' => 'Tax & Duties',
+                'base_value' => $this->getSource()->getBaseReachDuty()
             ]
         );
         $this->getParentBlock()->addTotalBefore($total, 'grand_total');

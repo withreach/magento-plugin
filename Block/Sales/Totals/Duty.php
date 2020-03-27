@@ -94,6 +94,7 @@ class Duty extends \Magento\Framework\View\Element\Template
                 'code' => 'reach_duty',
                 'strong' => false,
                 'value' => $this->_source->getReachDuty(),
+                'base_value' => $this->getSource()->getBaseReachDuty(),
                 'label' => 'Tax & Duties',
             ]
         );

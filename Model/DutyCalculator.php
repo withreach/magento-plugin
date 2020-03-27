@@ -148,6 +148,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                " parameter that is passed to this function or because duty is not optional for the chosen country ".
                "(shipment address)");
            $quote->setReachDuty($this->checkoutSession->getReachDuty());
+           $quote->setBaseReachDuty($this->checkoutSession->getBaseReachDuty());
            $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
         }
         else {
@@ -155,6 +156,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             //as apply duty and tax(DT) is not selected or it is optional; duty and tax would not be used in total
             // pricing; so setting all relevant quote values to zero
             $quote->setReachDuty(0);
+            $quote->setBaseReachDuty(0);
         }
         $quote->save();//this is needed so that different aspects related to a quote are available on other
         // pages/propagate to other pages (without changing existing code on those pages).
@@ -172,13 +174,16 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->response->setSuccess(true);
         $this->response->setDuty($duty);
         $this->checkoutSession->setReachDuty($duty);
+        $baseDuty = $this->getBaseDuty($duty);
+        $this->checkoutSession->setBaseReachDuty($baseDuty);
         //Need the following two assignments to make sure that the country comparison based initiation or prevention of
         //DHL call works properly.
         //Otherwise the DHL call is prevented even when we need one (due to the fact that even though the
         //country selection has changed that is not tracked/captured).
         $this->checkoutSession->setPrevCountry('');
         $this->checkoutSession->setPrevRegion('');
-        $quote->setReachDuty($duty) ;
+        $quote->setReachDuty($duty) ; //? should not it be set to 0
+
         $this->_logger->debug('In duty or shipping not allowed section');
         $quote->save();
     }
@@ -226,7 +231,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->handleTaxApplicability($address, $apply);
             $this->_logger->debug('User wants to apply the D&T. Value of apply ::' . $apply);
             $quote->setBaseReachDuty($this->checkoutSession->getBaseReachDuty());
-            $quote->setReachDuty($this->checkoutSession->getReachDuty());
             $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
             $quote->setDhlBreakdown($this->checkoutSession->getDhlBreakdown());
             $this->_logger->debug($quote->getReachDuty());
@@ -243,6 +247,20 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
         $quote->save();
         $this->response->setDuty($this->checkoutSession->getReachDuty());
+    }
+
+    /** gets duty in base currency from display currency
+     * @param float $duty
+     * returns float
+     */
+    public function getBaseDuty($duty)
+    {
+        //it may look at stale value???
+        $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
+        $rate = $baseCurrency->getRate($baseCurrency->getCode());
+        $baseRate = $duty / $rate;
+        $this->_logger->debug("Inside getBaseDuty ".$baseRate);
+        return $baseRate;
     }
 
     /** Adjust returned duty value from DHL and additionally keep track of different data that came back from
@@ -262,24 +280,26 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote = $this->checkoutSession->getQuote();
         $duty_adjusted = $this->priceCurrency->round($duty); //copied over pre-existing code
         //but are we supposed to round always?
-        //should not that be based on corresponding admin setting?
+        //should not that be based on corresponding admin setting? or what is coming back from REACH API
         $this->checkoutSession->setReachDuty($duty_adjusted);
+
+        $baseDuty = $this->getBaseDuty($duty_adjusted);
+
+        $this->checkoutSession->setBaseReachDuty($baseDuty);
+
+        $this->checkoutSession->setDhlQuoteId($response['quoteId']);
+        //$this->checkoutSession->setReachDuty($duty_adjusted);
+        $this->checkoutSession->setDhlBreakdown(json_encode($response['feeTotals']));
 
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
             //checkbox selection was duty should be applied
             //or applying duty is a must for that country
-            $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
-            $rate = $baseCurrency->getRate($baseCurrency->getCode());
-            $baseDuty = $duty_adjusted / $rate;
             $quote->setBaseReachDuty($baseDuty);
-            $this->checkoutSession->setBaseReachDuty($baseDuty);
             $quote->setReachDuty($duty_adjusted);
-            $this->checkoutSession->setReachDuty($duty_adjusted);
             $quote->setDhlQuoteId($response['quoteId']);
             $quote->setDhlBreakdown(json_encode($response['feeTotals']));
-            $this->checkoutSession->setDhlBreakdown($quote->getDhlBreakdown());
             $this->checkoutSession->setApply(true); //checkbox selection /corresponding passed value
-            $this->checkoutSession->setDhlQuoteId($response['quoteId']);
+
             //implies that duty should be applied
             $this->_logger->debug('Apply block immediately after DHL call');
         } else {
@@ -287,11 +307,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             //implies that the duty should not be applied
             $quote->setBaseReachDuty(0);
             $quote->setReachDuty(0);
-            $this->checkoutSession->setBaseReachDuty(0);
-            $this->checkoutSession->setReachDuty($duty_adjusted);
             $quote->setDhlQuoteId('');
             $quote->setDhlBreakdown('');
-            $this->checkoutSession->setDhlBreakdown('');
             $this->checkoutSession->setApply(false);
             $this->_logger->debug('Do not Apply block immediately after DHL call');
         }

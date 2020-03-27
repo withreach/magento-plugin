@@ -70,6 +70,7 @@ class Totals extends \Magento\Framework\View\Element\Template
             [
                 'code' => 'reach_duty',
                 'value' => $this->getSource()->getReachDuty(),
+                'base_value' => $this->getSource()->getBaseReachDuty(),
                 'label' => 'Tax & Duties',
             ]
         );
