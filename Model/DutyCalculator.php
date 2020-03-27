@@ -182,8 +182,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         //country selection has changed that is not tracked/captured).
         $this->checkoutSession->setPrevCountry('');
         $this->checkoutSession->setPrevRegion('');
-        $quote->setReachDuty($duty) ; //? should not it be set to 0
-
+        $quote->setReachDuty($duty); //it is actually 0.0 due to the way it is being called at present
+        $quote->setBaseReachDuty($baseDuty);
         $this->_logger->debug('In duty or shipping not allowed section');
         $quote->save();
     }
