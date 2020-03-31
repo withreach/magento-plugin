@@ -127,15 +127,17 @@ class ReachCurrency extends \Magento\Directory\Model\Currency
     public function convert($price, $toCurrency = null)
     {
         $value = parent::convert($price, $toCurrency);
-        if(gettype($toCurrency)=='string' && $toCurrency=="JPY")
-        {
-            return round($value);
+        $currencyCode = "";
+
+        if(gettype($toCurrency)=='string')
+        {   $currencyCode = $toCurrency;
         }
-        elseif(gettype($toCurrency)=='object' && $toCurrency->getCurrencyCode()=="JPY")
+        elseif(gettype($toCurrency)=='object')
         {
-            return round($value);
+            $currencyCode = $toCurrency->getCurrencyCode();
         }
-        return round($value,  $this->currencyModel::PRECISION);
+        return $this->currencyModel->convertCurrency($currencyCode, $value);
+
     }
 
 

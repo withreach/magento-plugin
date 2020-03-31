@@ -15,6 +15,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->startSetup();
         $connection = $installer->getConnection();
 
+        $precisionTable = $installer->getTable('reach_currency_precision');
+
+        if ($setup->getConnection()->isTableExists($precisionTable ) != true) {
+            $tableCurrencyPrecision = $installer->getConnection()
+                ->newTable($precisionTable)
+
+                ->addColumn(
+                    'currency_code',
+                    Table::TYPE_TEXT,
+                    3,
+                    [ 'nullable' => false, 'primary' => true],
+                    'Currency Code'
+                )
+                ->addColumn(
+                    'precision_unit',
+                    Table::TYPE_INTEGER,
+                    null,
+                    ['unsigned' => true, 'nullable' => false],
+                    'Precision Unit'
+                )
+                ->setComment('reach currency precision');
+            $installer->getConnection()->createTable($tableCurrencyPrecision);
+        }
+
         if (version_compare($context->getVersion(), '1.0.1') < 0) {
             $quoteAddressTable = 'quote_address';
             $quoteTable = 'quote';

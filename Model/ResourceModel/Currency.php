@@ -36,8 +36,37 @@ class Currency extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         return $connection->fetchAll($select);
     }
 
+    //should write  deletion routine too
+
     /**
-     * Delete not available rates
+     * @param $currencyCode string
+     * @return array
+     */
+    public function getPrecisionByCurrency($currencyCode)
+    {
+        $connection = $this->getConnection();
+        $select = $connection->select()
+            ->from($this->getTable('reach_currency_precision'))
+            ->where('currency_code = ?', $currencyCode);
+        return $connection->fetchAssoc($select);
+    }
+
+    /**
+     * @param $currencyCode string
+     * @param $precision integer
+     * @return \Zend_Db_Statement_Interface
+     */
+    public function setPrecisionByCurrency($currencyCode, $precision)
+    {
+        $connection = $this->getConnection();
+        $sql = "INSERT INTO reach_currency_precision(currency_code, precision_unit) values ('".$currencyCode."',".$precision.");";
+
+        return $connection->query($sql);
+    }
+
+
+    /**
+     * Delete unavailable rates
      *
      * @return void
      */

@@ -24,7 +24,9 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     protected $_logger;
 
-    const PRECISION = 2;
+    const PRECISION_CUTOFF = 2;
+
+
     /**
      * Constructor
      *
@@ -235,18 +237,45 @@ class Currency extends \Magento\Framework\Model\AbstractModel
 
 
     /**
-     * Convert decimal to int for JPY
+     * Convert decimal to int for JPY and for other currencies adjust number of digits after decimal the point based on
+     * what is acceptable in those currencies
      *
-     * @param string $currencycode
+     * @param string $currencyCode
      * @param float $amount
      * @return int|float
      */
-    public function convertCurrency($currencycode,$amount)
+    public function convertCurrency($currencyCode, $amount)
     {
-        if($currencycode == "JPY")
-        {
-            return round($amount);
+        $precision_adjusted = 0;
+        if (isset($currencyCode)) {
+            $merchantId = $this->reachHelper->getMerchantId();
+            $data = $this->getResource()->getPrecisionByCurrency($currencyCode);
+            $this->_logger->debug("Currency info from DB :::".json_encode($data));
+            if (isset($data[$currencyCode])) {
+                $precision = $data[$currencyCode]['precision_unit'];
+                $this->_logger->debug("Getting precision from Database call :".$precision);
+            }
+            else {
+                $this->_logger->debug("Getting precision from API call");
+                $url = $this->reachHelper->getApiUrl();
+                $this->_logger->debug(json_encode($url));
+                $url.='localize?MerchantId='.$this->reachHelper->getMerchantId()."&Currency=".$currencyCode;
+                $this->_logger->debug("url to retreive currency precision: ".json_encode($url));
+                $rest = $this->httpRestFactory->create();
+                $rest->setUrl($url);
+                $response = $rest->executeGet();
+                $result = $response->getResponseData();
+                if (isset($result)) {
+                    $precision =$result['Units'];
+                    $this->getResource()->setPrecisionByCurrency($currencyCode, $precision);
+                }
+            }
+            $precision_adjusted = ($precision > self::PRECISION_CUTOFF)? self::PRECISION_CUTOFF: $precision; //because of a bug in
+            //our API (as per the note in description of JIRA MAG-100)
+            $this->_logger->debug("in convert currency: precision adjusted :".$precision_adjusted);
+
         }
-        return round($amount, self::PRECISION);
+        return round($amount, $precision_adjusted); //when nothing coming back from api or db; verify with team
     }
+
 }
