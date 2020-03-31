@@ -275,7 +275,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         //or whether applying duty is a must for that country or not (a setting in magento admin
         //panel)
         //filling out both Quote and session state as appropriate
-        //DHL quoteID is already saved into session; so not doing it here again
         $quote = $this->checkoutSession->getQuote();
         $duty_adjusted = $this->priceCurrency->round($duty); //copied over pre-existing code
         //but are we supposed to round always?
