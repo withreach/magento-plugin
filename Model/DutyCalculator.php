@@ -255,11 +255,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function getBaseDuty($duty)
     {
-        //it may look at stale value???
         $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
         $rate = $baseCurrency->getRate($baseCurrency->getCode());
         $baseRate = $duty / $rate;
-        $this->_logger->debug("Inside getBaseDuty ".$baseRate);
+        $this->_logger->debug("Inside getBaseDuty: ".$baseRate);
         return $baseRate;
     }
 
@@ -276,7 +275,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         //or whether applying duty is a must for that country or not (a setting in magento admin
         //panel)
         //filling out both Quote and session state as appropriate
-        //DHL quoteID is already saved into session; so not doing it here again
         $quote = $this->checkoutSession->getQuote();
         $duty_adjusted = $this->priceCurrency->round($duty); //copied over pre-existing code
         //but are we supposed to round always?
@@ -288,7 +286,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->checkoutSession->setBaseReachDuty($baseDuty);
 
         $this->checkoutSession->setDhlQuoteId($response['quoteId']);
-        //$this->checkoutSession->setReachDuty($duty_adjusted);
         $this->checkoutSession->setDhlBreakdown(json_encode($response['feeTotals']));
 
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
