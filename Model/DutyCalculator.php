@@ -255,11 +255,10 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function getBaseDuty($duty)
     {
-        //it may look at stale value???
         $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
         $rate = $baseCurrency->getRate($baseCurrency->getCode());
         $baseRate = $duty / $rate;
-        $this->_logger->debug("Inside getBaseDuty ".$baseRate);
+        $this->_logger->debug("Inside getBaseDuty: ".$baseRate);
         return $baseRate;
     }
 
@@ -288,7 +287,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->checkoutSession->setBaseReachDuty($baseDuty);
 
         $this->checkoutSession->setDhlQuoteId($response['quoteId']);
-        //$this->checkoutSession->setReachDuty($duty_adjusted);
         $this->checkoutSession->setDhlBreakdown(json_encode($response['feeTotals']));
 
         if ($apply || !$this->getIsOptional($address->getCountryId())) {
