@@ -59,9 +59,11 @@ class Currency extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function setPrecisionByCurrency($currencyCode, $precision)
     {
         $connection = $this->getConnection();
-        $sql = "INSERT INTO reach_currency_precision(currency_code, precision_unit) values ('".$currencyCode."',".$precision.");";
 
-        return $connection->query($sql);
+        $connection->insert('reach_currency_precision', [
+            'currency_code' => $currencyCode,
+            'precision_unit' => $precision,
+        ]);
     }
 
 
