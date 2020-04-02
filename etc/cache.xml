@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type name="reach_payment_custom_cache" instance="Reach\Payment\Helper\Cacher">
+        <label>Reach Custom Cache</label>
+        <description>Reach Custom Cache to Store Currency Precision</description>
+    </type>
+</config>
