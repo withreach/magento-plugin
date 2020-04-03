@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alr:test-suite xmlns:alr="urn:model.allure.qatools.yandex.ru" start="1585866184372" stop="1585866184412" version="1.4.0">
+  <name>Reach\Payment\Test\Unit\Model\ReachTest</name>
+  <test-cases>
+    <test-case start="1585866184378" stop="1585866184401" status="passed">
+      <name>testIsAvailable with data set "invalid method"</name>
+    </test-case>
+  </test-cases>
+</alr:test-suite>

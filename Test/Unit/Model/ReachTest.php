@@ -52,18 +52,29 @@ class ReachTest extends TestCase
      */
 
     protected $helper;
+    /**
+     * @var bool
+     */
 
+    private $example = true;
+
+    /**
+     * @var string
+     */
+
+    private $methodName = 'Card';
 
     protected function setUp()
     {
         $objectManager = new ObjectManager($this);
 
         $this->_coresession = $this->createMock('Magento\Framework\Session\SessionManagerInterface');
-        $this->checkoutSession = $this->createMock('Magento\Checkout\Model\Session', [], [], '', false);
-        $this->httpRestFactory = $this->createMock('Reach\Payment\Model\Api\HttpRestFactory', $objectManager);
+        $this->checkoutSession = $this->createMock('Magento\Checkout\Model\Session');
+        $this->httpRestFactory = $this->createMock('Reach\Payment\Model\Api\HttpRestFactory');
         $this->currencyModel = $this->createMock('Reach\Payment\Model\Currency');
         $this->reachHelper = $this->createMock('Reach\Payment\Helper\Data');
-        $this->reach = $objectManager->getObject("Reach\Payment\Model\Reach",
+
+        $this->reach = $objectManager->getObject(Reach::class,
             [ 'coreSession' => $this->_coresession,
               'currencyModel' => $this->currencyModel,
               'reachHelper' => $this->reachHelper,
@@ -76,21 +87,34 @@ class ReachTest extends TestCase
 
 
     /**
-     * @param $isTrue
-     * @param $methodName
-     * @dataProvider availabilityProvider
+     * @param $currency
+     * @param $currencyArray
+     * @dataProvider localizeCurrencyProvider
      */
-    public function testIsAvailable($isTrue, $methodName)
+    public function testLocalizeCurrency($currency, $currencyArray)
     {
-        $this->assertEquals($isTrue, $this->reach->isAvailable($methodName));
+        $this->currencyModel->expects($this->once())->method('getLocalizeCurrency')->willReturn($currencyArray);
+        $this->assertEquals($currency, $this->currencyModel->getLocalizeCurrency()['currency']);
     }
 
-    public function availabilityProvider()
+    public function localizeCurrencyProvider()
     {
         return [
-             "paypal available" => [true, 'Online'],
-             "cc available" => [true, 'Card'],
-             "invalid method" => [false, '1-800-junk']
+
+             "About CAD" => ['CAD',
+                    $currencyArray = [
+                        'currency'=>'CAD',
+                        'symbol'=>'$',
+                        'country'=>'CA'
+                    ]
+             ],
+            "About USD" => ['USD',
+                $currencyArray = [
+                    'currency'=>'USD',
+                    'symbol'=>'$',
+                    'country'=>'US'
+                ]
+            ]
 
         ];
     }
@@ -103,6 +127,7 @@ class ReachTest extends TestCase
      */
     public function testReachEnabled($isTrue, $path)
     {
+        $this->reachHelper->expects($this->once())->method('getConfigValue')->with($path)->willReturn($this->example);
         $this->assertEquals($isTrue, $this->reachHelper->getConfigValue($path));
 
     }
