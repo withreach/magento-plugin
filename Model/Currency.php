@@ -2,6 +2,7 @@
 
 namespace Reach\Payment\Model;
 
+
 class Currency extends \Magento\Framework\Model\AbstractModel
 {
     /**
@@ -24,7 +25,13 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      */
     protected $_logger;
 
-    const PRECISION = 2;
+    const PRECISION_CUTOFF = 2;
+
+    /**
+     * @var \Reach\Payment\Helper\Cacher
+     */
+    protected $cacher;
+
     /**
      * Constructor
      *
@@ -36,6 +43,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      * @param \Reach\Payment\Model\ResourceModel\Currency $resource
      * @param \Reach\Payment\Model\ResourceModel\Currency\Collection $collection
      * @param \Psr\Log\LoggerInterface $logger
+     * @param \Reach\Payment\Helper\Cacher $cacher
      * @param array $data = []
      */
     public function __construct(
@@ -47,6 +55,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         \Reach\Payment\Model\ResourceModel\Currency $resource,
         \Reach\Payment\Model\ResourceModel\Currency\Collection $collection,
         \Psr\Log\LoggerInterface $logger,
+        \Reach\Payment\Helper\Cacher $cacher,
         array $data = []
     ) {
 
@@ -54,6 +63,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         $this->httpRestFactory = $httpRestFactory;
         $this->addressService  = $addressService;
         $this->_logger = $logger;
+        $this->cacher = $cacher;
         parent::__construct($context, $registry, $resource, $collection, $data);
     }
 
@@ -235,18 +245,60 @@ class Currency extends \Magento\Framework\Model\AbstractModel
 
 
     /**
-     * Convert decimal to int for JPY
-     *
-     * @param string $currencycode
+     * Convert decimal to int for JPY and for other currencies adjust number of digits after decimal the point based on
+     * what is acceptable in those currencies
+     * looking for the precision in cache, if not there then look for it in the extension specific database
+     * if not found in database then make a call to REACH api
+     * once the value is found in api it gets cached in the database; if found in database but not in cache
+     * then it is added in the cache (magento style of caching without using third party software component
+     * like redis, varnish)
+     * @param string $currencyCode
      * @param float $amount
      * @return int|float
      */
-    public function convertCurrency($currencycode,$amount)
+    public function convertCurrency($currencyCode, $amount)
     {
-        if($currencycode == "JPY")
-        {
-            return round($amount);
+        $precision_adjusted = 0;
+        $precision = 0;
+        if (isset($currencyCode)) {
+            $reachCache = $this->cacher->loadDataFromCache();
+            $this->_logger->debug("this is in cache :::" . json_encode($reachCache));
+            if (isset($reachCache[$currencyCode])) {
+                $this->_logger->debug("Loaded Currency Precision from Cache :::" . json_encode($reachCache));
+                $precision = $reachCache[$currencyCode];
+            }
+            else {
+                $data = $this->getResource()->getPrecisionByCurrency($currencyCode);
+                $this->_logger->debug("Currency info from DB :::" . json_encode($data));
+                if (isset($data[$currencyCode])) {
+                    $precision = $data[$currencyCode]['precision_unit'];
+                    $this->_logger->debug("Getting precision from Database call :" . $precision);
+                } else {
+                    $this->_logger->debug("Getting precision from API call");
+                    $url = $this->reachHelper->getApiUrl();
+                    $this->_logger->debug(json_encode($url));
+                    $url .= 'localize?MerchantId=' . $this->reachHelper->getMerchantId() . "&Currency=" . $currencyCode;
+                    $this->_logger->debug("url to retreive currency precision: " . json_encode($url));
+                    $rest = $this->httpRestFactory->create();
+                    $rest->setUrl($url);
+                    $response = $rest->executeGet();
+                    $result = $response->getResponseData();
+                    if (isset($result)) {
+                        $precision = $result['Units'];
+                        $this->getResource()->setPrecisionByCurrency($currencyCode, $precision);
+                    }
+                }
+                $currencyVsPrecision = [$currencyCode => $precision];
+                $this->cacher->saveDataInCache($currencyVsPrecision);
+            }
+            $precision_adjusted = ($precision > self::PRECISION_CUTOFF)? self::PRECISION_CUTOFF: $precision; //because of a bug in
+            //our API (as per the note in description of JIRA MAG-100)
+            $this->_logger->debug("in convert currency: precision adjusted :".$precision_adjusted);
+
         }
-        return round($amount, self::PRECISION);
+        return round($amount, $precision_adjusted); //when nothing coming back from api or db; verify with team
     }
+
+
+
 }
