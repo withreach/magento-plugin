@@ -1,8 +1,16 @@
 <?php
+/**
+ * Reason behind this Cacher class:
+ * Most appropriate place to save precision values related to various currencies
+ * is cache not session. This is because the precision of a currency does not change
+ * from one customer to another. Wrote a custom Magento cache such that only that
+ * cache can be cleared as needed instead of clearing all the caches.
+ * This cached data is saved on Server side.
+ */
+
 
 namespace Reach\Payment\Helper;
 
-//use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Cache\Type\FrontendPool;
 use Magento\Framework\Cache\Frontend\Decorator\TagScope;
 
@@ -11,8 +19,13 @@ use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Helper Class
+
+ * If this class is not a subclass of TagScope then we get error when we try to compile code for
+ * dependency injection and interceptor generator as well as while running cache cleanup or 
+ * flushing options.
+ * This is the reason behind exetending TagScope instead of AbstractHelper class.
  */
-//class Cacher extends AbstractHelper
+
 class Cacher extends TagScope
 {
     /**
@@ -25,7 +38,11 @@ class Cacher extends TagScope
      */
     private $serializer;
 
+    //Needed for saving and retrieving data.
     const REACH_CACHE_ID = 'reach_payment_custom_cache';
+
+    //Is needed for clearing or flushing a specific cache instead of clearing everything
+    // (or something with wider scope).
     const REACH_CACHE_TAG = 'REACH_PAYMENT_CUSTOM_CACHE';
 
 
@@ -61,7 +78,7 @@ class Cacher extends TagScope
         \Magento\Framework\App\Cache\TypeListInterface $typeList
     ) {
         $this->_logger = $logger;
-        $this->serializer   = $serializer;
+        $this->serializer = $serializer;
         $this->cache = $cache;
         $this->typeList = $typeList;
         $this->data = [];

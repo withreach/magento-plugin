@@ -15,6 +15,12 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->startSetup();
         $connection = $installer->getConnection();
 
+        /**
+         * New table in the database to store currency versus precision information.
+         * Index is automatically generated on the primary key.
+         * Though the index does not matter in this case due to relatively small table size
+         * and data being saved in the Magento caching layer as well.
+         */
         $precisionTable = $installer->getTable('reach_currency_precision');
 
         if ($setup->getConnection()->isTableExists($precisionTable ) != true) {
