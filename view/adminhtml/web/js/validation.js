@@ -15,7 +15,7 @@ require([
                 //hscode string - made it that way after talking (on Slack) to the team.
                 //Check is done only at frontend level
                 //Additionally the check could be done/enforced when getting saved in db (in a path way bypassing UI)
-
+                hscode = hscode.trimRight();
                 return (/^[\d]{2}[A-Za-z0-9\.-]{0,18}$/.test(hscode));
             }, $.mage.__('Please enter a string that starts with two digits and have at least 2 characters and at most 20 characters (letter and numbers)'));
     }
