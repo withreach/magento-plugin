@@ -15,8 +15,10 @@ require([
                 //hscode string - made it that way after talking (on Slack) to the team.
                 //Check is done only at frontend level
                 //Additionally the check could be done/enforced when getting saved in db (in a path way bypassing UI)
-                hscode = hscode.trimRight();
+                //At this point it does not accept white spaces (this is to avoid adding/overriding Admin config model
+                // related code - the way we added custom code for our currency model).
+                //If it returns false (i.e. the regex validation fails) in that case we show the error text/msg.
                 return (/^[\d]{2}[A-Za-z0-9\.-]{0,18}$/.test(hscode));
-            }, $.mage.__('Please enter a string that starts with two digits and have at least 2 characters and at most 20 characters (letter and numbers)'));
+            }, $.mage.__('Please enter an HS Code that starts with two digits and has at most 20 characters (letters, digits, . and -). White spaces are not allowed.'));
     }
 );
