@@ -176,6 +176,7 @@
                     </field>
                     <field id="default_hs_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="110" translate="label" type="text">
                         <label>Default HS Code</label>
+                        <backend_model>Reach\Payment\Model\Config\Backend\DefaultHSCode</backend_model>
                         <depends>
                             <field id="active">1</field>
                         </depends>
