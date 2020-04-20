@@ -176,9 +176,11 @@
                     </field>
                     <field id="default_hs_code" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="110" translate="label" type="text">
                         <label>Default HS Code</label>
+                        <backend_model>Reach\Payment\Model\Config\Backend\DefaultHSCode</backend_model>
                         <depends>
                             <field id="active">1</field>
                         </depends>
+                        <validate>required-entry validate-length minimum-length-2 maximum-length-20 validate-no-empty reach-default-hs-code-validator</validate>
                         <config_path>reach/dhl/default_hs_code</config_path>
                     </field>
                     <field id="export_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Export" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
