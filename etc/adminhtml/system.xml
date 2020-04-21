@@ -183,6 +183,13 @@
                         <validate>required-entry validate-length minimum-length-2 maximum-length-20 validate-no-empty reach-default-hs-code-validator</validate>
                         <config_path>reach/dhl/default_hs_code</config_path>
                     </field>
+                    <!-- Default Country of Origin of a Product - related to Default HS Code -->
+                    <field id="default_country_of_origin" translate="label" type="multiselect" sortOrder="115" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Default Country of Origin</label>
+                        <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                        <can_be_empty>1</can_be_empty>
+                        <config_path>reach/dhl/default_country_of_origin</config_path>
+                    </field>
                     <field id="export_csv_hs_code" translate="label" type="Reach\Payment\Block\Adminhtml\Form\Field\Export" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Export CSV of HS Code</label>
                         <depends>
