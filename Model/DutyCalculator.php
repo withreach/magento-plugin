@@ -551,7 +551,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
         if ($quote->getId()) {
             $request=[];
-            $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
+            $request['pickupAccount'] = $this->reachHelper->getDhlPickupAccount();
             $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
             $request['pricingStrategy']=$this->reachHelper->getPricingStrategy();
             $request['senderAddress']=$this->getShippingOrigin();//['state'=>'FL','country'=>'US'];
@@ -577,11 +577,18 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['skuNumber']=$item->getSku();
                 $itemData['itemValue']=['value'=>($item->getRowTotal() - $item->getDiscountAmount())/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
-                $itemData['countryOfOrigin'] = $this->getCountryOfOrigin($item->getSku());
-                if (!$itemData['countryOfOrigin']) {
-                    $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
+
+                //country of origin from uploaded hs code file
+                $countryOfOrigin = $this->getCountryOfOrigin($item->getSku());
+                if (!$countryOfOrigin) {
+                    $countryOfOrigin = $this->reachHelper->getDefaultCountryOfOrigin();
                 }
-                if ($this->reachHelper->getPrefTariffs() == 1 ) {
+                //country of origin from default country of origin drop down
+                if ($countryOfOrigin) {
+                    $itemData['countryOfOrigin'] = $countryOfOrigin;
+                }
+
+                if ($this->reachHelper->getPrefTariffs() == 1) {
                     $itemData['qualifiesForPreferentialTariffs'] = true;
                 } else {
                     $itemData['qualifiesForPreferentialTariffs'] = false;
