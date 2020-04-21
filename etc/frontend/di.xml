@@ -16,4 +16,10 @@
             </argument>
         </arguments>
     </type>
+    <!-- On currency switch we want to clean part of the checkout session. This plugin is introduced for that purpose -->
+    <type name="Magento\Directory\Controller\Currency\SwitchAction">
+        <plugin name="Reach_Payment_currency_switch_plugin"
+                type="Reach\Payment\Plugin\Magento\Directory\Controller\Currency\SwitchAction" sortOrder="1"
+                disabled="false"/>
+    </type>
 </config>

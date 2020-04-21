@@ -213,7 +213,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote = $this->checkoutSession->getQuote();
         $this->response->setDuty($quote->getReachDuty());
         $this->handleTaxApplicability($address, $apply);
-        $this->_logger->debug('Country is specified but state is not selected (when both are needed); so we would'.
+        $this->_logger->debug('Country is specified but state is not selected (when both are needed) or the selection of (country, state) combo didnot change; so we would'.
             'prevent call to DHL API');
     }
 
@@ -426,7 +426,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $this->_logger->debug('Previous and current country selections are the same');
                 $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
                 //if chosen country is one of the special countries where state is needed
-                //but state is either not specified
+                //but state is either not specified or did not change
                 if (in_array($address->getCountryId(), $countries_require_state, true)) {
                     if ((($this->checkoutSession->getPrevRegion() == $address->getRegionCode())
                         &&  $this->checkoutSession->getPrevRegion() !='')
