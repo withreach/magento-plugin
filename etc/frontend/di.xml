@@ -22,4 +22,10 @@
                 type="Reach\Payment\Plugin\Magento\Directory\Controller\Currency\SwitchAction" sortOrder="1"
                 disabled="false"/>
     </type>
+    <!-- Removing `you will be charged for message from Magento checkout sidebar`. This plugin is introduced for that purpose -->
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="Reach_Payment_checkout_sidebar_plugin"
+                type="Reach\Payment\Plugin\Magento\Checkout\Block\Checkout\LayoutProcessor" sortOrder="1"
+                disabled="false"/>
+    </type>
 </config>
