@@ -18,7 +18,8 @@ use Reach\Payment\Model\Api\HttpRestFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManager;
 use Magento\Framework\UrlInterface;
-use  Magento\Store\Model\Store;
+use Magento\Store\Model\Store;
+use Magento\Payment\Model\InfoInterface;
 
 class CcTest extends TestCase
 {
@@ -91,6 +92,10 @@ class CcTest extends TestCase
 
     protected $coreUrl;
 
+    /**
+     * @var InfoInterface MockObject
+     */
+    protected $paymentObj;
 
     protected function setUp()
     {
@@ -104,7 +109,8 @@ class CcTest extends TestCase
         $this->reachPayment = $this->createMock('Reach\Payment\Model\Reach');
         $this->store = $this->createMock('Magento\Store\Model\Store');
         $this->storeManager = $this->createMock('Magento\Store\Model\StoreManager');
-        
+        $this->paymentObj = $this->createMock('Magento\Payment\Model\InfoInterface');
+        //$this->paymentObj->method()
         $this->cc = $objectManager->getObject('Reach\Payment\Model\Cc', [
                 'coreSession' => $this->_coresession,
                 'storeManager' => $this->storeManager,
@@ -150,6 +156,5 @@ class CcTest extends TestCase
               'Cc Disabled Case 4' => [ false, true, true, 1, 'reach_cc', false]
         ];
     }
-
 
 }

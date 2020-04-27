@@ -222,6 +222,14 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $this->errorHandler = $errorHandler;
     }
 
+    /**
+     * @return \Reach\Payment\Helper\Data
+     */
+    public function getReachHelper()
+    {
+        return $this->reachHelper;
+    }
+
     /** Why do we need both isAvailable and isActive
      * methods? Should not the first one be enough?
      **/

@@ -259,6 +259,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     public function convertCurrency($currencyCode, $amount)
     {
         $precision_adjusted = 0;
+        $precision = 0;
         if (isset($currencyCode)) {
             $reachCache = $this->cacher->loadDataFromCache();
             $this->_logger->debug("this is in cache :::" . json_encode($reachCache));

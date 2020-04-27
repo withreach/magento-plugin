@@ -4,6 +4,7 @@
 namespace Reach\Payment\Test\Unit\Model;
 
 
+use Magento\Payment\Model\Method\ConfigInterfaceFactory;
 use Reach\Payment\Model\Reach;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -14,9 +15,16 @@ use Reach\Payment\Model\Currency;
 use Reach\Payment\Helper\Data;
 use Magento\Checkout\Model\Session;
 use Reach\Payment\Model\Api\HttpRestFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\UrlInterface;
 
 class ReachTest extends TestCase
 {
+    /**
+     * @var Reach\Payment\Model\Cc
+     */
+    private $cc;
     /**
      * @var Reach\Payment\Model\Reach
      */
@@ -31,7 +39,7 @@ class ReachTest extends TestCase
     /**
      * @var  Currency MockObject
      */
-    protected $currencyModel;
+    protected $reachCurrency;
 
     /**
      * @var Data MockObject
@@ -47,11 +55,7 @@ class ReachTest extends TestCase
      * @var HttpRestFactory MockObject
      */
     protected $httpRestFactory;
-    /**
-     * @var Data MockObject
-     */
 
-    protected $helper;
     /**
      * @var bool
      */
@@ -62,7 +66,26 @@ class ReachTest extends TestCase
      * @var string
      */
 
+
     private $methodName = 'Card';
+
+
+/**
+ * @var ScopeConfigInterface MockObject
+ */
+protected $scopeConfig;
+
+/**
+ *  @var StoreManagerInterface MockObject
+ */
+protected $storeManager;
+
+/**
+ * @var UrlInterface MockObject
+ */
+
+protected $coreUrl;
+
 
     protected function setUp()
     {
@@ -71,19 +94,70 @@ class ReachTest extends TestCase
         $this->_coresession = $this->createMock('Magento\Framework\Session\SessionManagerInterface');
         $this->checkoutSession = $this->createMock('Magento\Checkout\Model\Session');
         $this->httpRestFactory = $this->createMock('Reach\Payment\Model\Api\HttpRestFactory');
-        $this->currencyModel = $this->createMock('Reach\Payment\Model\Currency');
+        $this->reachCurrency = $this->createMock('Reach\Payment\Model\Currency');
         $this->reachHelper = $this->createMock('Reach\Payment\Helper\Data');
-
-        $this->reach = $objectManager->getObject(Reach::class,
+        $this->reachPayment = $this->createMock(Reach::class);
+        $this->storeManager = $this->createMock(StoreManagerInterface::class);
+        /*$this->reach = $objectManager->getObject(Reach::class,
             [ 'coreSession' => $this->_coresession,
-              'currencyModel' => $this->currencyModel,
+              'reachCurrency' => $this->reachCurrency,
               'reachHelper' => $this->reachHelper,
               'checkoutSession' => $this->checkoutSession,
               'httpRestFactory' => $this->httpRestFactory
-            ]);
+            ]);*/
+        $this->cc = $objectManager->getObject(Cc::class,
+        [
+        'storeManager' => $this->storeManager,
+        'reachHelper' => $this->reachHelper,
+        'coreUrl' => $this->coreUrl,
+        'reachCurrency' => $this->reachCurrency,
+        'reachPayment' => $this->reachPayment,
+        'httpTextFactory' => $this->httpTextFactory
+            ]
+        );
 
     }
 
+    /**
+     * @param $localizeCurrency
+     * @param $currencyArray1
+     * @param $currencyArray2
+     * @dataProvider expandedLocalizeCurrencyProvider
+     */
+    public function testGetLocalize($localizeCurrency, $currencyArray1, $currencyArray2)
+    {
+        $this->_coresession->expects($this->once())->method('getLocalize')->willReturn($currencyArray1);
+        $this->reachCurrency->expects($this->once())->method('getLocalizeCurrency')->willReturn($currencyArray2);
+        $this->assertEquals($localizeCurrency, $this->reach->getLocalize()['currency']);
+    }
+
+    public function expandedLocalizeCurrencyProvider()
+    {
+        return [
+
+            "About CAD" => ['CAD',
+                  null,
+                 [
+                    'currency'=>'CAD',
+                    'symbol'=>'$',
+                    'country'=>'CA'
+                ]
+            ],
+            "About USD" => ['USD',
+                 [
+                    'currency'=>'USD',
+                    'symbol'=>'$',
+                    'country'=>'US'
+                 ],
+                 [
+                    'currency'=>'CAD',
+                    'symbol'=>'$',
+                    'country'=>'CA'
+                ]
+            ]
+
+        ];
+    }
 
 
     /**
@@ -93,8 +167,8 @@ class ReachTest extends TestCase
      */
     public function testLocalizeCurrency($currency, $currencyArray)
     {
-        $this->currencyModel->expects($this->once())->method('getLocalizeCurrency')->willReturn($currencyArray);
-        $this->assertEquals($currency, $this->currencyModel->getLocalizeCurrency()['currency']);
+        $this->reachCurrency->expects($this->once())->method('getLocalizeCurrency')->willReturn($currencyArray);
+        $this->assertEquals($currency, $this->reachCurrency->getLocalizeCurrency()['currency']);
     }
 
     public function localizeCurrencyProvider()
@@ -102,18 +176,18 @@ class ReachTest extends TestCase
         return [
 
              "About CAD" => ['CAD',
-                    $currencyArray = [
+                     [
                         'currency'=>'CAD',
                         'symbol'=>'$',
                         'country'=>'CA'
                     ]
              ],
             "About USD" => ['USD',
-                $currencyArray = [
+                  [
                     'currency'=>'USD',
                     'symbol'=>'$',
                     'country'=>'US'
-                ]
+                 ]
             ]
 
         ];
