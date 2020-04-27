@@ -213,7 +213,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote = $this->checkoutSession->getQuote();
         $this->response->setDuty($quote->getReachDuty());
         $this->handleTaxApplicability($address, $apply);
-        $this->_logger->debug('Country is specified but state is not selected (when both are needed) or the selection of (country, state) combo didnot change; so we would'.
+        $this->_logger->debug('Country is specified but state is not selected (when both are needed) or the selection of (country, state) combo did not change; so we would'.
             'prevent call to DHL API');
     }
 
@@ -578,12 +578,13 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['itemValue']=['value'=>($item->getRowTotal() - $item->getDiscountAmount())/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
 
-                //country of origin from uploaded hs code file
+                //country of origin from `uploaded hs code file`
                 $countryOfOrigin = $this->getCountryOfOrigin($item->getSku());
                 if (!$countryOfOrigin) {
+                    //country of origin from `default country of origin drop down`
                     $countryOfOrigin = $this->reachHelper->getDefaultCountryOfOrigin();
                 }
-                //country of origin from default country of origin drop down
+                //country of origin from `uploaded hscode file` or `default country of origin` drop down
                 if ($countryOfOrigin) {
                     $itemData['countryOfOrigin'] = $countryOfOrigin;
                 }
