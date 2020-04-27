@@ -36,6 +36,7 @@ class Data extends AbstractHelper
     const DHL_ITEM_SELLER = "reach/dhl/item_seller";
     const DHL_PICKUP_ACCOUNT =  "reach/dhl/pickup_account";
     const DHL_DEFAULT_HS_CODE =  "reach/dhl/default_hs_code";
+    const DHL_DEFAULT_COUNTRY_ORIGIN = "reach/dhl/default_country_of_origin";
 
     const CONFIG_REACH_ENABLED = 'reach/global/active';
     const CONFIG_CURRENCY_OPTION = 'reach/global/display_currency_switch';
@@ -569,5 +570,12 @@ class Data extends AbstractHelper
     public function getDhlApplicableShippings()
     {
         return $this->getConfigValue(self::DHL_DUTY_ALLOW_SHIPPING, $this->storeManager->getStore()->getId());
+    }
+
+
+    public function getDefaultCountryOfOrigin()
+    {
+        return $this->getConfigValue(self::DHL_DEFAULT_COUNTRY_ORIGIN, $this->storeManager->getStore()->getId());
+
     }
 }

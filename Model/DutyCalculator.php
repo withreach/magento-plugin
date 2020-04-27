@@ -213,7 +213,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $quote = $this->checkoutSession->getQuote();
         $this->response->setDuty($quote->getReachDuty());
         $this->handleTaxApplicability($address, $apply);
-        $this->_logger->debug('Country is specified but state is not selected (when both are needed); so we would'.
+        $this->_logger->debug('Country is specified but state is not selected (when both are needed) or the selection of (country, state) combo did not change; so we would'.
             'prevent call to DHL API');
     }
 
@@ -426,7 +426,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $this->_logger->debug('Previous and current country selections are the same');
                 $this->response->setIsOptional($this->getIsOptional($address->getCountryId()));
                 //if chosen country is one of the special countries where state is needed
-                //but state is either not specified
+                //but state is either not specified or did not change
                 if (in_array($address->getCountryId(), $countries_require_state, true)) {
                     if ((($this->checkoutSession->getPrevRegion() == $address->getRegionCode())
                         &&  $this->checkoutSession->getPrevRegion() !='')
@@ -551,7 +551,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 
         if ($quote->getId()) {
             $request=[];
-            $request['pickupAccount'] = $this->reachHelper ->getDhlPickupAccount();
+            $request['pickupAccount'] = $this->reachHelper->getDhlPickupAccount();
             $request['itemSeller']= $this->reachHelper->getDhlItemSeller();
             $request['pricingStrategy']=$this->reachHelper->getPricingStrategy();
             $request['senderAddress']=$this->getShippingOrigin();//['state'=>'FL','country'=>'US'];
@@ -577,11 +577,19 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['skuNumber']=$item->getSku();
                 $itemData['itemValue']=['value'=>($item->getRowTotal() - $item->getDiscountAmount())/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
-                $itemData['countryOfOrigin'] = $this->getCountryOfOrigin($item->getSku());
-                if (!$itemData['countryOfOrigin']) {
-                    $itemData['countryOfOrigin'] = $request['senderAddress']['country'];
+
+                //country of origin from `uploaded hs code file`
+                $countryOfOrigin = $this->getCountryOfOrigin($item->getSku());
+                if (!$countryOfOrigin) {
+                    //country of origin from `default country of origin drop down`
+                    $countryOfOrigin = $this->reachHelper->getDefaultCountryOfOrigin();
                 }
-                if ($this->reachHelper->getPrefTariffs() == 1 ) {
+                //country of origin from `uploaded hscode file` or `default country of origin` drop down
+                if ($countryOfOrigin) {
+                    $itemData['countryOfOrigin'] = $countryOfOrigin;
+                }
+
+                if ($this->reachHelper->getPrefTariffs() == 1) {
                     $itemData['qualifiesForPreferentialTariffs'] = true;
                 } else {
                     $itemData['qualifiesForPreferentialTariffs'] = false;
