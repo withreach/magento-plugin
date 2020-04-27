@@ -578,12 +578,13 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $itemData['itemValue']=['value'=>($item->getRowTotal() - $item->getDiscountAmount())/$item->getQty(),'currency'=>$quote->getQuoteCurrencyCode()];
                 $itemData['itemQuantity']=['value'=>$item->getQty(),'unit'=>"PCS"];
 
-                //country of origin from uploaded hs code file
+                //country of origin from `uploaded hs code file`
                 $countryOfOrigin = $this->getCountryOfOrigin($item->getSku());
                 if (!$countryOfOrigin) {
+                    //country of origin from `default country of origin drop down`
                     $countryOfOrigin = $this->reachHelper->getDefaultCountryOfOrigin();
                 }
-                //country of origin from default country of origin drop down
+                //country of origin from `uploaded hscode file` or `default country of origin` drop down
                 if ($countryOfOrigin) {
                     $itemData['countryOfOrigin'] = $countryOfOrigin;
                 }
