@@ -6,16 +6,22 @@
 
 class CallbackTest extends \Magento\TestFramework\TestCase\AbstractController
 {
+    //@magentoDbIsolation disabled : to be able to check the value in db; read about db isolation here
+    // http://dusanlukic.com/annotations-in-magento-2-integration-tests : it is interesting
+    //on the other hand @magentoAppIsolation
+    //When this annotation is enabled, the application will be restarted on each test run.
     /**
      * @magentoAppIsolation enabled
      * @magentoDataFixture Reach/Payment/Test/Integration/_files/order_express.php
      * @magentoAppArea frontend
+
      */
     public function testExecute()
     {   //https://stackoverflow.com/a/7493389
         //https://stackoverflow.com/a/16652301
         //$this->expectOutputString(''); // tell PHPUnit to expect '' as output
 
+        //tables involved `sales_order` `sales_order_address`
         /**
          * @var $objectManager \Magento\TestFramework\ObjectManager
          */
