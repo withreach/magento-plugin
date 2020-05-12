@@ -1,7 +1,7 @@
 <?php
 
 //How to run:
-//from command prompt
+//from command prompt and running from the parent directory of app/...
 //php7.3 vendor/phpunit/phpunit/phpunit -c /opt/magento/public_html/dev/tests/integration/phpunit.xml app/code/Reach/Payment/Test/Integration/Controller/CallbackTest.php  --debug
 
 class CallbackTest extends \Magento\TestFramework\TestCase\AbstractController
@@ -9,7 +9,8 @@ class CallbackTest extends \Magento\TestFramework\TestCase\AbstractController
     //@magentoDbIsolation disabled : to be able to check the value in db; read about db isolation here
     // http://dusanlukic.com/annotations-in-magento-2-integration-tests : it is interesting
     //on the other hand @magentoAppIsolation
-    //When this annotation is enabled, the application will be restarted on each test run.
+    //When this annotation is enabled, the application will be restarted (i.e. re- instantiate almost everything ;
+    //would be useful as for example while dealing with singleton ) on each test run.
     /**
      * @magentoAppIsolation enabled
      * @magentoDataFixture Reach/Payment/Test/Integration/_files/order_express.php
