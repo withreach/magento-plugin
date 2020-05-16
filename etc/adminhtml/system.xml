@@ -14,7 +14,7 @@
                     <depends>
                         <field id="active">1</field>
                     </depends>
-                    <config_path>reach/global/mearchant_id</config_path>
+                    <config_path>reach/global/merchant_id</config_path>
                     <validate>required-entry</validate>
                 </field>
                 <field id="api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="4" translate="label" type="obscure">
