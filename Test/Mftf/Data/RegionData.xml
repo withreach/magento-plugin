@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+
+    <entity name="RegionBC" type="region">
+        <data key="region">British Columbia</data>
+        <data key="region_code">British Columbia</data>
+        <data key="region_id">67</data>
+    </entity>
+</entities>

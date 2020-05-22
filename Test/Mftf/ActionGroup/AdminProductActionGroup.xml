@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <!--Fill main fields in create product form-->
+    <actionGroup name="fillMainProductForm">
+        <arguments>
+            <argument name="product" defaultValue="_defaultProduct"/>
+        </arguments>
+        <fillField selector="" userInput="" stepKey="fillProductName"/>
+        <fillField selector="" userInput="" stepKey="fillProductSku"/>
+        <fillField selector="" userInput="" stepKey="fillProductPrice"/>
+        <fillField selector="" userInput="" stepKey="fillProductQty"/>
+        <selectOption selector="" userInput="" stepKey="selectStockStatus"/>
+        <selectOption selector="" userInput="This item has weight" stepKey="selectWeight"/>
+        <fillField selector="" userInput="" stepKey="fillProductWeight"/>
+        <click selector="" stepKey="openSeoSection"/>
+        <fillField userInput="" selector="" stepKey="fillUrlKey"/>
+    </actionGroup>
+</actionGroups>
