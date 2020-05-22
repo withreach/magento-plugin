@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="CreateSimpleExperimentalProductTest">
+        <annotations>
+            <features value="Catalog"/>
+            <stories value="Create Product"/>
+            <title value="Admin should be able to create simple product."/>
+            <description value="Admin should be able to create simple product."/>
+            <severity value="MAJOR"/>
+            <group value="Catalog"/>
+            <group value="alex" />
+        </annotations>
+        <before>
+            <!-- Login to Admin panel -->
+            <actionGroup ref="LoginAsAdmin" stepKey="loginToAdminPanel" />
+        </before>
+        <after>
+            <!-- Logout from Admin panel -->
+        </after>
+
+        <!-- Navigate to Catalog -> Products page (or just open by link) -->
+        <amOnPage url="mag_admin/catalog/product" stepKey="openProductGridPage" />
+        <waitForPageLoad stepKey="waitForProductGridPageLoaded" />
+
+        <!-- Click "Add Product" button -->
+        <actionGroup ref="goToCreateProductPage" stepKey="goToCreateProductPage" />
+        <fillField selector="" userInput="" stepKey="fillProductName"/>
+        <actionGroup ref="fillMainProductForm" stepKey="fillProductForm">
+            <argument name="product" value="_defaultProduct" />
+        </actionGroup>
+
+        <!-- See success save message "You saved the product." -->
+        <actionGroup ref="saveProductForm" stepKey="clickSaveOnProductForm" />
+
+        <!--<actionGroup ref="AssertProductInGridActionGroup" stepKey="assertProductInGrid" />-->
+
+        <!-- Open Storefront Product Page and verify "Name", "SKU", "Price" -->
+        <actionGroup ref="AssertProductInStorefrontProductPage" stepKey="assertProductInStorefrontProductPage">
+            <argument name="product" value="_defaultProduct" />
+        </actionGroup>
+    </test>
+</tests>
