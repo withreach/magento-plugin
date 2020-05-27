@@ -43,7 +43,7 @@ class Data extends AbstractHelper
     const CONFIG_CURRENCY_ALLOW_SPECIFIC = 'reach/global/allowspecific';
     const CONFIG_CURRENCY_SPECIFIC_COUNTRY = 'reach/global/specificcountry';
     const CONFIG_API_MODE = 'reach/global/mode';
-    const CONFIG_MERCHANT_ID = 'reach/global/mearchant_id';
+    const CONFIG_MERCHANT_ID = 'reach/global/merchant_id';
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
 
