@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="OnePageCheckoutAsCustomerUsingCAAddressTest">
+        <annotations>
+            <features value="OnePageCheckout"/>
+            <stories value="OnePageCheckout within Offline Payment Methods"/>
+            <title value="OnePageCheckout as customer using new address test"/>
+            <description value="Checkout as customer using new address"/>
+            <severity value="CRITICAL"/>
+            <testCaseId value="MAG-CheckOutDHL"/>
+            <group value="checkout"/>
+            <group value="mtf_migrated"/>
+        </annotations>
+        <before>
+            <!-- Create Simple Product -->
+            <createData entity="SimpleProduct2" stepKey="createSimpleProduct">
+                <field key="price">65</field>
+            </createData>
+
+            <!-- Create customer -->
+            <createData entity="Simple_CA_Customer" stepKey="createSimpleCustomer"/>
+        </before>
+        <after>
+            <!-- Admin log out -->
+            <actionGroup ref="logout" stepKey="logout"/>
+
+            <!-- Customer log out -->
+            <actionGroup ref="StorefrontCustomerLogoutActionGroup" stepKey="customerLogout"/>
+
+        </after>
+
+        <!-- Add Simple Product to cart -->
+        <amOnPage url="{{StorefrontProductPage.url($$createSimpleProduct.custom_attributes[url_key]$$)}}" stepKey="navigateToSimpleProductPage"/>
+        <waitForPageLoad stepKey="waitForSimpleProductPageLoad"/>
+        <actionGroup ref="addToCartFromStorefrontProductPage" stepKey="addToCartFromStorefrontProductPage">
+            <argument name="productName" value="$$createSimpleProduct.name$$"/>
+        </actionGroup>
+
+        <!-- Go to shopping cart -->
+        <actionGroup ref="clickViewAndEditCartFromMiniCart" stepKey="goToShoppingCartFromMinicart"/>
+        <actionGroup ref="FillShippingZipForm" stepKey="fillShippingZipForm">
+            <argument name="address" value="CA_Address_BC"/>
+        </actionGroup>
+        <click selector="{{CheckoutCartSummarySection.proceedToCheckout}}" stepKey="clickProceedToCheckout"/>
+        <waitForPageLoad stepKey="waitForProceedToCheckout"/>
+
+        <!-- Login using Sign In link from checkout page -->
+        <actionGroup ref="LoginAsCustomerUsingSignInLinkActionGroup" stepKey="customerLogin">
+            <argument name="customer" value="$$createSimpleCustomer$$"/>
+        </actionGroup>
+
+        <!-- Add new address -->
+        <!--  <click selector="{{CheckoutShippingSection.newAddressButton}}" stepKey="addNewAddress"/>-->
+
+        <!-- Fill in required fields and save -->
+        <!-- <actionGroup ref="FillShippingAddressOneStreetActionGroup" stepKey="changeAddress">
+            <argument name="address" value="CA_Address_BC"/>
+        </actionGroup>-->
+        <!-- <click selector="{{CheckoutShippingSection.saveAddress}}" stepKey="saveNewAddress"/>
+        <waitForPageLoad stepKey="waitForAddressSaving"/>-->
+
+        <grabTextFrom selector=".reach-tax-duty .label" stepKey="grabDutyTax"/>
+        <assertEquals message="This is an optional human readable hint that will be shown in the logs if this assert fails." stepKey="assertEquals1">
+            <expectedResult type="string">{$grabDutyTax}</expectedResult>
+            <actualResult type="string">Pay Tax and Duties $7.80</actualResult>
+        </assertEquals>
+
+
+        <!-- Click next button to open payment section -->
+        <click selector="{{CheckoutShippingSection.next}}" stepKey="clickNext"/>
+        <waitForPageLoad stepKey="waitForShipmentPageLoad"/>
+
+        <!-- Change the address -->
+        <!-- <uncheckOption selector="{{CheckoutPaymentSection.billingAddressNotSameCheckbox}}" stepKey="selectPaymentSolution" />-->
+        <!-- <click selector="{{CheckoutPaymentSection.editAddress}}" stepKey="editAddress"/>
+        <waitForElementVisible selector="{{CheckoutShippingSection.addressDropdown}}" stepKey="waitForAddressDropDownToBeVisible"/>
+        <selectOption selector="{{CheckoutShippingSection.addressDropdown}}" userInput="New Address" stepKey="addAddress"/>
+        <waitForPageLoad stepKey="waitForNewAddressForm"/>
+        <actionGroup ref="LoggedInCheckoutFillNewBillingAddressActionGroup" stepKey="changeBillingAddress">
+            <argument name="Address" value="CA_Address_BC"/>
+        </actionGroup>-->
+        <!--<click selector="{{CheckoutShippingSection.updateAddress}}" stepKey="saveAddress"/>
+        <waitForPageLoad stepKey="waitForAddressSaved"/>
+        -->
+
+
+
+        <!-- Place order -->
+        <click selector="{{CheckoutPaymentSection.placeOrder}}" stepKey="clickPlaceOrder"/>
+        <waitForPageLoad stepKey="waitForCheckoutPaymentSectionPageLoad" />
+        <seeElement selector="{{CheckoutSuccessMainSection.success}}" stepKey="orderIsSuccessfullyPlaced"/>
+        <grabTextFrom selector="{{CheckoutSuccessMainSection.orderNumber22}}" stepKey="grabOrderNumber"/>
+
+        <!-- Login as admin -->
+        <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+
+        <!-- Open created order in backend -->
+        <amOnPage url="{{AdminOrdersPage.url}}" stepKey="goToOrders"/>
+        <waitForPageLoad stepKey="waitForOrdersPageLoad"/>
+        <actionGroup ref="OpenOrderById" stepKey="filterOrderGridById">
+            <argument name="orderId" value="$grabOrderNumber"/>
+        </actionGroup>
+
+        <!-- Assert order total -->
+        <!--<scrollTo selector="{{AdminOrderTotalSection.grandTotal}}" stepKey="scrollToOrderTotalSection"/>
+        <see selector="{{AdminOrderTotalSection.grandTotal}}" userInput="$65.00" stepKey="checkOrderTotalInBackend"/>
+        -->
+        <!-- Assert order addresses -->
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.street[0]}}" stepKey="seeBillingAddressStreet"/>
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.city}}" stepKey="seeBillingAddressCity"/>
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.postcode}}" stepKey="seeBillingAddressPostcode"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.street[0]}}" stepKey="seeShippingAddressStreet"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.city}}" stepKey="seeShippingAddressCity"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.postcode}}" stepKey="seeShippingAddressPostcode"/>
+    </test>
+</tests>
