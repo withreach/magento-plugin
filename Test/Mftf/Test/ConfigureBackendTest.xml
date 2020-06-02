@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ConfigureBackendTest">
+        <annotations>
+            <features value="ConfigureBackendTest"/>
+            <stories value="Version 1: Configure Reach DT and Payment(DHL, CC and PayPal) from Magento Admin "/>
+            <title value="Version 1: Configure Reach DHL, CC and PayPal from Magento Admin"/>
+            <description value="Set up reach payment from backend so that those appears on front end"/>
+            <severity value="CRITICAL"/>
+            <testCaseId value="MAG-ReachPaymentConfigured"/>
+            <group value="ReachPayment"/>
+        </annotations>
+        <before>
+            <!-- Login as admin -->
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <waitForPageLoad stepKey="waitForPageLoadStep0" />
+        </before>
+
+
+        <!-- Am I seeing store? -->
+        <see selector="#menu-magento-backend-stores > a > span"  userInput="Stores" stepKey="seeStoreOption" />
+        <click selector="#menu-magento-backend-stores > a > span" stepKey="clickSetupStore"/>
+        <waitForPageLoad stepKey="waitForProceedToStoreConfigStep1" />
+        <!-- goto store payment config page -->
+
+
+        <!-- Am I seeing the config? -->
+        <see selector=".item-system-config span"  userInput="Configuration" stepKey="seePayment"/>
+        <click selector=".item-system-config span" stepKey="clickSetupStoreConfig"/>
+        <waitForPageLoad stepKey="waitForProceedToConfigSetupstep2" />
+
+        <!-- Am I seeing sales? -->
+        <click selector=".config-nav-block:nth-child(5) strong" stepKey="clickSetupStoreConfigstep3"/>
+        <waitForPageLoad stepKey="waitForProceedToConfigSetupstep3" />
+
+
+
+        <!-- Am I seeing payment? -->
+
+        <click selector=".config-nav-block:nth-child(5) .admin__page-nav-item:nth-child(10) span" stepKey="clickSetupStoreConfigstep4"/>
+        <waitForPageLoad stepKey="waitForProceedToConfigSetupstep4" />
+        <see selector="#payment_us_reach_payment-head"  userInput="Reach(GoInterpay)" stepKey="seeInterPayToggleDropDown"/>
+        <click selector="#payment_us_reach_payment-head"  stepKey="seeInterPayToggleDropDownExpnad"/>
+        <wait time="30" stepKey="ExtraWaitTimeBeforeControlExpands"/>
+        <see selector="#payment_us_reach_payment_active" userInput="yes" stepKey="seeReachPaymentEnabled"/>
+
+
+        <!-- Is proper config value set from commandline and then cache was flushed previously? -->
+        <!-- grabTextFrom vs grabValueFrom
+        https://webkul.com/blog/how-to-use-variable-in-magento-functional-testing-framework/
+        -->
+        <grabValueFrom selector="#payment_us_reach_payment_merchantId" stepKey="grabMerchantId"/>
+        <assertEquals message="Merchant ID is not configured right (This is an optional human readable hint that will be shown in the logs if this assert fails.)"
+                      stepKey="checkingPreviouslyLoadedValue">
+            <expectedResult type="string">{{_ENV.MERCHANT_ID}}</expectedResult> <!--needle-->
+            <actualResult type="string">{$grabMerchantId}</actualResult>  <!--haystack-->
+        </assertEquals>
+        <after>
+            <!--collapse the control after grabbing merchant id from expanded control otherwise it would fail
+             because of the expanded control being collapsed with a click and then seeing enable disable status/merchant id
+              - that type of verifications would fail -->
+            <click selector="#payment_us_reach_payment-head"  stepKey="seeInterPayToggleDropDownCollapse" before="logout"/>
+            <wait time="30" stepKey="ExtraWaitTimeBeforeControlCollapse"/>
+            <!-- Admin log out -->
+            <actionGroup ref="logout" stepKey="logout"/>
+        </after>
+        <!-- Login to store front and check that the configured payment options are available  -->
+    </test>
+</tests>

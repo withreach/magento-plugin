@@ -21,6 +21,10 @@
             <!-- Create customer -->
             <createData entity="Simple_CA_Customer" stepKey="createSimpleCustomer"/>
         </before>
+        <after>
+            <deleteData createDataKey="createSimpleCustomer" stepKey="deleteCustomer" />
+            <deleteData createDataKey="createSimpleProduct" stepKey="deleteProduct" />
+        </after>
 
 
         <!-- Add Simple Product to cart -->
@@ -54,7 +58,7 @@
         <waitForPageLoad stepKey="waitForAddressSaving"/>-->
         <waitForText userInput="Pay Tax and Duties " selector=".reach-tax-duty .label" stepKey="waitForText1" />
         <grabTextFrom selector=".reach-tax-duty .label" stepKey="grabDutyTax"/>
-        <assertContains message="This is an optional human readable hint that will be shown in the logs if this assert fails." stepKey="assertEquals1">
+        <assertContains message="This is an optional human readable hint that will be shown in the logs if this assert fails." stepKey="assertContains1">
             <expectedResult type="string">Pay Tax and Duties </expectedResult> <!--needle-->
             <actualResult type="string">{$grabDutyTax}</actualResult>  <!--haystack-->
         </assertContains>
