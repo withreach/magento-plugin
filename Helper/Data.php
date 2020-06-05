@@ -578,4 +578,10 @@ class Data extends AbstractHelper
         return $this->getConfigValue(self::DHL_DEFAULT_COUNTRY_ORIGIN, $this->storeManager->getStore()->getId());
 
     }
+
+    /**
+     * this is to store payment methods returned from reach API call for a particular merchnat, country, currency combo
+     * @var array
+     */
+    public $paymentMethods;
 }

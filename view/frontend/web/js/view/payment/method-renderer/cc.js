@@ -72,14 +72,28 @@ define([
                 this.getDeviceFingerPrint();
                 return this;
             },
-
             getDeviceFingerPrint:function (){
                 var s = document.createElement("script");
                 s.type = "text/javascript";
                 s.src = this.getFingerprinturl();
                 $("head").append(s);
             },
-
+            getCcAvailableTypes: function () {
+                //got idea from here: https://webkul.com/blog/adding-additional-variables-in-window-checkoutconfig-on-magento-2-checkout-page/
+                //return window.checkoutConfig.payment.ccform.availableTypes[this.getCode()];
+                console.log(window.checkoutConfig.payment.reach_cc.availableTypes);
+                return window.checkoutConfig.payment.reach_cc.availableTypes;
+            },
+            getIcons: function (type) {
+                //console.log(window.checkoutConfig.payment.reach_cc.icons);
+                console.log(type);
+                console.log(window.checkoutConfig.payment.reach_cc.icons[type]);
+                //return window.checkoutConfig.payment.reach_cc.icons;
+                //return window.checkoutConfig.payment.ccform.icons;
+                return window.checkoutConfig.payment.reach_cc.icons.hasOwnProperty(type) ?
+                    window.checkoutConfig.payment.reach_cc.icons[type]
+                    : false;
+            },
             getFingerprinturl:function(){
                return window.checkoutConfig.reach.fingerprint_url;
             },

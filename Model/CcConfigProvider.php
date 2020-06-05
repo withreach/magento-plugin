@@ -5,6 +5,7 @@ namespace Reach\Payment\Model;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
 use Magento\Payment\Helper\Data as PaymentHelper;
+use Magento\Payment\Model\CcConfig;
 
 class CcConfigProvider implements ConfigProviderInterface
 {
@@ -12,6 +13,8 @@ class CcConfigProvider implements ConfigProviderInterface
      * @var string[]
      */
     protected $methodCode = Cc::METHOD_CC;
+
+    const superTypeCcPaymentMethod = 'Card';
 
     /**
      * @var Checkmo
@@ -49,8 +52,26 @@ class CcConfigProvider implements ConfigProviderInterface
     protected $coreUrl;
 
     /**
+     * @var CcConfig
+     */
+    protected $ccConfig;
+
+    /**
+     *  @var \Psr\Log\LoggerInterface
+     */
+    protected $_logger;
+
+
+    /**
      * @param PaymentHelper $paymentHelper
      * @param Escaper $escaper
+     * @param \Magento\Framework\UrlInterface $coreUrl
+     * @param \Reach\Payment\Helper\Data $reachHelper
+     * @param \Reach\Payment\Model\Contract $openContract
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param CcConfig $ccConfig
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         PaymentHelper $paymentHelper,
@@ -59,7 +80,9 @@ class CcConfigProvider implements ConfigProviderInterface
         \Reach\Payment\Model\Contract $openContract,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Customer\Model\Session $customerSession,
-        Escaper $escaper
+        Escaper $escaper,
+        CcConfig $ccConfig,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->escaper = $escaper;
         $this->coreUrl = $coreUrl;
@@ -68,6 +91,9 @@ class CcConfigProvider implements ConfigProviderInterface
         $this->openContract = $openContract;
         $this->checkoutSession = $checkoutSession;
         $this->method = $paymentHelper->getMethodInstance($this->methodCode);
+        $this->ccConfig = $ccConfig;
+        $this->_logger = $logger;
+
     }
 
     /**
@@ -79,8 +105,13 @@ class CcConfigProvider implements ConfigProviderInterface
             'payment' => [
                 'reach_cc' => [
                     'oc_enabled'=>(boolean)$this->reachHelper->getAllowOpenContract(),
-                    'open_contracts'=>$this->getOpenContracts()
-                ],
+                    'open_contracts'=>$this->getOpenContracts(),
+                     //got idea from here: https://webkul.com/blog/adding-additional-variables-in-window-checkoutconfig-on-magento-2-checkout-page/
+                    'availableTypes'=> $this->getCcAvailableTypes('Card'), //has something like
+                    // ["AE"=>"American Express","VI"=>"Visa"]]
+
+                    'icons' => $this->getIcons()
+                ]
             ],
         ] : [];
     }
@@ -107,5 +138,56 @@ class CcConfigProvider implements ConfigProviderInterface
             }
         }
         return $contracts;
+    }
+    /** @var CcConfig
+     */
+
+    private $icons = [];
+
+    /**
+     * Get icons for available payment methods
+     *
+     * @return array
+     */
+    public function getIcons()
+    {
+        //https://magento.stackexchange.com/a/195972
+        $types = $this->getCcAvailableTypes(self::superTypeCcPaymentMethod);//has something like
+        // ["ae"=>"American Express","vi"=>"Visa"] in it;
+        foreach ($types as $code => $label) {
+            if (!array_key_exists($code, $this->icons)) {
+                $asset = $this->ccConfig->createAsset('Magento_Payment::images/cc/' . strtolower($code) . '.png');
+                list($width, $height) = getimagesize($asset->getSourceFile());
+                $this->icons[$code] = [
+                    'url' => $asset->getUrl(),
+                    'width' => $width,
+                    'height' => $height,
+                    'title' => __($label),
+                ];
+            }
+        }
+        $this->_logger->debug('Icons:::'.json_encode($this->icons));
+        return $this->icons;
+    }
+
+
+    protected function getCcAvailableTypes($methodCode)
+    {
+        //Mapping from card ids in our system into shortened name that maps to card images that comes with magento_payment
+        // module ; this is to be able to retrieve correct image asset info and reuse what comes with magento_payment
+        // module
+        $mapping=["AMEX"=>"AE", "VISA"=>"VI","DINERS"=>"DN","MC"=>"MC","DISC"=>"DI","JCB"=>"JCB","Diners"=>"DN",
+            'MAESTRO'=>'MI', 'ELECTRON'=> 'EL'];
+
+        $availableTypes=[];
+        foreach ($this->reachHelper->paymentMethods[$methodCode] as $item) {
+            $availableTypes[ $mapping[$item["Id"]]] = $item["Name"];
+        }
+
+        $this->_logger->debug("payment type stored into helper:::".json_encode(
+            $this->reachHelper->paymentMethods[$methodCode]));
+
+        $this->_logger->debug('Payment types:::'.json_encode($availableTypes));
+        return $availableTypes;
     }
 }
