@@ -69,6 +69,12 @@ class Data extends AbstractHelper
     protected $storeManager;
 
     /**
+     * this is to store payment methods returned from reach API call for a particular merchnat, country, currency combo
+     * @var array
+     */
+    protected $paymentMethods;
+
+    /**
      * @param Context $context
      * @param EncryptorInterface $enc
      * @param ScopeConfigInterface $config
@@ -579,9 +585,22 @@ class Data extends AbstractHelper
 
     }
 
+
     /**
-     * this is to store payment methods returned from reach API call for a particular merchnat, country, currency combo
-     * @var array
+     * @return  array
      */
-    public $paymentMethods;
+    public function getPaymentMethods()
+    {
+        return $this->paymentMethods;
+    }
+
+
+    /**
+     * @param  array
+     */
+    public function setPaymentMethods($methods)
+    {
+           $this->paymentMethods = $methods;
+    }
+
 }

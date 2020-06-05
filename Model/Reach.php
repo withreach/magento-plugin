@@ -67,7 +67,8 @@ class Reach
         if($this->reachHelper->getReachEnabled()) {
 
             $methods = $this->fetchPaymentMethods();
-            $this->reachHelper->paymentMethods = $methods;
+            $this->reachHelper->setPaymentMethods($methods);
+
             if (array_key_exists('Card', $methods) && $method == \Reach\Payment\Model\Cc::METHOD_CC) {
                 $available = true;
             }

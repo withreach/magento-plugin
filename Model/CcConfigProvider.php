@@ -180,12 +180,14 @@ class CcConfigProvider implements ConfigProviderInterface
             'MAESTRO'=>'MI', 'ELECTRON'=> 'EL'];
 
         $availableTypes=[];
-        foreach ($this->reachHelper->paymentMethods[$methodCode] as $item) {
+        $methodCodeList = $this->reachHelper->getPaymentMethods()[$methodCode];
+
+        foreach ($methodCodeList as $item) {
             $availableTypes[ $mapping[$item["Id"]]] = $item["Name"];
         }
 
         $this->_logger->debug("payment type stored into helper:::".json_encode(
-            $this->reachHelper->paymentMethods[$methodCode]));
+                $methodCodeList));
 
         $this->_logger->debug('Payment types:::'.json_encode($availableTypes));
         return $availableTypes;
