@@ -14,7 +14,7 @@ use \Magento\Payment\Model\CcConfig;
 use \Psr\Log\LoggerInterface;
 use \Magento\Framework\UrlInterface;
 use \Reach\Payment\Model\CcConfigProvider;
-use Magento\Framework\Filesystem\Io\File;
+
 
 class CcConfigProviderTest extends \PHPUnit\Framework\TestCase
 {
