@@ -108,7 +108,7 @@ class CcConfigProvider implements ConfigProviderInterface
                     'open_contracts'=>$this->getOpenContracts(),
                      //got idea from here: https://webkul.com/blog/adding-additional-variables-in-window-checkoutconfig-on-magento-2-checkout-page/
                     'availableTypes'=> $this->getCcAvailableTypes('Card'), //has something like
-                    // ["AE"=>"American Express","VI"=>"Visa"]]
+                    // ["AE"=>"American Express","VI"=>"Visa"]
 
                     'icons' => $this->getIcons()
                 ]
@@ -171,7 +171,7 @@ class CcConfigProvider implements ConfigProviderInterface
     }
 
 
-    protected function getCcAvailableTypes($methodCode)
+    public function getCcAvailableTypes($methodCode)
     {
         //Mapping from card ids in our system into shortened name that maps to card images that comes with magento_payment
         // module ; this is to be able to retrieve correct image asset info and reuse what comes with magento_payment
