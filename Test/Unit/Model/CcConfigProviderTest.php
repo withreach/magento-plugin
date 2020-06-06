@@ -323,4 +323,9 @@ class CcConfigProviderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals( "American Express",$this->ccConfigProvider->getIcons()['AE']['title'], json_encode($this->ccConfigProvider->getIcons()));
     }
+
+    protected function tearDown()
+    {
+        unset($this->ccConfigProvider);
+    }
 }
