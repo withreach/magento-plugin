@@ -277,19 +277,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get display badge config
-     *
-     * @return boolean
-     */
-    //<FIXME> I see spelling mistake
-    //Also where is the self::CONFIG_DISPLAY_BADGE constant even defined?
-
-    public function getDisaplyBade()
-    {
-        return $this->getConfigValue(self::CONFIG_DISPLAY_BADGE, $this->storeManager->getStore()->getId());
-    }
-
-    /**
      * Get currency enable config
      *
      * @return boolean
