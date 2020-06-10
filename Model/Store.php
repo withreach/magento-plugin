@@ -125,7 +125,7 @@ class Store extends \Magento\Store\Model\Store
             if (!$this->isCountryApplicable()) {
                  return parent::getAvailableCurrencyCodes($skipBaseNotAllowed);
             }
-            if ($this->reachHelper->canAllowMultiPleCurrency()) {
+            if ($this->reachHelper->canAllowMultipleCurrency()) {
                 $codes = $this->currencyModel->getReachCurrencies();
                 if (count($codes)) {
                     return $codes;
@@ -189,7 +189,7 @@ class Store extends \Magento\Store\Model\Store
      */
     public function isCountryApplicable()
     {
-        if ($this->reachHelper->allowCurrencySpeicifcCountry()) {
+        if ($this->reachHelper->allowCurrencySpecificCountry()) {
             $allowed = $this->reachHelper->allowedCurrencyForCountries();
             $localized = $this->getLocalizedCurrency();
             $countries = explode(',', $allowed);

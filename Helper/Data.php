@@ -298,7 +298,7 @@ class Data extends AbstractHelper
      *
      * @return boolean
      */
-    public function canAllowMultiPleCurrency()
+    public function canAllowMultipleCurrency()
     {
         return $this->currencyOption == 'customer';
     }
@@ -309,7 +309,7 @@ class Data extends AbstractHelper
      */
     // <FIXME> spelling should be corrected in the function name and also where it is called
 
-    public function allowCurrencySpeicifcCountry()
+    public function allowCurrencySpecificCountry()
     {
         return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC, $this->storeManager->getStore()->getId());
     }
