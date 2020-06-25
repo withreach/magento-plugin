@@ -28,7 +28,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     /**
      *  @var \Psr\Log\LoggerInterface
      */
-    protected $_logger;
+    public $_logger;
 
     const PRECISION_CUTOFF = 2;
 

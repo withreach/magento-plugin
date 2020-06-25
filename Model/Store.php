@@ -123,14 +123,26 @@ class Store extends \Magento\Store\Model\Store
     {
         if (in_array($this->state->getAreaCode(), ['frontend','webapi_rest']) && $this->reachHelper->isReachCurrencyEnabled()) {
             if (!$this->isCountryApplicable()) {
-                 return parent::getAvailableCurrencyCodes($skipBaseNotAllowed);
+                $this->currencyModel->_logger->debug("No Country Filtering");
+                //shall remove this commented out section once the change is finalized
+                //or I assess whether applying that mask ($skipBaseNotAllowed) on what is
+                //returned from Reach API is needed or not.
+                //return parent::getAvailableCurrencyCodes($skipBaseNotAllowed);
+                return $this->currencyModel->getReachCurrencies();
             }
             if ($this->reachHelper->canAllowMultipleCurrency()) {
+                $this->currencyModel->_logger->debug("Multiple Currencies");
                 $codes = $this->currencyModel->getReachCurrencies();
+                $this->currencyModel->_logger->debug("Currency code from Magento ".json_encode(parent::getAvailableCurrencyCodes($skipBaseNotAllowed)));
+                $this->currencyModel->_logger->debug("Currency codes from Reach ".json_encode($codes));
+                //what to do if nothing is returned from our api call?
+                //and what if the intersection is empty
                 if (count($codes)) {
-                    return $codes;
+                    $filteredCodes = array_intersect(parent::getAvailableCurrencyCodes($skipBaseNotAllowed), $codes);
+                    return $filteredCodes;
                 }
             } else {
+                $this->currencyModel->_logger->debug("Single Currency");
                 $localized  = $this->getLocalizedCurrency();
                 if ($localized && isset($localized['currency'])) {
                     return [$localized['currency']];
