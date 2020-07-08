@@ -69,7 +69,7 @@ class Data extends AbstractHelper
     protected $storeManager;
 
     /**
-     * this is to store payment methods returned from reach API call for a particular merchnat, country, currency combo
+     * this is to store payment methods returned from reach API call for a particular merchant, country, currency combo
      * @var array
      */
     protected $paymentMethods;
