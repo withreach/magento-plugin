@@ -29,6 +29,9 @@ class Cc extends \Magento\Payment\Model\Method\Cc
     const METHOD_CC = 'reach_cc';
 
     /**
+     * For the purpose of configuration management within Magento,
+     * unrelated to REACH API payment methods
+     *
      * Payment method code
      *
      * @var string

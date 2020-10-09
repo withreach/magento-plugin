@@ -1,0 +1,258 @@
+<?php
+
+
+namespace Reach\Payment\Test\Unit\Model\Order;
+
+
+
+use Magento\Framework\Model\Context;
+use Magento\Payment\Helper\Data as Data;
+use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Sales\Api\CreditmemoManagementInterface;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
+use Magento\Sales\Model\Order\Invoice;
+use Magento\Sales\Model\Order\OrderStateResolverInterface;
+use Magento\Sales\Model\Order\Payment;
+use Magento\Sales\Model\Order\Payment\Transaction;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
+
+use Magento\Payment\Model\Method\ConfigInterfaceFactory;
+use Reach\Payment\Model\Reach;
+use PHPUnit\Framework\TestCase;
+
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+
+use Magento\Framework\Session\SessionManagerInterface;
+use Reach\Payment\Model\Currency;
+use Reach\Payment\Helper\Data as ReachData;
+use Magento\Checkout\Model\Session;
+use Reach\Payment\Model\Api\HttpRestFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManager;
+use Magento\Framework\UrlInterface;
+use Magento\Store\Model\Store;
+use Magento\Payment\Model\InfoInterface;
+
+
+class PaymentTest extends TestCase
+{
+
+    /**
+     * @var Reach\Payment\Model\Cc
+     */
+    private $cc;
+    /**
+     * @var Reach MockObject
+     */
+    private $reach;
+
+    /**
+     * @var  SessionManagerInterface MockObject
+     */
+
+    protected $_coresession;
+
+    /**
+     * @var  Currency MockObject
+     */
+    protected $reachCurrency;
+
+    /**
+     * @var Data MockObject
+     */
+    protected $reachHelper;
+
+    /**
+     * @var Session MockObject
+     */
+    protected $checkoutSession;
+
+    /**
+     * @var HttpRestFactory MockObject
+     */
+    protected $httpRestFactory;
+
+    /**
+     * @var bool
+     */
+
+    private $example = true;
+
+    /**
+     * @var string
+     */
+
+
+    const PATH = 'payment/reach_cc/active';
+
+
+    /**
+     * @var ScopeConfigInterface MockObject
+     */
+    protected $scopeConfig;
+
+    /**
+     *  @var StoreManager MockObject
+     */
+    protected $storeManager;
+
+    /**
+     * @var Store MockObject
+     */
+    protected $store;
+    /**
+     * @var UrlInterface MockObject
+     */
+
+    protected $coreUrl;
+
+    /**
+     * @var InfoInterface MockObject
+     */
+    protected $paymentObj;
+
+    /** @var \Magento\Framework\Event\Manager | \PHPUnit_Framework_MockObject_MockObject */
+    private $eventManagerMock;
+
+    /** @var \Magento\Directory\Model\PriceCurrency | \PHPUnit_Framework_MockObject_MockObject */
+    private $priceCurrencyMock;
+
+    /** @var \Magento\Sales\Model\Order | \PHPUnit_Framework_MockObject_MockObject $orderMock */
+    private $orderMock;
+
+    /** @var \Magento\Payment\Model\Method\AbstractMethod | \PHPUnit_Framework_MockObject_MockObject $orderMock */
+    private $paymentMethodMock;
+
+    /** @var \Magento\Sales\Model\Order\Invoice | \PHPUnit_Framework_MockObject_MockObject $orderMock */
+    private $invoiceMock;
+
+    protected function setUp()
+    {
+        $this->eventManagerMock = $this->getMockBuilder('Magento\Framework\Event\Manager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $context = $this->getMockBuilder('Magento\Framework\Model\Context')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $context->expects($this->once())
+            ->method('getEventDispatcher')
+            ->will($this->returnValue($this->eventManagerMock));
+
+        $objectManager = new ObjectManager($this);
+
+        $this->_coresession = $this->getMockBuilder('Magento\Framework\Session\SessionManagerInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->checkoutSession = $this->getMockBuilder('Magento\Checkout\Model\Session');
+        $this->httpRestFactory = $this->getMockBuilder('Reach\Payment\Model\Api\HttpRestFactory');
+        $this->reachCurrency = $this->getMockBuilder('Reach\Payment\Model\Currency');
+        $this->reachHelper = $this->getMockBuilder('Reach\Payment\Helper\Data');
+        $this->reachPayment = $this->getMockBuilder('Reach\Payment\Model\Reach');
+        $this->store = $this->getMockBuilder('Magento\Store\Model\Store');
+        $this->storeManager = $this->getMockBuilder('Magento\Store\Model\StoreManager');
+        $this->paymentObj = $this->getMockBuilder('Magento\Payment\Model\InfoInterface');
+
+
+        //$this->paymentObj->method()
+        /*$this->cc = $objectManager->getObject('Reach\Payment\Model\Cc', [
+                'coreSession' => $this->_coresession,
+                'storeManager' => $this->storeManager,
+                'reachHelper' => $this->reachHelper,
+                'reachCurrency' => $this->reachCurrency,
+                'reachPayment' => $this->reachPayment,
+            ]
+        );*/
+        
+        
+
+    }
+
+    /**
+     * @param $expectedOutcome
+     * @param $isReachEnabled
+     * @param $isReachCcEnabled
+     * @param $storeId
+     * @param $paymentMethod
+     * @param $isPaymentMethodAvailable
+     * @dataProvider ccDataProvider
+     */
+    public function testCcIsAvailable($expectedOutcome, $isReachEnabled, $isReachCcEnabled, $storeId, $paymentMethod, $isPaymentMethodAvailable)
+    {
+
+
+        $this->store->method('getId')->willReturn($storeId);
+        $this->storeManager->method('getStore')->willReturn($this->store );
+
+
+        $this->reachHelper->expects($this->once())->method('getReachEnabled')->willReturn($isReachEnabled);
+        $this->reachHelper->expects($this->any())->method('getCreditCardActive')->with(self::PATH, $this->storeManager->getStore()->getId())->willReturn($isReachCcEnabled);
+        $this->reachPayment->expects($this->any())->method('isAvailable')->with($paymentMethod)->willReturn($isPaymentMethodAvailable);
+        $this->assertEquals($expectedOutcome, $this->cc->isAvailable());
+    }
+
+
+    public function ccDataProvider()
+    {
+        return [
+            'Cc Enabled Case 1' => [ true, true, true, 1, 'reach_cc', true],
+            'Cc Disabled Case 1' => [ false, false, true, 1, 'reach_cc', true],
+            'Cc Disabled Case 2' => [ false, false, false, 1, 'reach_cc', true],
+            'Cc Disabled Case 3' => [ false, true, false, 1, 'reach_cc', true],
+            'Cc Disabled Case 4' => [ false, true, true, 1, 'reach_cc', false]
+        ];
+    }
+
+
+    public function testAuthorize()
+    {
+        $payment = $this->paymentObj;
+        $amount = 30.45;
+        $request =  [
+            'MerchantId' => '12345',
+            'ReferenceId' => 1,
+            'Consumer' => null,
+            'Notify' => 'some url',
+            'ConsumerCurrency' =>'CAD',
+            'RateOfferId' => 3,
+            'DeviceFingerprint' => 'xyzwert',
+            'ContractId' =>'contract 1',
+            'StashId' =>'xyz',
+
+            'PaymentMethod' => 'reach_cc',
+            'OpenContract' => true,
+            'Items' =>[
+                [
+                    'Sku' => 'S12345',
+                    'ConsumerPrice'=>34.0,
+                    'Quantity' => 2
+                ]
+            ],
+            'ShippingRequired'=> true,
+            'Shipping' => [
+                'ConsumerDuty' => 7.02,
+                'ConsumerPrice' => 34.0,
+                'ConsumerTaxes' =>3.0,
+
+            ] ,
+            'ConsumerTotal' => 44.02,
+            'Capture' => false
+        ];
+
+
+        $response = ['response'=> [], 'signature' => ''];
+
+        //$this->cc->method("validateResponse")->with($response['response'], $response['signature'])->willReturn(true);
+
+        $checkOutUrl = 'place_holder_url';
+        //$this->cc->method("_buildCheckoutRequest")->with($payment, $amount)->willReturn($request);
+        $this->reachHelper->method('getCheckOutUrl')->willReturn($checkOutUrl);
+        $this->cc->method("callCurl")->with($checkOutUrl, $request)->willReturn($response);
+        var_dump($request);
+        var_dump($response);
+        $this->assertEquals(true, $response==[]);
+    }
+
+}

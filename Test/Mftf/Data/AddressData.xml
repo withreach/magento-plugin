@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="CA_Address_BC" type="address">
+        <data key="firstname">John2</data>
+        <data key="lastname">Doe2</data>
+        <data key="company">Magento</data>
+        <array key="street">
+            <item>7700 Richmond</item>
+        </array>
+        <data key="city">Victoria</data>
+        <data key="state">British Columbia</data>
+        <data key="country_id">CA</data>
+        <data key="country">Canada</data>
+        <data key="postcode">V2E 3C9</data>
+        <data key="telephone">512-345-6789</data>
+        <data key="default_billing">Yes</data>
+        <data key="default_shipping">Yes</data>
+        <requiredEntity type="region">RegionBC</requiredEntity>
+    </entity>
+    <entity name="CA_Address_BC_Default_Billing" type="address">
+        <data key="firstname">John2</data>
+        <data key="lastname">Doe2</data>
+        <data key="company">Magento</data>
+        <array key="street">
+            <item>7700 Richmond</item>
+        </array>
+        <data key="city">Victoria</data>
+        <data key="state">British Columbia</data>
+        <data key="country_id">CA</data>
+        <data key="country">Canada</data>
+        <data key="postcode">V2E 3C9</data>
+        <data key="telephone">512-345-6789</data>
+        <data key="default_billing">Yes</data>
+       <requiredEntity type="region">RegionBC</requiredEntity>
+    </entity>
+
+    <entity name="CA_Address_BC_Default_Shipping" type="address">
+        <data key="firstname">John2</data>
+        <data key="lastname">Doe2</data>
+        <data key="company">Magento</data>
+        <array key="street">
+            <item>7700 Richmond</item>
+        </array>
+        <data key="city">Victoria</data>
+        <data key="state">British Columbia</data>
+        <data key="country_id">CA</data>
+        <data key="country">Canada</data>
+        <data key="postcode">V2E 3C9</data>
+        <data key="telephone">512-345-6789</data>
+        <data key="default_shipping">Yes</data>
+        <requiredEntity type="region">RegionBC</requiredEntity>
+    </entity>
+    <entity name="CA_Default_Billing_Address_BC" type="address" extends="CA_Address_BC">
+        <data key="default_billing">true</data>
+        <data key="default_shipping">true</data>
+    </entity>
+    <entity name="CA_Default_Shipping_Address_BC" type="address" extends="CA_Address_BC">
+        <data key="default_billing">true</data>
+        <data key="default_shipping">true</data>
+    </entity>
+</entities>

@@ -33,6 +33,7 @@ class Reach
      */
     protected $httpRestFactory;
 
+
     /**
      * Constructor
      *
@@ -64,7 +65,10 @@ class Reach
     {
         $available = false;
         if($this->reachHelper->getReachEnabled()) {
+
             $methods = $this->fetchPaymentMethods();
+            $this->reachHelper->setPaymentMethods($methods);
+
             if (array_key_exists('Card', $methods) && $method == \Reach\Payment\Model\Cc::METHOD_CC) {
                 $available = true;
             }
@@ -85,7 +89,6 @@ class Reach
      */
     protected function fetchPaymentMethods()
     {
-
         $localize = $this->getLocalize();
         $currencyCode = $this->checkoutSession->getQuote()->getQuoteCurrencyCode();
         if (!$localize || !isset($localize['country'])) {

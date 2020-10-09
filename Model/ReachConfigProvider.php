@@ -16,9 +16,15 @@ class ReachConfigProvider implements ConfigProviderInterface
     protected $reachHelper;
 
     /**
+     * @var \Reach\Payment\Helper\Misc
+     */
+    protected $miscHelper;
+
+    /**
      * @var  \Magento\Checkout\Model\Session
      */
     protected $checkoutSession;
+
 
     /**
      * @var  \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
@@ -36,17 +42,20 @@ class ReachConfigProvider implements ConfigProviderInterface
       * @param \Magento\Checkout\Model\Session $checkoutSession
       * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $addressService
       * @param \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
+      * @param \Reach\Payment\Helper\Misc $miscHelper
       */
     public function __construct(
         \Reach\Payment\Helper\Data $reachHelper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $addressService,
-        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory
+        \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
+        \Reach\Payment\Helper\Misc $miscHelper
     ) {
         $this->reachHelper = $reachHelper;
         $this->checkoutSession = $checkoutSession;
         $this->addressService  = $addressService;
         $this->httpRestFactory = $httpRestFactory;
+        $this->miscHelper = $miscHelper;
     }
 
      /**
@@ -88,7 +97,7 @@ class ReachConfigProvider implements ConfigProviderInterface
         $url = $this->reachHelper->getApiUrl();
         $url = $url.'badge?MerchantId='.$this->reachHelper->getMerchantId();
         $ip = $this->getConsumerIp();
-        if (!$this->checkLocalIP($ip)) {
+        if (!$this->miscHelper->checkLocalIP($ip)) {
             $url = $url.'&ConsumerIpAddress='.$ip;
         }
         $rest->setUrl($url);
@@ -123,23 +132,6 @@ class ReachConfigProvider implements ConfigProviderInterface
         return $ip;
     }
 
-    /**
-     * check IP is local machine IP
-     * @param  string $ip
-     * @return boolean
-     */
-    protected function checkLocalIP($ip)
-    {
-        //Ryan's code from MAG-75 (to be able to test payment code properly).
-        //In future this method should be moved to some util or helper file to increase reusability.
-        //I noticed duplication of this method/code in our extension.
-        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
-        {
-            // is a local ip address
-            return true;
-        }
-        return false;
-    }
      /**
      * Get fingerprint url
      *

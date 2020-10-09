@@ -11,6 +11,11 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     protected $reachHelper;
 
     /**
+     * @var \Reach\Payment\Helper\Misc
+     */
+    protected $miscHelper;
+
+    /**
      * @var \Reach\Payment\Model\Api\HttpRestFactory
      */
     protected $httpRestFactory;
@@ -23,7 +28,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     /**
      *  @var \Psr\Log\LoggerInterface
      */
-    protected $_logger;
+    public $_logger;
 
     const PRECISION_CUTOFF = 2;
 
@@ -44,6 +49,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
      * @param \Reach\Payment\Model\ResourceModel\Currency\Collection $collection
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Reach\Payment\Helper\Cacher $cacher
+     * @param \Reach\Payment\Helper\Misc $miscHelper
      * @param array $data = []
      */
     public function __construct(
@@ -56,6 +62,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         \Reach\Payment\Model\ResourceModel\Currency\Collection $collection,
         \Psr\Log\LoggerInterface $logger,
         \Reach\Payment\Helper\Cacher $cacher,
+        \Reach\Payment\Helper\Misc $miscHelper,
         array $data = []
     ) {
 
@@ -64,6 +71,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         $this->addressService  = $addressService;
         $this->_logger = $logger;
         $this->cacher = $cacher;
+        $this->miscHelper = $miscHelper;
         parent::__construct($context, $registry, $resource, $collection, $data);
     }
 
@@ -161,7 +169,7 @@ class Currency extends \Magento\Framework\Model\AbstractModel
         $url = $this->reachHelper->getApiUrl();
         $url = $url.'localize?MerchantId='.$this->reachHelper->getMerchantId();
         $ip = $this->getConsumerIp();
-        if (!$this->checkLocalIP($ip)) {
+        if (!$this->miscHelper->checkLocalIP($ip)) {
             $url = $url.'&ConsumerIpAddress='.$ip;
         }
         $rest->setUrl($url);
@@ -224,23 +232,6 @@ class Currency extends \Magento\Framework\Model\AbstractModel
     {
         $ip =  $this->addressService->getRemoteAddress();
         return $ip;
-    }
-
-    /**
-     * check IP is local machine IP
-     * @param  string $ip
-     * @return boolean
-     */
-    protected function checkLocalIP($ip)
-    {
-        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
-        {
-            // is a local ip address
-            $this->_logger->debug('Using a local IP address');
-            return true;
-        }
-        $this->_logger->debug('Using a public IP address');
-        return false;
     }
 
 

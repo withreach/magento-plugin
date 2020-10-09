@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="CheckoutWithAuthCaptureReachCCTest">
+        <annotations>
+            <features value="CheckoutWithAuthCaptureReachCCTest"/>
+            <stories value="OnePageCheckout with Credit Card Auth Capture Payment Action Mode"/>
+            <title value="OnePageCheckout with Credit Card Auth Capture Payment Action Mode"/>
+            <description value="OnePageCheckout with Credit Card Auth Capture Payment Action Mode"/>
+            <severity value="CRITICAL"/>
+            <testCaseId value="MAG-133"/>
+            <group value="checkoutwithcc"/>
+            <group value="mtf_migrated"/>
+        </annotations>
+        <before>
+            <!-- Create Simple Product -->
+            <createData entity="SimpleProduct2" stepKey="createSimpleProduct">
+                <field key="price">65</field>
+            </createData>
+            <!-- Create customer -->
+            <createData entity="Simple_CA_Customer" stepKey="createSimpleCustomer"/>
+
+
+            <!-- Login as admin -->
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <waitForPageLoad stepKey="waitForPageLoadStep0" />
+            <!--<see selector="#payment_us_reach_payment-head"  userInput="Reach(GoInterpay)" stepKey="seeInterPayToggleDropDown"/>-->
+
+            <click selector="{{AdminConfigSection.stores}}" stepKey="clickOnStores"/>
+            <waitForPageLoad stepKey="waitForConfiguration" time="2"/>
+            <click stepKey="clickOnConfigurations" selector="{{AdminConfigSection.configuration}}"/>
+            <waitForPageLoad stepKey="waitForSales" time="2"/>
+            <click stepKey="clickOnSales" selector="{{ConfigurationListSection.sales}}"/>
+            <waitForPageLoad stepKey="waitForPaymentMethods" time="2"/>
+            <click stepKey="clickOnPaymentMethods" selector="{{ConfigurationListSection.salesPaymentMethods}}"/>
+            <waitForPageLoad stepKey="waitForConfigureButton" time="2"/>
+
+            <conditionalClick selector="{{ReachConfigSection.reachPaymentHead}}" stepKey="clickInterPayControlExpand" dependentSelector="{{ReachConfigSection.checkIfReachPaymentHeadExpand}}" visible="true"/>
+            <waitForPageLoad stepKey="waitForReachSectionToExpand" time="2"/>
+            <conditionalClick selector="{{ReachConfigSection.reachPaymentCCHead}}" stepKey="clickReachPaymentControlExpand" dependentSelector="{{ReachConfigSection.checkIfReachPaymentCCExpand}}" visible="true"/>
+            <waitForPageLoad stepKey="waitForReachPaymentSectionToExpand" time="2"/>
+            <selectOption userInput='authorize_capture' selector="{{ReachConfigSection.reachPaymentAction}}" stepKey="clickReachPaymentAction"/>
+            <waitForPageLoad stepKey="waitForReachPaymentActionToStabilize" time="2"/>
+
+
+            <!--<magentoCLI command="config:set payment/reach_cc/payment_action 'authorize_capture'" stepKey="paymentAction"/>-->
+            <!--<magentoCLI command="config:set payment/reach_cc/payment_action authorize_capture" stepKey="paymentAction"/>-->
+            <click stepKey="save" selector="{{AdminConfigSection.save}}"/>
+        </before>
+        <after>
+            <deleteData createDataKey="createSimpleCustomer" stepKey="deleteCustomer" />
+            <deleteData createDataKey="createSimpleProduct" stepKey="deleteProduct" />
+        </after>
+
+        <magentoCLI command="cache:clean config" stepKey="clearCache" />
+        <!-- Admin log out -->
+        <actionGroup ref="logout" stepKey="logout" />
+
+        <!-- Add Simple Product to cart -->
+        <amOnPage url="{{StorefrontProductPage.url($$createSimpleProduct.custom_attributes[url_key]$$)}}" stepKey="navigateToSimpleProductPage"/>
+        <waitForPageLoad stepKey="waitForSimpleProductPageLoad"/>
+        <actionGroup ref="addToCartFromStorefrontProductPage" stepKey="addToCartFromStorefrontProductPage">
+            <argument name="productName" value="$$createSimpleProduct.name$$"/>
+        </actionGroup>
+
+        <!-- Go to shopping cart -->
+        <actionGroup ref="clickViewAndEditCartFromMiniCart" stepKey="goToShoppingCartFromMinicart"/>
+        <actionGroup ref="FillShippingZipForm" stepKey="fillShippingZipForm">
+            <argument name="address" value="CA_Address_BC"/>
+        </actionGroup>
+        <click selector="{{CheckoutCartSummarySection.proceedToCheckout}}" stepKey="clickProceedToCheckout"/>
+        <waitForPageLoad stepKey="waitForProceedToCheckout" />
+
+        <!-- Login using Sign In link from checkout page -->
+       <actionGroup ref="LoginAsCustomerUsingSignInLinkActionGroup" stepKey="customerLogin">
+            <argument name="customer" value="$$createSimpleCustomer$$"/>
+        </actionGroup>
+
+        <!-- Add new address -->
+        <!--  <click selector="{{CheckoutShippingSection.newAddressButton}}" stepKey="addNewAddress"/>-->
+
+        <!-- Fill in required fields and save -->
+        <!-- <actionGroup ref="FillShippingAddressOneStreetActionGroup" stepKey="changeAddress">
+            <argument name="address" value="CA_Address_BC"/>
+        </actionGroup>-->
+        <!-- <click selector="{{CheckoutShippingSection.saveAddress}}" stepKey="saveNewAddress"/>
+        <waitForPageLoad stepKey="waitForAddressSaving"/>-->
+        <waitForText userInput="Pay Tax and Duties " selector=".reach-tax-duty .label" stepKey="waitForText1" />
+        <grabTextFrom selector=".reach-tax-duty .label" stepKey="grabDutyTax"/>
+        <assertContains message="This is an optional human readable hint that will be shown in the logs if this assert fails." stepKey="assertContains1">
+            <expectedResult type="string">Pay Tax and Duties </expectedResult> <!--needle-->
+            <actualResult type="string">{$grabDutyTax}</actualResult>  <!--haystack-->
+        </assertContains>
+
+        <click selector=".reach-tax-duty .checkbox-inline" stepKey="clickTaxDuty"/>
+        <!-- <waitForAjaxLoad stepKey="waitForAjaxLoad1"/>-->
+        <!-- Click next button to open payment section -->
+        <waitForLoadingMaskToDisappear stepKey="waitForLoadingMaskToDisappear1" />
+        <click selector="{{CheckoutShippingSection.next}}" stepKey="clickNext"/>
+        <waitForPageLoad stepKey="waitForShipmentPageLoad"/>
+
+
+        <click stepKey="clickSelectCreditCardRadioButton" selector="#reach_cc" />
+        <!--<waitForElementVisible selector="#billing-address-same-as-shipping-reach_cc" stepKey="address_same"/>-->
+        <!--<click selector="#billing-address-same-as-shipping-reach_cc" stepKey="choseSameAddress" />-->
+        <fillField selector="#reach_cc_cc_number" userInput="{{_ENV.CC_NUMBER}}" stepKey="ccNumber"/>
+        <fillField selector="#reach_cc_cc_name" userInput="Oscar Grouch" stepKey="cardOwnerName"/>
+        <selectOption selector="#reach_cc_expiration" userInput="{{_ENV.CC_EXPIRATION_MONTH}}"  stepKey="fillExpirationMonth"/>
+        <selectOption selector="#reach_cc_expiration_yr" userInput="{{_ENV.CC_EXPIRATION_YEAR}}" stepKey="fillExpirationYear"/>
+        <fillField selector="#reach_cc_cc_cid.input-text.cvv" userInput="{{_ENV.CC_CVV}}" stepKey="fillCVV"/>
+
+        <makeScreenshot userInput="cc_payment_based_checkout" stepKey="capturePaymentPage" after="fillCVV"/>
+        <!-- Change the address -->
+        <!-- <uncheckOption selector="{{CheckoutPaymentSection.billingAddressNotSameCheckbox}}" stepKey="selectPaymentSolution" />-->
+        <!-- <click selector="{{CheckoutPaymentSection.editAddress}}" stepKey="editAddress"/>
+        <waitForElementVisible selector="{{CheckoutShippingSection.addressDropdown}}" stepKey="waitForAddressDropDownToBeVisible"/>
+        <selectOption selector="{{CheckoutShippingSection.addressDropdown}}" userInput="New Address" stepKey="addAddress"/>
+        <waitForPageLoad stepKey="waitForNewAddressForm"/>
+        <actionGroup ref="LoggedInCheckoutFillNewBillingAddressActionGroup" stepKey="changeBillingAddress">
+            <argument name="Address" value="CA_Address_BC"/>
+        </actionGroup>-->
+        <!--<click selector="{{CheckoutShippingSection.updateAddress}}" stepKey="saveAddress"/>
+        <waitForPageLoad stepKey="waitForAddressSaved"/>
+        -->
+
+        <!--<waitForAjaxLoad stepKey="waitForAjaxLoad2"/>-->
+        <!--<waitForLoadingMaskToDisappear stepKey="waitForLoadingMaskToDisappear2" />-->
+        <!-- Place order -->
+        <click selector=".action.primary.checkout" stepKey="clickPlaceOrder"/>
+        <waitForPageLoad stepKey="waitForCheckoutPaymentSectionPageLoad" />
+        <seeElement selector="{{CheckoutSuccessMainSection.success}}" stepKey="orderIsSuccessfullyPlaced"/>
+        <grabTextFrom selector="{{CheckoutSuccessMainSection.orderNumber22}}" stepKey="grabOrderNumber"/>
+
+        <!-- Login as admin -->
+        <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+
+        <!-- Open created order in backend -->
+        <amOnPage url="{{AdminOrdersPage.url}}" stepKey="goToOrders"/>
+        <waitForPageLoad stepKey="waitForOrdersPageLoad"/>
+        <actionGroup ref="OpenOrderById" stepKey="filterOrderGridById">
+            <argument name="orderId" value="$grabOrderNumber"/>
+        </actionGroup>
+
+        <!-- Assert order total -->
+        <!--<scrollTo selector="{{AdminOrderTotalSection.grandTotal}}" stepKey="scrollToOrderTotalSection"/>
+        <see selector="{{AdminOrderTotalSection.grandTotal}}" userInput="$65.00" stepKey="checkOrderTotalInBackend"/>
+        -->
+        <!-- Assert order addresses -->
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.street[0]}}" stepKey="seeBillingAddressStreet"/>
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.city}}" stepKey="seeBillingAddressCity"/>
+        <see selector="{{AdminShipmentAddressInformationSection.billingAddress}}" userInput="{{CA_Address_BC.postcode}}" stepKey="seeBillingAddressPostcode"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.street[0]}}" stepKey="seeShippingAddressStreet"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.city}}" stepKey="seeShippingAddressCity"/>
+        <see selector="{{AdminShipmentAddressInformationSection.shippingAddress}}" userInput="{{CA_Address_BC.postcode}}" stepKey="seeShippingAddressPostcode"/>
+    </test>
+</tests>

@@ -14,13 +14,14 @@
                                                  _active: $parent.selectedCardType() == item.value,
                                                  _inactive: $parent.selectedCardType() != null && $parent.selectedCardType() != item.value
                                                  } ">
+
                     <!--ko if: $parent.getIcons(item.value) -->
                     <img data-bind="attr: {
                         'src': $parent.getIcons(item.value).url,
-                        'alt': item.type,
+                        'alt': $parent.getIcons(item.value).title,
                         'width': $parent.getIcons(item.value).width,
                         'height': $parent.getIcons(item.value).height
-                        }">
+                        }" />
                     <!--/ko-->
                 </li>
                 <!--/ko-->
@@ -31,7 +32,7 @@
                    value=""
                    data-bind="attr: {id: getCode() + '_cc_type', 'data-container': getCode() + '-cc-type'},
                    value: creditCardType
-                   ">
+                   "/>
         </div>
     </div>
     <div class="field number required">

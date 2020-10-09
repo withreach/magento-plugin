@@ -106,7 +106,8 @@ class ReachCurrency extends \Magento\Directory\Model\Currency
     {
         if (in_array($this->state->getAreaCode(), ['frontend','webapi_rest']) && $this->reachHelper->isReachCurrencyEnabled()) {
             if (!$this->_storeManager->getStore()->isCountryApplicable()) {
-                return parent::getRate($toCurrency); //where is this $toCurrency coming from???
+                return parent::getRate($currency); //it used to be $toCurrency ... where was it coming from???
+                // I think it should be $currency
             }
             $rates = $this->currencyModel->getReachCurrencyRates();
             if (count($rates)) {

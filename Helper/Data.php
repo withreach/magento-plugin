@@ -43,7 +43,7 @@ class Data extends AbstractHelper
     const CONFIG_CURRENCY_ALLOW_SPECIFIC = 'reach/global/allowspecific';
     const CONFIG_CURRENCY_SPECIFIC_COUNTRY = 'reach/global/specificcountry';
     const CONFIG_API_MODE = 'reach/global/mode';
-    const CONFIG_MERCHANT_ID = 'reach/global/mearchant_id';
+    const CONFIG_MERCHANT_ID = 'reach/global/merchant_id';
     const CONFIG_API_SECRET = 'reach/global/api_secret';
 
 
@@ -67,6 +67,12 @@ class Data extends AbstractHelper
     protected $_enc;
     protected $config;
     protected $storeManager;
+
+    /**
+     * this is to store payment methods returned from reach API call for a particular merchant, country, currency combo
+     * @var array
+     */
+    protected $paymentMethods;
 
     /**
      * @param Context $context
@@ -271,19 +277,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get display badge config
-     *
-     * @return boolean
-     */
-    //<FIXME> I see spelling mistake
-    //Also where is the self::CONFIG_DISPLAY_BADGE constant even defined?
-
-    public function getDisaplyBade()
-    {
-        return $this->getConfigValue(self::CONFIG_DISPLAY_BADGE, $this->storeManager->getStore()->getId());
-    }
-
-    /**
      * Get currency enable config
      *
      * @return boolean
@@ -305,7 +298,7 @@ class Data extends AbstractHelper
      *
      * @return boolean
      */
-    public function canAllowMultiPleCurrency()
+    public function canAllowMultipleCurrency()
     {
         return $this->currencyOption == 'customer';
     }
@@ -316,7 +309,7 @@ class Data extends AbstractHelper
      */
     // <FIXME> spelling should be corrected in the function name and also where it is called
 
-    public function allowCurrencySpeicifcCountry()
+    public function allowCurrencySpecificCountry()
     {
         return $this->getConfigValue(self::CONFIG_CURRENCY_ALLOW_SPECIFIC, $this->storeManager->getStore()->getId());
     }
@@ -578,4 +571,23 @@ class Data extends AbstractHelper
         return $this->getConfigValue(self::DHL_DEFAULT_COUNTRY_ORIGIN, $this->storeManager->getStore()->getId());
 
     }
+
+
+    /**
+     * @return  array
+     */
+    public function getPaymentMethods()
+    {
+        return $this->paymentMethods;
+    }
+
+
+    /**
+     * @param  array
+     */
+    public function setPaymentMethods($methods)
+    {
+           $this->paymentMethods = $methods;
+    }
+
 }
