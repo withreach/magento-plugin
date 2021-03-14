@@ -70,7 +70,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
      *
      * @return string
      */
-    protected function getAccessToken() {
+    public function getAccessToken() {
 
         if ( $this->isTokenValid() )
             return $this->getCachedToken();
@@ -124,7 +124,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
         }
 
         if (!$result) {
-            $this->_logger->debug("No DHL access token or expired");
+            $this->logger->debug("No DHL access token or expired");
         }
 
         return $result;
@@ -152,7 +152,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
             $tokenExpiry = new DateTime('NOW');
             $tokenExpiry->modify("+ {$seconds} seconds");
             $this->session->setTokenExpires($tokenExpiry);
-            $this->_logger->debug("DHL access token expiry {$seconds} s.  expires @ {$this->session->getTokenExpires()->format('Y-m-d H:i:s')} UTC");
+            $this->logger->debug("DHL access token expiry {$seconds} s.  expires @ {$this->session->getTokenExpires()->format('Y-m-d H:i:s')} UTC");
         }
         else {
             $this->setCachedToken(null);
@@ -182,6 +182,6 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
             $this->session->setCachedAccessToken($token);
         }
 
-        $this->_logger->debug("new access token {$this->getCachedToken()}");
+        $this->logger->debug("new access token {$this->getCachedToken()}");
     }
 }
