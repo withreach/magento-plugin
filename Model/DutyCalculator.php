@@ -5,6 +5,7 @@ namespace Reach\Payment\Model;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use \DateTime;
 
 class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 {
@@ -73,6 +74,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected $_logger;
 
     /**
+     *  @var \Reach\Payment\Model\DhlAccessToken
+     */
+    protected $dhlAccessToken;
+
+    /**
      * Constructor
      *
      * @param \Reach\Payment\Helper\Data $reachHelper
@@ -114,6 +120,15 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->csvHsCodeFactory   = $csvHsCodeFactory;
         $this->httpRestFactory    = $httpRestFactory;
         $this->_logger = $logger;
+
+        $this->dhlAccessToken = new DhlAccessToken(
+            $this->reachHelper->getDhlApiKey(),
+            $this->reachHelper->getDhlApiSecret(),
+            $this->reachHelper->getDhlApiUrl(),
+            $this->checkoutSession,
+            $this->httpRestFactory,
+            $this->_logger
+        );
     }
 
 
@@ -348,7 +363,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function callDHLDutyTaxApi($cartId, $address, $shippingCharge, $duty, $apply, $quote)
     {
-        $accessToken = $this->getDhlAccessToken();
+        $accessToken = $this->dhlAccessToken->getAccessToken();
 
         //Right moment to make a DHL api call for getting 'Duty and Tax' value
         if ($accessToken && $accessToken != '') {
@@ -684,6 +699,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     protected function getDhlAccessToken()
     {
+        if ( $this->isAccessTokenValid() )
+          return $this->getCachedAccessToken();
+
         $clientId = $this->reachHelper->getDhlApiKey();
         $clientSecret = $this->reachHelper->getDhlApiSecret();
         $url = $this->reachHelper->getDhlApiUrl();
@@ -696,8 +714,90 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $result = $response->getResponseData();
 
         if (isset($result['access_token'])) {
-            return $result['access_token'];
+            if(isset($result['expires_in'])) {
+              $this->setTokenExpiry($result['expires_in']);
+              $this->setCachedAccessToken($result['access_token']);
+              return $this->getCachedAccessToken();
+            }
         }
         return null;
+    }
+
+    /**
+     * Sets the cached DHL access token
+     * @param mixed $token
+     */
+    protected function setCachedAccessToken($token) {
+      $this->checkoutSession->setCachedAccessToken($token);
+      $this->_logger->debug("new DHL access token {$this->checkoutSession->getCachedAccessToken()}");
+    }
+
+    /**
+     * Retrieves the DHL access token from cache
+     * @return string
+     */
+    protected function getCachedAccessToken() {
+      return $this->checkoutSession->getCachedAccessToken();
+    }
+
+    /**
+     * Tests if have DHL access token in cache and
+     * has not expired.
+     * @return bool
+     */
+    public function isAccessTokenValid() {
+
+      $result = true;
+
+      $token = $this->getCachedAccessToken();
+      if ( $token == null ) {
+        $result = false;
+      }
+      else {
+        $tokenExpiry = $this->getTokenExpiry();
+        if ( $tokenExpiry == null ) {
+          $result = false;
+        }
+        else {
+          $now = new DateTime('NOW');
+          if ( $now >= $tokenExpiry ) {
+            $result = false;
+          }
+        }
+      }
+
+      if (!$result) {
+        $this->_logger->debug("DHL access token expired");
+      }
+
+      return $result;
+
+    }
+
+    /**
+     * Get current access token expiry date
+     * @return DateTime
+     */
+    public function getTokenExpiry() {
+      return $this->checkoutSession->getTokenExpires();
+    }
+
+    /**
+     * Sets the DHL cached access token
+     * @param int $secondsFromNow
+     */
+    public function setTokenExpiry($secondsFromNow) {
+
+      $seconds = intval($secondsFromNow);
+      if ( $seconds > 0 ) {
+        $tokenExpiry = new DateTime('NOW');
+        $tokenExpiry->modify("+ {$seconds} seconds");
+        $this->checkoutSession->setTokenExpires($tokenExpiry);
+        $this->_logger->debug("DHL access token expiry {$seconds} s.  expires @ {$this->checkoutSession->getTokenExpires()->format('Y-m-d H:i:s')} UTC");
+      }
+      else {
+        $this->checkoutSession->unsTokenExpires();
+      }
+
     }
 }
