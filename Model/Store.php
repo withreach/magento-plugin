@@ -134,7 +134,7 @@ class Store extends \Magento\Store\Model\Store
                 $this->currencyModel->_logger->debug("Multiple Currencies");
                 $codes = $this->currencyModel->getReachCurrencies();
                 $this->currencyModel->_logger->debug("Currency code from Magento ".json_encode(parent::getAvailableCurrencyCodes($skipBaseNotAllowed)));
-                $this->currencyModel->_logger->debug("Currency codes from Reach ".json_encode($codes));
+                //$this->currencyModel->_logger->debug("Currency codes from Reach ".json_encode($codes));
                 //what to do if nothing is returned from our api call?
                 //and what if the intersection is empty
                 if (count($codes)) {

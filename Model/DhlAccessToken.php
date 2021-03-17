@@ -68,37 +68,64 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
     /**
      * Retrieve DHL API access token
      *
-     * @return string
+     * @return array
      */
     public function getAccessToken() {
 
-        if ( $this->isTokenValid() )
-            return $this->getCachedToken();
+        $response = [];
 
-        $url = $this->baseUrl;
-        $basic = base64_encode($this->clientId.':'.$this->clientSecret);
-        $url .= 'account/v1/auth/accesstoken';
+        if ( $this->isTokenValid() ) {
+            $response['access_token'] = $this->getCachedToken();
+            $response['status_code'] = 200;
+        }
+        else {
 
-        $rest = $this->httpRestFactory->create();
-        $rest->setBasicAuth($basic);
-        $rest->setUrl($url);
+            $result = $this->callDHLGetAccessTokenApi();
 
-        $response = $rest->executeGet();
-        $result = $response->getResponseData();
-
-        if (isset($result['access_token'])) {
-            if(isset($result['expires_in'])) {
-                $this->setTokenExpiry($result['expires_in']);
-                $this->setCachedToken($result['access_token']);
-                return $this->getCachedToken();
+            if (($result['status_code'] == 200) && isset($result['access_token'])) {
+                if(isset($result['expires_in'])) {
+                    $this->setTokenExpiry($result['expires_in']);
+                    $this->setCachedToken($result['access_token']);
+                    $response['access_token'] = $this->getCachedToken();
+                }
             }
+            else {
+                $this->logger->error("DHL API call returned error {json_encode($result)}");
+                $response['status_code'] = $result['status_code'];
+                $this->setCachedToken(null);
+            }
+
         }
 
-        return null;
+        return $response;
     }
 
     /**
-     * Tests for valid, active access token
+     * Call DHL V4 API to get access token
+     *
+     * @return array json response
+     */
+    protected function callDHLGetAccessTokenApi() {
+
+        $result = [];
+        $url = $this->baseUrl;
+        $url .= 'auth/v4/accesstoken';
+
+        $rest = $this->httpRestFactory->create();
+        $rest->setUrl($url);
+        $rest->setContentType('application/x-www-form-urlencoded');
+
+        $response = $rest->executePost("grant_type=client_credentials&client_id=RdnQzDWJAFG0vHnzSoA04RiRJnjQH0N6&client_secret=GCe4jh8mWemuBpEK");
+
+        $result = $response->getResponseData();
+        $result['status_code'] = $response->getStatus();
+        $result['url'] = $url;
+
+        return $result;
+    }
+
+    /**
+     * Tests if have valid, active access token
      *
      * @return bool
      */
@@ -124,7 +151,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
         }
 
         if (!$result) {
-            $this->logger->debug("No DHL access token or expired");
+            $this->logger->debug("No current DHL access token or has expired");
         }
 
         return $result;
@@ -136,27 +163,46 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
      * @return DateTime
      */
     public function getTokenExpiry() {
-        return $this->session->getTokenExpires();
+        return $this->getCachedTokenExpiry();
     }
 
     /**
      * Sets/overrides the default access token expiry
      *
-     * @param int $secondsFromNow
+     * @param int $secondsFromNow (= 0, immediate expiry)
      *
      */
     public function setTokenExpiry($secondsFromNow) {
 
         $seconds = intval($secondsFromNow);
         if ( $seconds > 0 ) {
+            $this->logger->debug("DHL access token expiry in {$secondsFromNow} seconds");
             $tokenExpiry = new DateTime('NOW');
             $tokenExpiry->modify("+ {$seconds} seconds");
-            $this->session->setTokenExpires($tokenExpiry);
-            $this->logger->debug("DHL access token expiry {$seconds} s.  expires @ {$this->session->getTokenExpires()->format('Y-m-d H:i:s')} UTC");
+            $this->setCachedTokenExpiry($tokenExpiry);
         }
         else {
             $this->setCachedToken(null);
         }
+    }
+
+    /**
+     * Retrieves access token expiry from session
+     *
+     * @return DateTime
+     */
+    protected function getCachedTokenExpiry() {
+        return $this->session->getTokenExpiry();
+    }
+
+    /**
+     * Sets access token expiry in session
+     *
+     * @param DateTime
+     */
+    protected function setCachedTokenExpiry($tokenExpiry) {
+        $this->session->setTokenExpiry($tokenExpiry);
+        $this->logger->debug("DHL access token expiry at {$this->getCachedTokenExpiry()->format('Y-m-d H:i:s')} UTC");
     }
 
     /**
@@ -176,12 +222,12 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
     protected function setCachedToken($token) {
 
         if ( $token == null ) {
-            $this->session->unsTokenExpires();
+            $this->session->unsTokenExpiry();
         }
         else {
             $this->session->setCachedAccessToken($token);
         }
 
-        $this->logger->debug("new access token {$this->getCachedToken()}");
+        $this->logger->debug("access token {$this->getCachedToken()}");
     }
 }

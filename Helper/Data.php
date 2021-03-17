@@ -19,12 +19,12 @@ class Data extends AbstractHelper
     const STASH_SANDBOX_URL = 'https://stash-sandbox.gointerpay.net/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
 
-    const DHL_API_URL = 'https://api.dhlecommerce.com/';
-    const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
+    //const DHL_API_URL = 'https://api.dhlecommerce.com/';
+    //const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
 
     // DHL V4
-    //const DHL_API_URL = 'https://api.dhlecs.com/';
-    //const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecs.com/';
+    const DHL_API_URL = 'https://api.dhlecs.com/';
+    const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecs.com/';
 
     const DHL_ENABLE = 'reach/dhl/enable';
     const DHL_DUTY_LABEL = 'reach/dhl/duty_label';
@@ -487,7 +487,11 @@ class Data extends AbstractHelper
      */
     public function getDhlPickupAccount()
     {
-        return $this->getConfigValue(self::DHL_PICKUP_ACCOUNT, $this->storeManager->getStore()->getId());
+        $pickup = $this->getConfigValue(self::DHL_PICKUP_ACCOUNT, $this->storeManager->getStore()->getId());
+        if ( strlen( $pickup ) < 10 ) {
+            $pickup = str_pad($pickup, 10, "0", STR_PAD_LEFT);
+        }
+        return $pickup;
     }
 
     /**
