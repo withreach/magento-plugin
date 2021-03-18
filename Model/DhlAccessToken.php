@@ -91,9 +91,10 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
             }
             else {
                 $this->logger->error("DHL API call returned error {json_encode($result)}");
-                $response['status_code'] = $result['status_code'];
                 $this->setCachedToken(null);
             }
+
+            $response['status_code'] = $result['status_code'];
 
         }
 
@@ -115,7 +116,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
         $rest->setUrl($url);
         $rest->setContentType('application/x-www-form-urlencoded');
 
-        $response = $rest->executePost("grant_type=client_credentials&client_id=RdnQzDWJAFG0vHnzSoA04RiRJnjQH0N6&client_secret=GCe4jh8mWemuBpEK");
+        $response = $rest->executePost("grant_type=client_credentials&client_id={$this->clientId}&client_secret={$this->clientSecret}");
 
         $result = $response->getResponseData();
         $result['status_code'] = $response->getStatus();
