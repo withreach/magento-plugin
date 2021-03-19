@@ -19,9 +19,6 @@ class Data extends AbstractHelper
     const STASH_SANDBOX_URL = 'https://stash-sandbox.gointerpay.net/';
     const SANDBOX_API_URL = 'https://checkout-sandbox.gointerpay.net/v2.19/';
 
-    //const DHL_API_URL = 'https://api.dhlecommerce.com/';
-    //const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecommerce.com/';
-
     // DHL V4
     const DHL_API_URL = 'https://api.dhlecs.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecs.com/';

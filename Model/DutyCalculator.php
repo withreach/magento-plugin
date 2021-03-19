@@ -214,7 +214,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->response->setSuccess(true);
         $this->response->setDuty($duty);
         $this->_logger->debug('Special country where state selection is necessary before initiating DHL API call;'.
-                 'but state is not selected anyway.');
+                    'but state is not selected anyway.');
     }
 
 
