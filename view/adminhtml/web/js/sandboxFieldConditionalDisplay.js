@@ -24,7 +24,7 @@ require([
             }
         }
 
-        // register onChange for sandbox mode contorl
+        // register onChange for sandbox mode control
         jQuery('#payment_us_reach_payment_mode').change(function () {
             let sandboxMode = parseInt(jQuery('#payment_us_reach_payment_mode').val(), 10);
             setDhlPickupAccountAttributes(sandboxMode);
