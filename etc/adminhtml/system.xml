@@ -122,9 +122,6 @@
                     </field>
                     <field id="dhl_pickup_account" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>DHL Pickup Account No.</label>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
                         <config_path>reach/dhl/pickup_account</config_path>
                     </field>
                     <field id="dhl_item_seller" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
