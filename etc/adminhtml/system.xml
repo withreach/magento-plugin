@@ -100,25 +100,10 @@
                         <config_path>reach/dhl/optional_specificcountry</config_path>
                         <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="dhl_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
-                        <label>DHL Client ID</label>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
-                        <config_path>reach/dhl/key</config_path>
-                    </field>
                     <field id="applicable_shipping" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Tax and Duties Applicable to shipping</label>
                         <source_model>Reach\Payment\Model\Config\Source\Carriers</source_model>
                         <config_path>reach/dhl/applicable_shipping</config_path>
-                    </field>
-                    <field id="dhl_api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
-                        <label>DHL Client Secret</label>
-                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
-                        <config_path>reach/dhl/api_secret</config_path>
                     </field>
                     <field id="dhl_pickup_account" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>DHL Pickup Account No.</label>
