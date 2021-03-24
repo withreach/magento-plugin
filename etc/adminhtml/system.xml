@@ -124,7 +124,7 @@
                         </depends>
                         <config_path>reach/dhl/pref_tariffs</config_path>
                     </field>
-                    <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="101" translate="label" type="select">
                         <label>DHL Pricing Strategy</label>
                         <source_model>Reach\Payment\Model\Config\Source\PricingStrategy</source_model>
                         <depends>
@@ -132,7 +132,7 @@
                         </depends>
                         <config_path>reach/dhl/pricing_strategy</config_path>
                     </field>
-                    <field id="clearance_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="clearance_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="102" translate="label" type="select">
                         <label>Clearance Mode</label>
                         <source_model>Reach\Payment\Model\Config\Source\ClearanceMode</source_model>
                         <depends>
@@ -140,7 +140,7 @@
                         </depends>
                         <config_path>reach/dhl/clearance_mode</config_path>
                     </field>
-                    <field id="end_use" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="end_use" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="103" translate="label" type="select">
                         <label>End Use</label>
                         <source_model>Reach\Payment\Model\Config\Source\EndUse</source_model>
                         <depends>
@@ -148,7 +148,7 @@
                         </depends>
                         <config_path>reach/dhl/end_use</config_path>
                     </field>
-                    <field id="transport_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="transport_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="104" translate="label" type="select">
                         <label>Transport Mode</label>
                         <source_model>Reach\Payment\Model\Config\Source\TransportMode</source_model>
                         <depends>
