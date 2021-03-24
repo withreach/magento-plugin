@@ -715,6 +715,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $rest->setBearerAuth($accessToken);
         $rest->setUrl($url);
 
+        $this->_logger->debug("DHL quote url: {$url}");
         $this->_logger->debug("DHL quote request: " . json_encode($request));
 
         $response = $rest->executePost(json_encode($request));

@@ -63,6 +63,13 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
         $this->session = $session;
         $this->httpRestFactory = $httpRestFactory;
         $this->logger = $logger;
+
+        $sanitizedClientId = substr($this->clientId, -2);
+        $sanitizedClientSecret = substr($this->clientSecret, -2);
+
+        $this->logger->debug("access token clientId *****{$sanitizedClientId}");
+        $this->logger->debug("access token clientSecret *****{$sanitizedClientSecret}");
+        $this->logger->debug("access token baseUrl{$this->baseUrl}");
     }
 
     /**
@@ -97,6 +104,8 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
             $response['status_code'] = $result['status_code'];
 
         }
+
+        $this->logger->debug("DHL access token call: " . json_encode($response));
 
         return $response;
     }
