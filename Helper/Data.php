@@ -23,6 +23,10 @@ class Data extends AbstractHelper
     const DHL_API_URL = 'https://api.dhlecs.com/';
     const DHL_SANDBOX_API_URL = 'https://api-sandbox.dhlecs.com/';
 
+    const DHL_SANDBOX_CLIENT_ID = '7NhnAoNOXHryy2F6uGHMjrfyReRyUtUQ';
+    const DHL_SANDBOX_CLIENT_SECRET = 'mArmxE96xnRGLE37';
+    const DHL_SANDBOX_PICKUP_ID = '5351244';
+
     const DHL_ENABLE = 'reach/dhl/enable';
     const DHL_DUTY_LABEL = 'reach/dhl/duty_label';
     const DHL_DUTY_ALLOW_SPECIFIC = 'reach/dhl/allowspecific';
@@ -142,7 +146,7 @@ class Data extends AbstractHelper
         $valueInDefault = $this->config->getValue($path,\Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT);
 
         return $valueInDefault; //At this point other higher priority scopes are undefined; if it is undefined too
-                                // then it would be treated as false
+        // then it would be treated as false
 
     }
 
@@ -462,7 +466,12 @@ class Data extends AbstractHelper
      */
     public function getDhlApiKey()
     {
-        return $this->getConfigValue(self::DHL_API_KEY, $this->storeManager->getStore()->getId());
+        if ($this->getConfigValue(self::CONFIG_API_MODE, $this->storeManager->getStore()->getId())
+            == self::SANDBOX_MODE) {
+            return self::DHL_SANDBOX_CLIENT_ID;
+        } else {
+            return $this->getConfigValue(self::DHL_API_KEY, $this->storeManager->getStore()->getId());
+        }
     }
 
 
@@ -474,7 +483,12 @@ class Data extends AbstractHelper
      */
     public function getDhlApiSecret()
     {
-        return $this->_enc->decrypt($this->getConfigValue(self::DHL_API_SECRET, $this->storeManager->getStore()->getId()));
+        if ($this->getConfigValue(self::CONFIG_API_MODE, $this->storeManager->getStore()->getId())
+            == self::SANDBOX_MODE) {
+            return self::DHL_SANDBOX_CLIENT_SECRET;
+        } else {
+            return $this->_enc->decrypt($this->getConfigValue(self::DHL_API_SECRET, $this->storeManager->getStore()->getId()));
+        }
     }
 
     /**
@@ -484,10 +498,17 @@ class Data extends AbstractHelper
      */
     public function getDhlPickupAccount()
     {
-        $pickup = $this->getConfigValue(self::DHL_PICKUP_ACCOUNT, $this->storeManager->getStore()->getId());
+        if ($this->getConfigValue(self::CONFIG_API_MODE, $this->storeManager->getStore()->getId())
+            == self::SANDBOX_MODE) {
+            $pickup = self::DHL_SANDBOX_PICKUP_ID;
+        } else {
+            $pickup = $this->getConfigValue(self::DHL_PICKUP_ACCOUNT, $this->storeManager->getStore()->getId());
+        }
+
         if ( strlen( $pickup ) < 10 ) {
             $pickup = str_pad($pickup, 10, "0", STR_PAD_LEFT);
         }
+
         return $pickup;
     }
 
@@ -593,7 +614,7 @@ class Data extends AbstractHelper
      */
     public function setPaymentMethods($methods)
     {
-           $this->paymentMethods = $methods;
+        $this->paymentMethods = $methods;
     }
 
 }

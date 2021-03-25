@@ -97,7 +97,8 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
                 }
             }
             else {
-                $this->logger->error("DHL API call returned error {json_encode($result)}");
+                $error = json_encode($result);
+                $this->logger->error("DHL API call returned error {$error}");
                 $this->setCachedToken(null);
             }
 
