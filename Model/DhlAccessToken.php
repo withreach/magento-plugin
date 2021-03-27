@@ -69,7 +69,7 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
 
         $this->logger->debug("access token clientId *****{$sanitizedClientId}");
         $this->logger->debug("access token clientSecret *****{$sanitizedClientSecret}");
-        $this->logger->debug("access token baseUrl{$this->baseUrl}");
+        $this->logger->debug("access token baseUrl {$this->baseUrl}");
     }
 
     /**
