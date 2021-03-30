@@ -3,6 +3,7 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <link src="Reach_Payment::js/validation.js"/>
+        <link src="Reach_Payment::js/sandboxFieldConditionalDisplay.js"/>
         <!-- Without this file our custom validator would not be picked up even though it is specified in system.xml -->
     </head>
 </page>

@@ -100,31 +100,13 @@
                         <config_path>reach/dhl/optional_specificcountry</config_path>
                         <can_be_empty>1</can_be_empty>
                     </field>
-                    <field id="dhl_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="70" translate="label" type="text">
-                        <label>DHL Client ID</label>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
-                        <config_path>reach/dhl/key</config_path>
-                    </field>
                     <field id="applicable_shipping" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Tax and Duties Applicable to shipping</label>
                         <source_model>Reach\Payment\Model\Config\Source\Carriers</source_model>
                         <config_path>reach/dhl/applicable_shipping</config_path>
                     </field>
-                    <field id="dhl_api_secret" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="80" translate="label" type="obscure">
-                        <label>DHL Client Secret</label>
-                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
-                        <config_path>reach/dhl/api_secret</config_path>
-                    </field>
                     <field id="dhl_pickup_account" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
                         <label>DHL Pickup Account No.</label>
-                        <depends>
-                            <field id="active">1</field>
-                        </depends>
                         <config_path>reach/dhl/pickup_account</config_path>
                     </field>
                     <field id="dhl_item_seller" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="90" translate="label" type="text">
@@ -142,7 +124,7 @@
                         </depends>
                         <config_path>reach/dhl/pref_tariffs</config_path>
                     </field>
-                    <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="pricing_strategy" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="101" translate="label" type="select">
                         <label>DHL Pricing Strategy</label>
                         <source_model>Reach\Payment\Model\Config\Source\PricingStrategy</source_model>
                         <depends>
@@ -150,7 +132,7 @@
                         </depends>
                         <config_path>reach/dhl/pricing_strategy</config_path>
                     </field>
-                    <field id="clearance_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="clearance_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="102" translate="label" type="select">
                         <label>Clearance Mode</label>
                         <source_model>Reach\Payment\Model\Config\Source\ClearanceMode</source_model>
                         <depends>
@@ -158,7 +140,7 @@
                         </depends>
                         <config_path>reach/dhl/clearance_mode</config_path>
                     </field>
-                    <field id="end_use" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="end_use" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="103" translate="label" type="select">
                         <label>End Use</label>
                         <source_model>Reach\Payment\Model\Config\Source\EndUse</source_model>
                         <depends>
@@ -166,7 +148,7 @@
                         </depends>
                         <config_path>reach/dhl/end_use</config_path>
                     </field>
-                    <field id="transport_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label" type="select">
+                    <field id="transport_mode" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="104" translate="label" type="select">
                         <label>Transport Mode</label>
                         <source_model>Reach\Payment\Model\Config\Source\TransportMode</source_model>
                         <depends>

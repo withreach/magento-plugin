@@ -5,6 +5,7 @@ namespace Reach\Payment\Model;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use \DateTime;
 
 class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
 {
@@ -73,6 +74,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected $_logger;
 
     /**
+     *  @var \Reach\Payment\Model\DhlAccessToken
+     */
+    protected $dhlAccessToken;
+
+    /**
      * Constructor
      *
      * @param \Reach\Payment\Helper\Data $reachHelper
@@ -103,7 +109,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         \Psr\Log\LoggerInterface $logger
     ) {
         $this->quoteRepository    = $quoteRepository;
-        $this->reachHelper    = $reachHelper;
+        $this->reachHelper        = $reachHelper;
         $this->checkoutSession    = $checkoutSession;
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->_scopeConfig       = $scopeConfig;
@@ -114,6 +120,13 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->csvHsCodeFactory   = $csvHsCodeFactory;
         $this->httpRestFactory    = $httpRestFactory;
         $this->_logger = $logger;
+
+        $this->dhlAccessToken = new DhlAccessToken(
+            $this->reachHelper,
+            $this->checkoutSession,
+            $this->httpRestFactory,
+            $this->_logger
+        );
     }
 
 
@@ -144,12 +157,12 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->_logger->debug("Value of isDutyOptional ".$isDutyOptional);
 
         if ($apply || !$isDutyOptional) {
-           $this->_logger->debug("Duty should be applied (due to user selection or the value of the 'apply' ".
-               " parameter that is passed to this function or because duty is not optional for the chosen country ".
-               "(shipment address)");
-           $quote->setReachDuty($this->checkoutSession->getReachDuty());
-           $quote->setBaseReachDuty($this->checkoutSession->getBaseReachDuty());
-           $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
+            $this->_logger->debug("Duty should be applied (due to user selection or the value of the 'apply' ".
+                " parameter that is passed to this function or because duty is not optional for the chosen country ".
+                "(shipment address)");
+            $quote->setReachDuty($this->checkoutSession->getReachDuty());
+            $quote->setBaseReachDuty($this->checkoutSession->getBaseReachDuty());
+            $quote->setDhlQuoteId($this->checkoutSession->getDhlQuoteId());
         }
         else {
             $this->_logger->debug("Duty should not be applied.");
@@ -195,11 +208,11 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function handleStateUnspecifiedCase($duty)
     {
-       $quote = $this->checkoutSession->getQuote();
-       $this->response->setSuccess(true);
-       $this->response->setDuty($duty);
-       $this->_logger->debug('Special country where state selection is necessary before initiating DHL API call;'.
-                'but state is not selected anyway.');
+        $quote = $this->checkoutSession->getQuote();
+        $this->response->setSuccess(true);
+        $this->response->setDuty($duty);
+        $this->_logger->debug('Special country where state selection is necessary before initiating DHL API call;'.
+                    'but state is not selected anyway.');
     }
 
 
@@ -258,7 +271,8 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $baseCurrency = $this->storeManager->getStore()->getBaseCurrency();
         $rate = $baseCurrency->getRate($baseCurrency->getCode());
         $baseRate = $duty / $rate;
-        $this->_logger->debug("Inside getBaseDuty: ".$baseRate);
+
+        $this->_logger->debug("Base duty = {$baseRate} {$baseCurrency->getCurrencyCode()}");
         return $baseRate;
     }
 
@@ -348,10 +362,12 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
      */
     public function callDHLDutyTaxApi($cartId, $address, $shippingCharge, $duty, $apply, $quote)
     {
-        $accessToken = $this->getDhlAccessToken();
+        $response = $this->dhlAccessToken->getAccessToken();
 
-        //Right moment to make a DHL api call for getting 'Duty and Tax' value
-        if ($accessToken && $accessToken != '') {
+        if (($response['status_code'] == 200) && isset($response['access_token']) && $response['access_token'] != '') {
+
+            $accessToken = $response['access_token'];
+
             $this->checkoutSession->setCartId($cartId);
             //storing selection of country and state to be able to compare it against new set of values
             //when a potential buyer inputs more data
@@ -359,33 +375,51 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->checkoutSession->setPrevRegion($address->getRegionCode());
 
             $request = $this->prepareRequest($shippingCharge, $address);
-            $this->_logger->debug('---------------- Making DHL API call to get Duty and Tax ----------------');
             $response = $this->getQuote($request, $accessToken);
 
-            $this->checkoutSession->setDhlQuoteId($response['quoteId']);
-            $quote->setDhlQuoteId($response['quoteId']);
+            if ( $response['status_code'] != 200 )
+            {
+                $response['message'] = "Unable to calculate Duty/Tax. Reason(s): ";
 
-            //fee value came from DHL
-            if (isset($response['feeTotals'])) {
-                foreach ($response['feeTotals'] as $charge) {
-                    $duty += $charge['value'];
+                if ( isset( $response['invalidParams'])) {
+                    foreach ($response['invalidParams'] as $invalidParam) {
+                        $response['message'] .= "'{$invalidParam['name']}': {$invalidParam['reason']}. ";
+                    }
                 }
-                $this->fillOutQuoteAndSessionUsingFeeReturned($duty, $address, $apply, $response);
 
-            } else {
                 $this->fillOutResponseAndSessionOnError($response);
+            }
+            else {
+                $this->checkoutSession->setDhlQuoteId($response['quoteId']);
+                $quote->setDhlQuoteId($response['quoteId']);
 
+                //fee value came from DHL
+                if (isset($response['feeTotals'])) {
+                    foreach ($response['feeTotals'] as $charge) {
+                        $this->_logger->debug("Fee: {$charge['name']} = {$charge['value']} {$charge['currency']}");
+                        $duty += $charge['value'];
+                    }
+
+                    $this->fillOutQuoteAndSessionUsingFeeReturned($duty, $address, $apply, $response);
+
+                } else {
+                    $this->fillOutResponseAndSessionOnError($response);
+                }
             }
         }
+        else {
+            $response['message'] = "Unable to calculate Duty/Tax.  Error code {$response['status_code']}";
+            $this->fillOutResponseAndSessionOnError($response);
+        }
     }
-     /**
-      * @inheritDoc
-      */
+    /**
+     * @inheritDoc
+     */
     public function getDutyandTax($cartId, $shippingCharge, $shippingMethodCode, $shippingCarrierCode, $address, $apply = false)
     {
         //DHL API call is not required if DHL option is not enabled from admin
         if (!$this->reachHelper->getDhlEnabled()) {
-           return;
+            return;
         }
 
         //this can go somewhere else more appropriate
@@ -400,6 +434,13 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             $this->_logger->debug('current region '.$address->getRegionCode());
             $this->_logger->debug('previous country '.$this->checkoutSession->getPrevCountry());
             $this->_logger->debug('previous region '.$this->checkoutSession->getPrevRegion());
+
+            // test if shipping domestically
+            if ( $this->getShippingOrigin()['country'] == $address->getCountryId()) {
+                $this->_logger->info('Shipping domestically.');
+                $this->handleNoDutyOrShippingCase($duty, $quote);
+                return $this->response;
+            }
 
             if (!$this->allowDuty($address->getCountryId())
                 || !$this->allowShipping($shippingMethodCode, $shippingCarrierCode)
@@ -448,7 +489,9 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
             }
             //trying to get Duty value by calling DHL Duty API
             $this->callDHLDutyTaxApi($cartId, $address, $shippingCharge, $duty, $apply, $quote);
-        } catch (\Exception $e) {
+
+        }
+        catch (\Exception $e) {
             $this->response->setSuccess(false);
             $this->response->setErrorMessage(
                 __('Something went wrong while generating the DHL request: ' . $e->getMessage())
@@ -597,7 +640,6 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
                 $request['customsDetails'][]=$itemData;
             }
 
-            $this->_logger->debug(json_encode($request));
             return $request;
         }
     }
@@ -656,7 +698,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     }
 
     /**
-     * Get Quote from DHL
+     * Call DHL V4 API to get quote
      *
      * @param array $request
      * @param string $accessToken
@@ -665,39 +707,28 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
     protected function getQuote($request, $accessToken)
     {
         $url = $this->reachHelper->getDhlApiUrl();
-        $url .= 'flc/v1/quote';
+        $url .= 'dtc/v4/quotes';
 
         $rest = $this->httpRestFactory->create();
         $rest->setBearerAuth($accessToken);
         $rest->setUrl($url);
-        $this->_logger->debug(json_encode($request));
+
+        $this->_logger->debug("DHL quote url: {$url}");
+        $this->_logger->debug("DHL quote request: " . json_encode($request));
+
         $response = $rest->executePost(json_encode($request));
         $result = $response->getResponseData();
-        $this->_logger->debug(json_encode($result));
+        $result['status_code'] = $response->getStatus();
+
+        if ( $response->getStatus() == 200 ) {
+            $this->_logger->debug("DHL quote response: " . json_encode($result));
+        }
+        else {
+            $this->_logger->error("Error: {$response->getStatus()} " . json_encode($result));
+        }
+
         return $result;
     }
 
-    /**
-     * Retrieve DHL API access token
-     *
-     * @return string
-     */
-    protected function getDhlAccessToken()
-    {
-        $clientId = $this->reachHelper->getDhlApiKey();
-        $clientSecret = $this->reachHelper->getDhlApiSecret();
-        $url = $this->reachHelper->getDhlApiUrl();
-        $basic = base64_encode($clientId.':'.$clientSecret);
-        $url .= 'account/v1/auth/accesstoken';
-        $rest = $this->httpRestFactory->create();
-        $rest->setBasicAuth($basic);
-        $rest->setUrl($url);
-        $response = $rest->executeGet();
-        $result = $response->getResponseData();
 
-        if (isset($result['access_token'])) {
-            return $result['access_token'];
-        }
-        return null;
-    }
 }
