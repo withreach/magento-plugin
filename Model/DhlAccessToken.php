@@ -9,6 +9,14 @@ use \DateTime;
 
 class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
 {
+    const TOKEN_TYPE_SANDBOX = "S";
+    const TOKEN_TYPE_PRODUCTION = "P";
+
+    /**
+     * @var \Reach\Payment\Helper\Data
+     */
+    protected $reachHelper;
+
     /**
      * @var string
      */
@@ -50,16 +58,16 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
-        string $clientId,
-        string $clientSecret,
-        string $baseUrl,
+        \Reach\Payment\Helper\Data $reachHelper,
         \Magento\Checkout\Model\Session $session,
         \Reach\Payment\Model\Api\HttpRestFactory $httpRestFactory,
         \Psr\Log\LoggerInterface $logger
     ) {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->baseUrl = $baseUrl;
+        $this->reachHelper = $reachHelper;
+
+        $this->clientId = $this->reachHelper->getDhlApiKey();
+        $this->clientSecret = $this->reachHelper->getDhlApiSecret();
+        $this->baseUrl = $this->reachHelper->getDhlApiUrl();
         $this->session = $session;
         $this->httpRestFactory = $httpRestFactory;
         $this->logger = $logger;
@@ -144,25 +152,35 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
 
         $result = true;
 
-        $token = $this->getCachedToken();
-        if ( $token == null ) {
+        $currentMode = $this->reachHelper->isSandboxMode() ? self::TOKEN_TYPE_SANDBOX : self::TOKEN_TYPE_PRODUCTION;
+        $tokenType = $this->getTokenType();
+
+        // test if mode matches token type.  if so, current token is bad
+        if ( $currentMode != $tokenType ) {
             $result = false;
+            $this->logger->debug("access token does not match mode");
         }
         else {
-            $tokenExpiry = $this->getTokenExpiry();
-            if ( $tokenExpiry == null ) {
+
+            $token = $this->getCachedToken();
+            if ( $token == null ) {
                 $result = false;
+                $this->logger->debug("access token is empty");
             }
             else {
-                $now = new DateTime('NOW');
-                if ( $now >= $tokenExpiry ) {
+                $tokenExpiry = $this->getTokenExpiry();
+                if ( $tokenExpiry == null ) {
                     $result = false;
+                    $this->logger->debug("access token has a null expiry");
+                }
+                else {
+                    $now = new DateTime('NOW');
+                    if ( $now >= $tokenExpiry ) {
+                        $result = false;
+                        $this->logger->debug("access token has expired");
+                    }
                 }
             }
-        }
-
-        if (!$result) {
-            $this->logger->debug("No current DHL access token or has expired");
         }
 
         return $result;
@@ -237,8 +255,30 @@ class DhlAccessToken implements \Reach\Payment\Api\RestAccessTokenInterface
         }
         else {
             $this->session->setCachedAccessToken($token);
+            $currentMode = $this->reachHelper->isSandboxMode() ? self::TOKEN_TYPE_SANDBOX : self::TOKEN_TYPE_PRODUCTION;
+            $this->setTokenType($currentMode);
         }
 
         $this->logger->debug("access token {$this->getCachedToken()}");
+    }
+
+    /**
+     * Gets the access token type (S = sandbox, P = production)
+     *
+     * @return string
+     */
+    protected function getTokenType() {
+        return $this->session->getTokenType();
+    }
+
+    /**
+     * Sets the access token type (S = sandbox, P = production)
+     *
+     * @param string $tokenType
+     */
+    protected function setTokenType($tokenType) {
+
+        $this->session->setTokenType($tokenType);
+        $this->logger->debug("token type '{$this->getTokenType()}'");
     }
 }

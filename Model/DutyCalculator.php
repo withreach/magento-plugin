@@ -109,7 +109,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         \Psr\Log\LoggerInterface $logger
     ) {
         $this->quoteRepository    = $quoteRepository;
-        $this->reachHelper    = $reachHelper;
+        $this->reachHelper        = $reachHelper;
         $this->checkoutSession    = $checkoutSession;
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
         $this->_scopeConfig       = $scopeConfig;
@@ -122,9 +122,7 @@ class DutyCalculator implements \Reach\Payment\Api\DutyCalculatorInterface
         $this->_logger = $logger;
 
         $this->dhlAccessToken = new DhlAccessToken(
-            $this->reachHelper->getDhlApiKey(),
-            $this->reachHelper->getDhlApiSecret(),
-            $this->reachHelper->getDhlApiUrl(),
+            $this->reachHelper,
             $this->checkoutSession,
             $this->httpRestFactory,
             $this->_logger
