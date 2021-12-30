@@ -328,7 +328,7 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
 
         if (isset($response['Error']) && count($response['Error'])) {
             $errorMessage = $response['Error']['Code'];
-            if ($response['Error']['Message'] != '') {
+            if (isset($response['Error']['Message']) && $response['Error']['Message'] != '') {
                 $errorMessage = ':'.$response['Error']['Message'];
             }
             throw new \Magento\Framework\Exception\LocalizedException(
