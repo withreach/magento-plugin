@@ -5,6 +5,10 @@ namespace Reach\Payment\Controller\Paypal;
 
 class Processing extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * @var \Magento\Quote\Model\QuoteRepository
+     */
+    protected $_quoteRepository;
 
     /**
      *
@@ -21,9 +25,10 @@ class Processing extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Sales\Model\Order\Payment\TransactionFactory $transactionFactory,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderEmailSender
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderEmailSender,
+        \Magento\Quote\Model\QuoteRepository $quoteRepository
     ) {
-    
+
         
         parent::__construct($context);
         $this->_checkoutSession    = $checkoutSession;
@@ -32,6 +37,7 @@ class Processing extends \Magento\Framework\App\Action\Action
         $this->_orderFactory       = $orderFactory;
         $this->_quoteFactory       = $quoteFactory;
         $this->transactionFactory  = $transactionFactory;
+        $this->_quoteRepository    = $quoteRepository;
     }
 
     /**
@@ -42,10 +48,11 @@ class Processing extends \Magento\Framework\App\Action\Action
         try {
             $params = $this->getRequest()->getParams();
             $response = json_decode($params['response'], true);
-            $this->validateResponse($response);
             $this->loadQuote($params['quoteid']);
             $order = $this->loadOrder();
             $payment = $order->getPayment();
+
+            $this->validateResponse($response);
            
             $this->setTransactionData($response['OrderId'], $payment, $response['OrderState']);
             $methodInstance = $payment->getMethodInstance();
@@ -89,6 +96,14 @@ class Processing extends \Magento\Framework\App\Action\Action
             return;
         } catch (\Exception $e) {
             $this->messageManager->addError('We can\'t place the order: ' . $e->getMessage());
+
+            $this->_quoteRepository->save($this->_quote); // Needs to be added as part of the constructor
+
+            // TODO:: Determine which of these are actually needed
+            $this->_checkoutSession->clearHelperData(); // Clear misc checkout parameters
+            $this->_checkoutSession->replaceQuote($this->_quote); // Sets the quote for the current session
+            $this->_checkoutSession->setData("reach_order_pending_payment", null); // Clears the order id from this key
+
             $this->_redirect('checkout/cart');
         }
     }
