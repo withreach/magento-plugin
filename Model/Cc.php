@@ -90,6 +90,12 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     protected $_clientTimeout = 45;
 
+    /**
+     * Payment Method feature
+     *
+     * @var bool
+     */
+    protected $_isGateway = true;
 
     /**
      * Payment Method feature
