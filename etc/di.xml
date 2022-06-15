@@ -12,8 +12,38 @@
     <preference for="Reach\Payment\Api\DutyCalculatorInterface" type="Reach\Payment\Model\DutyCalculator" />
     <preference for="Reach\Payment\Api\GuestDutyCalculatorInterface" type="Reach\Payment\Model\GuestDutyCalculator" />
 
+    <preference for="Reach\Payment\Api\NotificationInterface" type="Reach\Payment\Model\ReachNotification" />
+
     <preference for="Reach\Payment\Api\Data\StashResponseInterface" type="Reach\Payment\Model\Api\Data\StashResponse" />
     <preference for="Reach\Payment\Api\Data\DutyResponseInterface" type="Reach\Payment\Model\Api\Data\DutyResponse" />
     <preference for="Reach\Payment\Api\Data\ResponseInterface" type="Reach\Payment\Model\Api\Data\Response" />
     <preference for="Reach\Payment\Api\Data\HttpResponseInterface" type="Reach\Payment\Model\Api\Data\HttpResponse" />
+    <preference for="Reach\Payment\Api\Data\NotificationResponseInterface" type="Reach\Payment\Model\Api\Data\NotificationResponse" />
+
+    <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
+        <arguments>
+            <argument name="deserializers" xsi:type="array">
+                <item name="application_x_www_form_urlencoded" xsi:type="array">
+                    <item name="type" xsi:type="string">application/x-www-form-urlencoded</item>
+                    <item name="model" xsi:type="string">Reach\Payment\Webapi\Rest\Request\Deserializer\XWwwFormUrlencoded</item>
+                </item>
+                <item name="application_json" xsi:type="array">
+                    <item name="type" xsi:type="string">application/json</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Json</item>
+                </item>
+                <item name="application_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">application/xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+                <item name="application_xhtml_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">application/xhtml+xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+                <item name="text_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">text/xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
 </config>

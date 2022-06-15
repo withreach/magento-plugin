@@ -90,6 +90,12 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     protected $_clientTimeout = 45;
 
+    /**
+     * Payment Method feature
+     *
+     * @var bool
+     */
+    protected $_isGateway = true;
 
     /**
      * Payment Method feature
@@ -595,10 +601,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     private function getCallbackUrl($order)
     {
-        $url = $this->coreUrl->getUrl('reach/cc/callback', [
-            '_secure' => true,
-            '_store'  => $order->getStoreId()
-        ]);
+        $url = $this->coreUrl->getUrl('rest/default/V1/reach/notification');
         $url .= "?orderid=" . $order->getQuoteId();
         return  $url;
     }
