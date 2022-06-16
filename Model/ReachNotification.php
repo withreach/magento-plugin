@@ -9,12 +9,12 @@ use Magento\Framework\Phrase;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
 /**
- * ReachCurrency model
+ * ReachNotification model
  *
  */
 class ReachNotification implements NotificationInterface
 {
-    /** @var ResponseInterface  */
+    /** @var ResponseInterface */
     protected $response;
 
     /**
@@ -33,14 +33,15 @@ class ReachNotification implements NotificationInterface
     protected $orderRepository;
 
     public function __construct(
-        ResponseInterface $response,
-        \Reach\Payment\Helper\Data $reachHelper,
+        ResponseInterface                 $response,
+        \Reach\Payment\Helper\Data        $reachHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        OrderRepositoryInterface $orderRepository
-    ) {
+        OrderRepositoryInterface          $orderRepository
+    )
+    {
         $this->response = $response;
         $this->reachHelper = $reachHelper;
-        $this->_orderFactory       = $orderFactory;
+        $this->_orderFactory = $orderFactory;
         $this->orderRepository = $orderRepository;
     }
 
@@ -72,7 +73,7 @@ class ReachNotification implements NotificationInterface
                 }
             }
         } catch (\Exception $e) {
-            throw new Exception(new Phrase($e->getMessage()), 400, 404);
+            throw new Exception(new Phrase($e->getMessage()));
         }
 
         return $this->response;
@@ -81,7 +82,7 @@ class ReachNotification implements NotificationInterface
     private function validate($request, $nonce)
     {
         $key = $this->reachHelper->getSecret();
-        $signature =  base64_encode(hash_hmac('sha256', $request, $key, true));
+        $signature = base64_encode(hash_hmac('sha256', $request, $key, true));
         return $signature == $nonce;
     }
 
