@@ -10,7 +10,7 @@ If you are interested in using this plugin please contact sales@withreach.com
 4. merge to QA branch
 5. delete feature branch
 6. deploy to QA environment
-   1. Access QA EC2 Server
+   1. Access QA Server
    2. run `bin/composer install`
    3. which will pull the qa branch code into the magento site with recent updates
 7. QA process complete
