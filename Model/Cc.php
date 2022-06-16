@@ -482,7 +482,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request['Consumer'] = $consumer;
         
         
-        $request['Notify'] = $this->getCallbackUrl($order);
+        $request['Notify'] = $this->getNotifyUrl($order);
         $request['ConsumerCurrency']= $order->getOrderCurrencyCode();
 
         $rateOfferId =  $this->reachCurrency->getOfferId($order->getOrderCurrencyCode());
@@ -599,7 +599,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      * @param object $order
      * @return string
      */
-    private function getCallbackUrl($order)
+    private function getNotifyUrl($order)
     {
         $url = $this->coreUrl->getUrl('rest/default/V1/reach/notification');
         $url .= "?orderid=" . $order->getQuoteId();

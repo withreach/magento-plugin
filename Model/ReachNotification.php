@@ -56,7 +56,12 @@ class ReachNotification implements NotificationInterface
             if ($this->validate($request, $signature)) {
                 // TODO:: Handle other Notification order states
                 $response = json_decode($request, true);
-                if (isset($response['OrderState']) && $response['OrderState'] == "Processed" && $response['UnderReview'] === false && !count($response['Refunds'])) {
+
+                $isProcessed = isset($response['OrderState']) && $response['OrderState'] == "Processed";
+                $isNotUnderReview = $response['UnderReview'] === false;
+                $hasNoRefunds = !count($response['Refunds']);
+
+                if ($isProcessed && $isNotUnderReview && $hasNoRefunds) {
                     $order = $this->loadOrder($response['ReferenceId']);
                     $order = $this->orderRepository->get($order->getId());
                     $order->getPayment()->accept();
