@@ -31,4 +31,10 @@
             <resource ref="anonymous" />
         </resources>
     </route>
+    <route url="/V1/reach/notification" method="POST">
+        <service class="Reach\Payment\Api\NotificationInterface" method="handleNotification"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
 </routes>
