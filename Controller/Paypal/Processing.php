@@ -16,12 +16,21 @@ class Processing extends \Magento\Framework\App\Action\Action
     protected $_orderManagement;
 
     /**
-     *
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\Sales\Model\Order\Payment\TransactionFactory $transactionFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderEmailSender
+     * @param \Magento\Quote\Model\QuoteRepository $quoteRepository
+     * @param \Magento\Sales\Api\OrderManagementInterface $orderManagement
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      */
     public function __construct(
         \Magento\Framework\App\Action\Context                 $context,
@@ -32,7 +41,8 @@ class Processing extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\Order\Payment\TransactionFactory $transactionFactory,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderEmailSender,
         \Magento\Quote\Model\QuoteRepository                  $quoteRepository,
-        \Magento\Sales\Api\OrderManagementInterface           $orderManagement
+        \Magento\Sales\Api\OrderManagementInterface           $orderManagement,
+        \Magento\Framework\Event\ManagerInterface             $eventManager
     )
     {
 
@@ -46,6 +56,7 @@ class Processing extends \Magento\Framework\App\Action\Action
         $this->transactionFactory = $transactionFactory;
         $this->_quoteRepository = $quoteRepository;
         $this->_orderManagement = $orderManagement;
+        $this->_eventManager = $eventManager;
     }
 
     /**
@@ -102,18 +113,18 @@ class Processing extends \Magento\Framework\App\Action\Action
 
             return;
         } catch (\Exception $e) {
-            $this->messageManager->addError('We can\'t place the order: ' . $e->getMessage());
-
             if ($e->getMessage() === 'PaymentAuthenticationCancelled') {
                 $this->_orderManagement->cancel($order->getId());
+            } else {
+                $this->messageManager->addError('We can\'t place the order: ' . $e->getMessage());
             }
 
-            $this->_quote->setIsActive(true);
+            $this->_quote->setIsActive(true)->setReservedOrderId(null);
             $this->_quoteRepository->save($this->_quote);
-
             $this->_checkoutSession->clearHelperData();
             $this->_checkoutSession->replaceQuote($this->_quote);
             $this->_checkoutSession->setData("reach_order_pending_payment", null);
+            $this->_eventManager->dispatch('restore_quote', ['order' => $order, 'quote' => $this->_quote]);
 
             $this->_redirect('checkout/cart');
         }
