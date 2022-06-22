@@ -5,33 +5,58 @@ namespace Reach\Payment\Controller\Paypal;
 
 class Processing extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * @var \Magento\Quote\Model\QuoteRepository
+     */
+    protected $_quoteRepository;
 
     /**
-     *
+     * @var \Magento\Sales\Api\OrderManagementInterface
+     */
+    protected $_orderManagement;
+
+    /**
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
+     * @param \Magento\Sales\Model\Order\Payment\TransactionFactory $transactionFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderEmailSender
+     * @param \Magento\Quote\Model\QuoteRepository $quoteRepository
+     * @param \Magento\Sales\Api\OrderManagementInterface $orderManagement
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Quote\Model\Quote $quote,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\Framework\App\Action\Context                 $context,
+        \Magento\Checkout\Model\Session                       $checkoutSession,
+        \Magento\Quote\Model\Quote                            $quote,
+        \Magento\Sales\Model\OrderFactory                     $orderFactory,
+        \Magento\Quote\Model\QuoteFactory                     $quoteFactory,
         \Magento\Sales\Model\Order\Payment\TransactionFactory $transactionFactory,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderEmailSender
-    ) {
-    
-        
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderEmailSender,
+        \Magento\Quote\Model\QuoteRepository                  $quoteRepository,
+        \Magento\Sales\Api\OrderManagementInterface           $orderManagement,
+        \Magento\Framework\Event\ManagerInterface             $eventManager
+    )
+    {
+
+
         parent::__construct($context);
-        $this->_checkoutSession    = $checkoutSession;
-        $this->_quote              = $quote;
-        $this->orderEmailSender    = $orderEmailSender;
-        $this->_orderFactory       = $orderFactory;
-        $this->_quoteFactory       = $quoteFactory;
-        $this->transactionFactory  = $transactionFactory;
+        $this->_checkoutSession = $checkoutSession;
+        $this->_quote = $quote;
+        $this->orderEmailSender = $orderEmailSender;
+        $this->_orderFactory = $orderFactory;
+        $this->_quoteFactory = $quoteFactory;
+        $this->transactionFactory = $transactionFactory;
+        $this->_quoteRepository = $quoteRepository;
+        $this->_orderManagement = $orderManagement;
+        $this->_eventManager = $eventManager;
     }
 
     /**
@@ -42,11 +67,12 @@ class Processing extends \Magento\Framework\App\Action\Action
         try {
             $params = $this->getRequest()->getParams();
             $response = json_decode($params['response'], true);
-            $this->validateResponse($response);
             $this->loadQuote($params['quoteid']);
             $order = $this->loadOrder();
             $payment = $order->getPayment();
-           
+
+            $this->validateResponse($response);
+
             $this->setTransactionData($response['OrderId'], $payment, $response['OrderState']);
             $methodInstance = $payment->getMethodInstance();
             $methodInstance->markAsInitialized();
@@ -54,10 +80,9 @@ class Processing extends \Magento\Framework\App\Action\Action
             $this->orderEmailSender->send($order);
 
             $closed = 0;
-            if ($payment->getMethodInstance()->getConfigPaymentAction()=='authorize' && $response['OrderState'] == "PaymentAuthorized") {
+            if ($payment->getMethodInstance()->getConfigPaymentAction() == 'authorize' && $response['OrderState'] == "PaymentAuthorized") {
                 $action = \Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH;
-            }
-            elseif ( $response['OrderState'] == "Processed" && $response['Captured']) {
+            } elseif ($response['OrderState'] == "Processed" && $response['Captured']) {
                 $closed = 1;
                 $action = \Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE;
             }
@@ -72,8 +97,8 @@ class Processing extends \Magento\Framework\App\Action\Action
             $transaction->save();
 
             $order->getInvoiceCollection()
-            ->setDataToAll('transaction_id', $payment->getLastTransId())
-            ->save();
+                ->setDataToAll('transaction_id', $payment->getLastTransId())
+                ->save();
 
             $this->_checkoutSession->clearHelperData();
             $this->_checkoutSession->setLastQuoteId($this->_quote->getId());
@@ -88,17 +113,29 @@ class Processing extends \Magento\Framework\App\Action\Action
 
             return;
         } catch (\Exception $e) {
-            $this->messageManager->addError('We can\'t place the order: ' . $e->getMessage());
+            if ($e->getMessage() === 'PaymentAuthenticationCancelled') {
+                $this->_orderManagement->cancel($order->getId());
+            } else {
+                $this->messageManager->addError('We can\'t place the order: ' . $e->getMessage());
+            }
+
+            $this->_quote->setIsActive(true)->setReservedOrderId(null);
+            $this->_quoteRepository->save($this->_quote);
+            $this->_checkoutSession->clearHelperData();
+            $this->_checkoutSession->replaceQuote($this->_quote);
+            $this->_checkoutSession->setData("reach_order_pending_payment", null);
+            $this->_eventManager->dispatch('restore_quote', ['order' => $order, 'quote' => $this->_quote]);
+
             $this->_redirect('checkout/cart');
         }
     }
-    
+
     private function validateResponse($response)
     {
-        if (empty($response) || !isset($response['OrderState']) ||!isset($response['OrderState'])) {
+        if (empty($response) || !isset($response['OrderState']) || !isset($response['OrderState'])) {
             if (!empty($response) && isset($response['Error'])) {
-                $message = isset($response['Error']['Code'])?$response['Error']['Code']:"";
-                $message .= isset($response['Error']['Message'])?$response['Error']['Message']:"";
+                $message = isset($response['Error']['Code']) ? $response['Error']['Code'] : "";
+                $message .= isset($response['Error']['Message']) ? $response['Error']['Message'] : "";
                 throw new \Magento\Framework\Exception\LocalizedException(__($message));
             } else {
                 throw new \Magento\Framework\Exception\LocalizedException(__("Can not place PayPal order, please try another payment method"));
