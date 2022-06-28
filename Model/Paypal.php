@@ -85,14 +85,14 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var bool
      */
-    protected $_canRefund = true;
+    protected $_canRefund = false;
 
     /**
      * Availability option
      *
      * @var bool
      */
-    protected $_canRefundInvoicePartial = true;
+    protected $_canRefundInvoicePartial = false;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
