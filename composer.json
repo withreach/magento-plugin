@@ -2,7 +2,7 @@
   "name": "reach/reachpayment",
   "description": "",
   "type": "magento2-module",
-  "version": "2.3.11",
+  "version": "0.1.0",
   "authors": [
       {
         "name": "Reach",
