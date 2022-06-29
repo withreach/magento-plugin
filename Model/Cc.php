@@ -66,7 +66,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      *
      * @var bool
      */
-    protected $_canRefundInvoicePartial = false;
+    protected $_canRefundInvoicePartial = true;
 
 
     /**

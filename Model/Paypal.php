@@ -92,7 +92,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var bool
      */
-    protected $_canRefundInvoicePartial = false;
+    protected $_canRefundInvoicePartial = true;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
