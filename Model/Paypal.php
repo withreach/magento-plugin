@@ -85,7 +85,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var bool
      */
-    protected $_canRefund = false;
+    protected $_canRefund = true;
 
     /**
      * Availability option
@@ -309,10 +309,9 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $request=[];
-        $request['OrderId'] = str_replace('-capture','',$payment->getParentTransactionId());
+        $request['OrderId'] = $payment->getAdditionalInformation('OrderId');
         $request['MerchantId']= $this->reachHelper->getMerchantId();
         $request['Amount']= $amount;
-        $request['ReferenceId']=$payment->getParentTransactionId();
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url,$request);
