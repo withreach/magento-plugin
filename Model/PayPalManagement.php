@@ -2,6 +2,8 @@
 
 namespace Reach\Payment\Model;
 
+use Magento\Sales\Model\Order\Payment;
+
 /**
  * PaypalManagement model
  *
@@ -363,20 +365,17 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
     }
 
     /**
-     * @param DataObject $payment
+     * @param Payment $payment
      * @param DataObject $response
      * @return Object
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setTransStatus($payment, $response)
     {
-
         if (isset($response['OrderId']) && isset($response['Action'])) {
             $payment->setTransactionId($response['OrderId']);
-
-            //as magento allows to store only 32 character for transaction id, removing - to store it
-            $trn = str_replace('-', '', $response['OrderId']);
-            $payment->setLastTransId($trn);
+            $payment->setParentTransactionId($response['OrderId']);
+            $payment->setLastTransId($response['OrderId']);
             $payment->setAdditionalInformation('Action', $response['Action']);
             $payment->setAdditionalInformation('OrderId', $response['OrderId']);
             
