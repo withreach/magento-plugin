@@ -308,10 +308,12 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
+        $refundGrandTotalInConsumerCurrency = $payment->getCreditmemo()->getGrandTotal();
         $request=[];
         $request['OrderId'] = $payment->getAdditionalInformation('OrderId');
         $request['MerchantId']= $this->reachHelper->getMerchantId();
-        $request['Amount']= $amount;
+        $request['Amount']= $this->reachCurrency->convertCurrency($currencyCode, $refundGrandTotalInConsumerCurrency);
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url,$request);
@@ -570,7 +572,7 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
     * @throws \Magento\Framework\Exception\LocalizedException
     */
     protected function callCurl($url,$params,$method="POST")
-    {        
+    {
         $json = json_encode($params);
         $secret = $this->reachHelper->getSecret();
         $signature = base64_encode(hash_hmac('sha256', $json,$secret, TRUE));
