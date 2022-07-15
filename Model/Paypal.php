@@ -308,10 +308,12 @@ class Paypal extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
+        $refundGrandTotalInConsumerCurrency = $payment->getCreditmemo()->getGrandTotal();
         $request=[];
         $request['OrderId'] = $payment->getAdditionalInformation('OrderId');
         $request['MerchantId']= $this->reachHelper->getMerchantId();
-        $request['Amount']= $this->reachCurrency->convertCurrency($payment->getOrder()->getOrderCurrencyCode(), $payment->getCreditmemo()->getGrandTotal());
+        $request['Amount']= $this->reachCurrency->convertCurrency($currencyCode, $refundGrandTotalInConsumerCurrency);
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url,$request);
