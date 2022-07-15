@@ -59,7 +59,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      *
      * @var bool
      */
-    protected $_canRefund = false;
+    protected $_canRefund = true;
 
     /**
      * Availability option
@@ -418,7 +418,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $request=[];
         $request['OrderId'] = str_replace('-capture', '', $payment->getParentTransactionId());
         $request['MerchantId']= $this->reachHelper->getMerchantId();
-        $request['Amount']= $amount;
+        $request['Amount']= $this->reachCurrency->convertCurrency($payment->getOrder()->getOrderCurrencyCode(), $payment->getCreditmemo()->getGrandTotal());
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url, $request);
