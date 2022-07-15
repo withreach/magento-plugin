@@ -59,7 +59,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      *
      * @var bool
      */
-    protected $_canRefund = false;
+    protected $_canRefund = true;
 
     /**
      * Availability option
@@ -415,10 +415,12 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $currencyCode = $payment->getOrder()->getOrderCurrencyCode();
+        $refundGrandTotalInConsumerCurrency = $payment->getCreditmemo()->getGrandTotal();
         $request=[];
         $request['OrderId'] = str_replace('-capture', '', $payment->getParentTransactionId());
         $request['MerchantId']= $this->reachHelper->getMerchantId();
-        $request['Amount']= $amount;
+        $request['Amount']= $this->reachCurrency->convertCurrency($currencyCode, $refundGrandTotalInConsumerCurrency);
         $request['ReferenceId']=$this->getReferenceIdForRefund($payment);
         $url = $this->reachHelper->getRefundUrl();
         $response = $this->callCurl($url, $request);
