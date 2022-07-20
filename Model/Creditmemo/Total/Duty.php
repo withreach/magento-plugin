@@ -14,9 +14,13 @@ class Duty extends AbstractTotal
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $creditmemo->setReachDuty(0);
-        $amount = $creditmemo->getOrder()->getReachDuty();
-        $creditmemo->setReachDuty($amount);
-        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $amount);
+        $reachDuty = $creditmemo->getOrder()->getReachDuty();
+        $baseReachDuty = $creditmemo->getOrder()->getBaseReachDuty();
+        $creditmemo->setReachDuty($reachDuty);
+        $creditmemo->setBaseReachDuty($baseReachDuty);
+        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $reachDuty);
+        $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseReachDuty);
+
         return $this;
     }
 }
