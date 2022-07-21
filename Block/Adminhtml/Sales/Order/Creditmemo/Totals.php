@@ -45,21 +45,25 @@ class Totals extends \Magento\Framework\View\Element\Template
      */
     public function initTotals()
     {
-        $this->getParentBlock();
-        $this->getCreditmemo();
-        $this->getSource();
-        if (!$this->getSource()->getReachDuty()) {
+        /** @var \Magento\Sales\Block\Order\Totals $parent */
+        $parent = $this->getParentBlock();
+        $source = $this->getSource();
+
+        if (!$source->getReachDuty()) {
             return $this;
         }
+
         $total = new \Magento\Framework\DataObject(
             [
                 'code' => 'reach_duty',
-                'value' => $this->getSource()->getReachDuty(),
+                'value' => $source->getReachDuty(),
                 'label' => 'Tax & Duties',
-                'base_value' => $this->getSource()->getBaseReachDuty()
+                'base_value' => $source->getBaseReachDuty()
             ]
         );
-        $this->getParentBlock()->addTotalBefore($total, 'grand_total');
+
+        $parent->addTotalBefore($total, 'grand_total');
+
         return $this;
     }
 }
