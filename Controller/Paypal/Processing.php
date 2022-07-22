@@ -3,6 +3,8 @@
 
 namespace Reach\Payment\Controller\Paypal;
 
+use Magento\Sales\Api\Data\TransactionInterface;
+
 class Processing extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -87,6 +89,7 @@ class Processing extends \Magento\Framework\App\Action\Action
                 $action = \Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE;
             }
 
+            /** @var TransactionInterface $transaction */
             $transaction = $this->transactionFactory->create();
             $transaction->setOrderPaymentObject($payment);
             $transaction->setTxnId($response['OrderId']);
@@ -167,9 +170,7 @@ class Processing extends \Magento\Framework\App\Action\Action
      */
     private function setTransactionData($transactionId, $payment, $orderState)
     {
-        $transactionId = str_replace('-', '', $transactionId);
         if (!empty($transactionId) && $payment->getLastTransId() == $transactionId) {
-            $payment->setLastTransId($transactionId);
             $payment->setAdditionalInformation('orderState', $orderState);
             $payment->save();
         } else {

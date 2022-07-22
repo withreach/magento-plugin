@@ -13,9 +13,12 @@ class Duty extends AbstractTotal
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $invoice->setReachDuty(0);
-        $amount = $invoice->getOrder()->getReachDuty();
-        $invoice->setReachDuty($amount);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $amount);
+        $reachDuty = $invoice->getOrder()->getReachDuty();
+        $baseReachDuty = $invoice->getOrder()->getBaseReachDuty();
+        $invoice->setReachDuty($reachDuty);
+        $invoice->setBaseReachDuty($baseReachDuty);
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $reachDuty);
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseReachDuty);
         return $this;
     }
 }
