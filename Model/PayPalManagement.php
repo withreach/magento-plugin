@@ -150,8 +150,14 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
             }
         } catch (\Exception $e) {
             $this->response->setSuccess(false);
+            $error = $e->getMessage();
+            if ($error == "Blacklisted" || $error == "FraudSuspected") {
+                $errorMessage = ': PaymentAuthorizationFailed';
+            } else {
+                $errorMessage = $error;
+            }
             $this->response->setErrorMessage(
-                __('Something went wrong while generating the paypal request: ' . $e->getMessage())
+                __('Something went wrong while generating the paypal request: ' . $errorMessage)
             );
         }
 
