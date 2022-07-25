@@ -4,11 +4,13 @@
         <policy id="script-src">
             <values>
                 <value id="reach-checkout-sandbox" type="host">https://checkout-sandbox.gointerpay.net</value>
+                <!-- TODO:: include the production domain -->
             </values>
         </policy>
         <policy id="frame-src">
             <values>
                 <value id="reach-checkout-sandbox" type="host">https://checkout-sandbox.gointerpay.net</value>
+                <!-- TODO:: include the production domain -->
             </values>
         </policy>
         <policy id="img-src">
