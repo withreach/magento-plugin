@@ -151,7 +151,7 @@ class PayPalManagement implements \Reach\Payment\Api\PayPalManagementInterface
         } catch (\Exception $e) {
             $this->response->setSuccess(false);
             $error = $e->getMessage();
-            if ($error == "Blacklisted" || $error == "FraudSuspected") {
+            if ($error === "Blacklisted" || $error === "FraudSuspected") {
                 $errorMessage = ': PaymentAuthorizationFailed';
             } else {
                 $errorMessage = $error;

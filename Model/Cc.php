@@ -693,7 +693,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         if (isset($response['Error']) && count($response['Error'])) {
             $error = $response['Error']['Code'];
             if (isset($error) && $error != '') {
-                if ($error == "Blacklisted" || $error == "FraudSuspected") {
+                if ($error === "Blacklisted" || $error === "FraudSuspected") {
                     $errorMessage = ': PaymentAuthorizationFailed';
                 } else {
                     $errorMessage = ':'.$error;
