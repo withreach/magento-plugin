@@ -694,9 +694,9 @@ class Cc extends \Magento\Payment\Model\Method\Cc
             $error = $response['Error']['Code'];
             if (isset($error) && $error != '') {
                 if ($error === "Blacklisted" || $error === "FraudSuspected") {
-                    $errorMessage = ': PaymentAuthorizationFailed';
+                    $errorMessage = 'PaymentAuthorizationFailed';
                 } else {
-                    $errorMessage = ':'.$error;
+                    $errorMessage = $error;
                 }
             }
             throw new \Magento\Framework\Exception\LocalizedException(
