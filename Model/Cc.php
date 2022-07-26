@@ -690,14 +690,17 @@ class Cc extends \Magento\Payment\Model\Method\Cc
      */
     public function processErrors($response)
     {
-
         if (isset($response['Error']) && count($response['Error'])) {
-            $errorMessage = $response['Error']['Code'];
-            if (isset($response['Error']['Message']) && $response['Error']['Message'] != '') {
-                $errorMessage = ':'.$response['Error']['Message'];
+            $error = $response['Error']['Code'];
+            if (isset($error) && $error != '') {
+                if ($error === "Blacklisted" || $error === "FraudSuspected") {
+                    $errorMessage = 'PaymentAuthorizationFailed';
+                } else {
+                    $errorMessage = $error;
+                }
             }
             throw new \Magento\Framework\Exception\LocalizedException(
-                __($errorMessage)
+                __('Something went wrong while generating the payment request: ' .$errorMessage)
             );
         }
     }
