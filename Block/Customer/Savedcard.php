@@ -38,7 +38,7 @@ class Savedcard extends \Magento\Framework\View\Element\Template
         $customerCards = $this->getCustomerCards();
         if ($customerCards && $customerCards->count()) {
             foreach ($customerCards as $card) {
-                $cards[]=['type'=>$card->getMethod(),'number'=>$card->getIdentifier(),'contract_id'=>$card->getId()];
+                $cards[]=['type'=>$card->getMethod(),'number'=>$card->getIdentifier(),'contract_id'=>$card->getId(), 'currency'=>$card->getcurrency()];
             }
         }
         return $cards;

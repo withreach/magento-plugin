@@ -13,6 +13,7 @@ class CcConfigProvider implements ConfigProviderInterface
      * @var string[]
      */
     protected $methodCode = Cc::METHOD_CC;
+    protected $_storeManager;
 
     const superTypeCcPaymentMethod = 'Card';
 
@@ -74,6 +75,7 @@ class CcConfigProvider implements ConfigProviderInterface
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         PaymentHelper $paymentHelper,
         \Magento\Framework\UrlInterface $coreUrl,
         \Reach\Payment\Helper\Data $reachHelper,
@@ -84,6 +86,7 @@ class CcConfigProvider implements ConfigProviderInterface
         CcConfig $ccConfig,
         \Psr\Log\LoggerInterface $logger
     ) {
+        $this->_storeManager = $storeManager;
         $this->escaper = $escaper;
         $this->coreUrl = $coreUrl;
         $this->reachHelper = $reachHelper;
@@ -106,7 +109,8 @@ class CcConfigProvider implements ConfigProviderInterface
                 'reach_cc' => [
                     'oc_enabled'=>(boolean)$this->reachHelper->getAllowOpenContract(),
                     'open_contracts'=>$this->getOpenContracts(),
-                     //got idea from here: https://webkul.com/blog/adding-additional-variables-in-window-checkoutconfig-on-magento-2-checkout-page/
+                    'selected_currency'=>$this->_storeManager->getStore()->getCurrentCurrency()->getCode(),
+        //got idea from here: https://webkul.com/blog/adding-additional-variables-in-window-checkoutconfig-on-magento-2-checkout-page/
                     'availableTypes'=> $this->getCcAvailableTypes('Card'), //has something like
                     // ["AE"=>"American Express","VI"=>"Visa"]
 
@@ -134,7 +138,7 @@ class CcConfigProvider implements ConfigProviderInterface
             $collection = $this->openContract->getCollection();
             $collection->addFieldToFilter('customer_id', ['eq'=>$customerId]);
             foreach ($collection as $contract) {
-                $contracts[] = ['contractId'=>$contract->getReachContractId(),'label'=>$contract->getMethod().' - '.$contract->getIdentifier()];
+                $contracts[] = ['contractId'=>$contract->getReachContractId(),'label'=>$contract->getMethod().' - '.$contract->getIdentifier(), 'contractCurrency'=>$contract->getCurrency()];
             }
         }
         return $contracts;

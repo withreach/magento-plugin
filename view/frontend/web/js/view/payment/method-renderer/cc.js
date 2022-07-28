@@ -26,17 +26,19 @@ define([
         
         var isLoggedIn = ko.observable(window.isCustomerLoggedIn);
         var contractOptions=[];
+        var selectedCurrency = window.checkoutConfig.payment.reach_cc.selected_currency;
         if (isLoggedIn()) {
             if (typeof window.checkoutConfig.payment.reach_cc.open_contracts !== 'undefined' &&
                     window.checkoutConfig.payment.reach_cc.open_contracts.length)
             {
                 var contracts = window.checkoutConfig.payment.reach_cc.open_contracts;
                 $.each(contracts, function (key, item) {
-                    contractOptions.push(item);
+                    if(item.contractCurrency === selectedCurrency){
+                        contractOptions.push(item);
+                    }
                 });
                 contractOptions.push({contractId:0,label:$t('Use Different Card')});
-            }  
-            console.log(contractOptions);            
+            }
         }
         return Component.extend({
             defaults: {
@@ -238,6 +240,7 @@ define([
                 {
                     return false;
                 }
+                console.log("herererere")
                 return typeof window.checkoutConfig.payment.reach_cc.oc_enabled !== 'undefined' &&
                     window.checkoutConfig.payment.reach_cc.oc_enabled === true;
             }
