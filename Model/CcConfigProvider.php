@@ -138,7 +138,12 @@ class CcConfigProvider implements ConfigProviderInterface
             $collection = $this->openContract->getCollection();
             $collection->addFieldToFilter('customer_id', ['eq'=>$customerId]);
             foreach ($collection as $contract) {
-                $contracts[] = ['contractId'=>$contract->getReachContractId(),'label'=>$contract->getMethod().' - '.$contract->getIdentifier(), 'contractCurrency'=>$contract->getCurrency()];
+                $contracts[] =
+                    [
+                        'contractId'=>$contract->getReachContractId(),
+                        'label'=>$contract->getMethod().' - '.$contract->getIdentifier(),
+                        'contractCurrency'=>$contract->getCurrency()
+                    ];
             }
         }
         return $contracts;

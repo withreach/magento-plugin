@@ -240,7 +240,6 @@ define([
                 {
                     return false;
                 }
-                console.log("herererere")
                 return typeof window.checkoutConfig.payment.reach_cc.oc_enabled !== 'undefined' &&
                     window.checkoutConfig.payment.reach_cc.oc_enabled === true;
             }
