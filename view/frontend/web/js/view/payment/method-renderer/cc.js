@@ -37,7 +37,9 @@ define([
                         contractOptions.push(item);
                     }
                 });
-                contractOptions.push({contractId:0,label:$t('Use Different Card')});
+                if (contractOptions.length){
+                    contractOptions.push({contractId:0,label:$t('Use Different Card')});
+                }
             }
         }
         return Component.extend({
