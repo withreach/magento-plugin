@@ -38,7 +38,10 @@ define([
                     }
                 });
                 if (contractOptions.length){
-                    contractOptions.push({contractId:0,label:$t('Use Different Card')});
+                    contractOptions.push({
+                            contractId:0,
+                            label:$t('Use Different Card')
+                        });
                 }
             }
         }
