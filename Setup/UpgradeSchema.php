@@ -45,278 +45,275 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $installer->getConnection()->createTable($tableCurrencyPrecision);
         }
 
-        if (version_compare($context->getVersion(), '1.0.1') < 0) {
-            $quoteAddressTable = 'quote_address';
-            $quoteTable = 'quote';
-            $orderTable = 'sales_order';
-            $invoiceTable = 'sales_invoice';
-            $creditmemoTable = 'sales_creditmemo';
+        $quoteAddressTable = 'quote_address';
+        $quoteTable = 'quote';
+        $orderTable = 'sales_order';
+        $invoiceTable = 'sales_invoice';
+        $creditmemoTable = 'sales_creditmemo';
 
-            //Setup two columns for quote, quote_address and order
-            //Quote address tables
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteAddressTable),
-                'reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
-                ]
-            );
-        
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteAddressTable),
-                'base_reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Base Tax & Duty'
-                ]
-            );
+        //Setup two columns for quote, quote_address and order
+        //Quote address tables
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteAddressTable),
+            'reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
+            ]
+        );
 
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteAddressTable),
-                'dhl_quote_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    255,
-                    'nullable' => true,
-                    'comment' =>'DHL Quote Id'
-                ]
-            );
-        
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteAddressTable),
-                'dhl_breakdown',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    null,
-                    'nullable' => true,
-                    'comment' =>'DHL Breakdown'
-                ]
-            );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteAddressTable),
+            'base_reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Base Tax & Duty'
+            ]
+        );
 
-            //Quote tables
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteTable),
-                'reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteAddressTable),
+            'dhl_quote_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                'nullable' => true,
+                'comment' =>'DHL Quote Id'
+            ]
+        );
 
-                ]
-            );
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteTable),
-                'base_reach_duty',
-                [
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteAddressTable),
+            'dhl_breakdown',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
+                'nullable' => true,
+                'comment' =>'DHL Breakdown'
+            ]
+        );
+
+        //Quote tables
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteTable),
+            'reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
+
+            ]
+        );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteTable),
+            'base_reach_duty',
+            [
+            'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+            'length'=>'12,4',
+            'default' => 0.00,
+            'nullable' => true,
+            'comment' =>'Base Tax & Duty'
+
+            ]
+        );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteTable),
+            'dhl_quote_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                'nullable' => true,
+                'comment' =>'DHL Quote Id'
+            ]
+        );
+
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($quoteTable),
+            'dhl_breakdown',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
+                'nullable' => true,
+                'comment' =>'DHL Breakdown'
+            ]
+        );
+
+        //Order tables
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($orderTable),
+            'reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
+
+            ]
+        );
+
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($orderTable),
+            'base_reach_duty',
+            [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
                 'length'=>'12,4',
                 'default' => 0.00,
                 'nullable' => true,
                 'comment' =>'Base Tax & Duty'
 
-                ]
-            );
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteTable),
-                'dhl_quote_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    255,
-                    'nullable' => true,
-                    'comment' =>'DHL Quote Id'
-                ]
-            );
+            ]
+        );
 
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($quoteTable),
-                'dhl_breakdown',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    null,
-                    'nullable' => true,
-                    'comment' =>'DHL Breakdown'
-                ]
-            );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($orderTable),
+            'dhl_quote_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                'nullable' => true,
+                'comment' =>'DHL Quote Id'
+            ]
+        );
 
-            //Order tables
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($orderTable),
-                'reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
-
-                ]
-            );
-
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($orderTable),
-                'base_reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Base Tax & Duty'
-
-                ]
-            );
-
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($orderTable),
-                'dhl_quote_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    255,
-                    'nullable' => true,
-                    'comment' =>'DHL Quote Id'
-                ]
-            );
-
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($orderTable),
-                'dhl_breakdown',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    null,
-                    'nullable' => true,
-                    'comment' =>'DHL Breakdown'
-                ]
-            );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($orderTable),
+            'dhl_breakdown',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
+                'nullable' => true,
+                'comment' =>'DHL Breakdown'
+            ]
+        );
 
 
-            //Invoice tables
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($invoiceTable),
-                'reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
+        //Invoice tables
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($invoiceTable),
+            'reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
 
-                ]
-            );
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($invoiceTable),
-                'base_reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
+            ]
+        );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($invoiceTable),
+            'base_reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
 
-                ]
-            );
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($invoiceTable),
-                'dhl_quote_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    255,
-                    'nullable' => true,
-                    'comment' =>'DHL Quote Id'
-                ]
-            );
+            ]
+        );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($invoiceTable),
+            'dhl_quote_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                'nullable' => true,
+                'comment' =>'DHL Quote Id'
+            ]
+        );
 
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($invoiceTable),
-                'dhl_breakdown',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    null,
-                    'nullable' => true,
-                    'comment' =>'DHL Breakdown'
-                ]
-            );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($invoiceTable),
+            'dhl_breakdown',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
+                'nullable' => true,
+                'comment' =>'DHL Breakdown'
+            ]
+        );
 
-            //Credit memo tables
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($creditmemoTable),
-                'reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
+        //Credit memo tables
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($creditmemoTable),
+            'reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
 
-                ]
-            );
-       
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($creditmemoTable),
-                'base_reach_duty',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    'length'=>'12,4',
-                    'default' => 0.00,
-                    'nullable' => true,
-                    'comment' =>'Tax & Duty'
+            ]
+        );
 
-                ]
-            );
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($creditmemoTable),
+            'base_reach_duty',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'=>'12,4',
+                'default' => 0.00,
+                'nullable' => true,
+                'comment' =>'Tax & Duty'
 
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($creditmemoTable),
-                'dhl_quote_id',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    255,
-                    'nullable' => true,
-                    'comment' =>'DHL Quote Id'
-                ]
-            );
-            
-            $setup->getConnection()
-            ->addColumn(
-                $setup->getTable($creditmemoTable),
-                'dhl_breakdown',
-                [
-                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                    null,
-                    'nullable' => true,
-                    'comment' =>'DHL Breakdown'
-                ]
-            );
-        }
-        
-        if (version_compare($context->getVersion(), "1.0.4") < 0) {
-            //DHL Country of Origin tables
-            $setup->getConnection()
+            ]
+        );
+
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($creditmemoTable),
+            'dhl_quote_id',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                'nullable' => true,
+                'comment' =>'DHL Quote Id'
+            ]
+        );
+
+        $setup->getConnection()
+        ->addColumn(
+            $setup->getTable($creditmemoTable),
+            'dhl_breakdown',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
+                'nullable' => true,
+                'comment' =>'DHL Breakdown'
+            ]
+        );
+
+        //DHL Country of Origin tables
+        $setup->getConnection()
             ->addColumn(
                 $setup->getTable('reach_hs_code'),
                 'country_of_origin',
@@ -327,6 +324,19 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'comment' =>'Country of Origin'
                 ]
             );
+
+        if (version_compare($context->getVersion(), "0.1.4") < 0) {
+            //DHL Country of Origin tables
+            $setup->getConnection()
+                ->addColumn(
+                    $setup->getTable('reach_open_contract'),
+                    'closed_at',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                        'nullable' => true,
+                        'comment' => 'Closed at timestamp'
+                    ]
+                );
         }
 
          $installer->endSetup();
