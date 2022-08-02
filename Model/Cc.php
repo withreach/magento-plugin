@@ -17,6 +17,7 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Quote\Api\Data\PaymentInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 /**
  * Cc payment model
@@ -155,6 +156,11 @@ class Cc extends \Magento\Payment\Model\Method\Cc
     private $httpTextFactory;
 
     /**
+     * @var EventManager
+     */
+    private $eventManager;
+
+    /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
@@ -199,6 +205,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         HandlerInterface $errorHandler,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        EventManager $eventManager,
         array $data = []
     ) {
         $this->storeManager     = $storeManager;
@@ -209,6 +216,7 @@ class Cc extends \Magento\Payment\Model\Method\Cc
         $this->reachPayment      = $reachPayment;
         $this->httpTextFactory  = $httpTextFactory;
         $this->transactionModel = $transactionModel;
+        $this->eventManager = $eventManager;
         parent::__construct(
             $context,
             $registry,
@@ -692,15 +700,24 @@ class Cc extends \Magento\Payment\Model\Method\Cc
     {
         if (isset($response['Error']) && count($response['Error'])) {
             $error = $response['Error']['Code'];
+            $errorMessage = 'Something went wrong while generating the payment request';
+
             if (isset($error) && $error != '') {
-                if ($error === "Blacklisted" || $error === "FraudSuspected") {
-                    $errorMessage = 'PaymentAuthorizationFailed';
+                if ($error === 'Blacklisted' || $error === 'FraudSuspected') {
+                    $errorMessage = 'Failed to authorize the payment.';
+                } elseif ($error === 'ContractClosed') {
+                    $errorMessage = 'Saved payment method is no longer valid. Please use a different payment method.';
+
+                    $info = $this->getInfoInstance();
+                    $contractId = $info->getAdditionalInformation('contract_id');
+                    $this->eventManager->dispatch('reach_contract_closed', ['closed_contract_id' => $contractId]);
                 } else {
-                    $errorMessage = $error;
+                    $errorMessage .= ': ' . $error;
                 }
             }
+
             throw new \Magento\Framework\Exception\LocalizedException(
-                __('Something went wrong while generating the payment request: ' .$errorMessage)
+                __($errorMessage)
             );
         }
     }

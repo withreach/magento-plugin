@@ -20,6 +20,10 @@
     <preference for="Reach\Payment\Api\Data\HttpResponseInterface" type="Reach\Payment\Model\Api\Data\HttpResponse" />
     <preference for="Reach\Payment\Api\Data\NotificationResponseInterface" type="Reach\Payment\Model\Api\Data\NotificationResponse" />
 
+    <preference for="Reach\Payment\Api\Data\ContractInterface" type="Reach\Payment\Model\Contract" />
+    <preference for="Reach\Payment\Api\Data\ContractSearchResultInterface" type="Reach\Payment\Model\ContractSearchResult" />
+    <preference for="Reach\Payment\Api\ContractRepositoryInterface" type="Reach\Payment\Model\ContractRepository" />
+
     <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
         <arguments>
             <argument name="deserializers" xsi:type="array">
