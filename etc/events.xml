@@ -16,4 +16,8 @@
     <event name="checkout_submit_all_after">
         <observer name="reach_opencontract_sales_order_save_commit_after_observer" instance="Reach\Payment\Observer\SalesOrderPlaceAfterObserver" />
     </event>
+
+    <event name="reach_contract_closed">
+        <observer name="reach_contract_closed_observer" instance="Reach\Payment\Observer\ClosedContractObserver"/>
+    </event>
 </config>
