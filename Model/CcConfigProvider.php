@@ -137,6 +137,7 @@ class CcConfigProvider implements ConfigProviderInterface
             $customerId = $this->customerSession->getCustomer()->getId();
             $collection = $this->openContract->getCollection();
             $collection->addFieldToFilter('customer_id', ['eq'=>$customerId]);
+            $collection->addFieldToFilter('closed_at', ['null' => true]);
             foreach ($collection as $contract) {
                 $contracts[] =
                     [
